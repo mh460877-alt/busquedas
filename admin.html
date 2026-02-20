@@ -119,11 +119,11 @@
             <thead>
                 <tr>
                     <th>DNI</th>
-                    <th>Candidato</th>
+                    <th>Nombre y Apellido</th>
                     <th>Puesto</th>
-                    <th>Consultor</th>
-                    <th>Acciones</th>
+                    <th>Provincia</th>
                     <th>Estado</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody id="tablaCandidatos">
@@ -136,7 +136,7 @@
 <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-Q1S3S15loP-wlW2dcD1pZWPh4kmUyL-wUw5xJn50a836kR-Ca7-ufKv1-YtXSdA9/exec";
 
-    // 1. Crear Vacante (Sin Empresa)
+    // 1. Crear Vacante
     async function crearBusqueda() {
         const puesto = document.getElementById('puesto').value;
         const provincia = document.getElementById('provincia').value;
@@ -178,7 +178,7 @@
         } catch (error) { console.error(error); }
     }
 
-    // 3. Cargar Tabla de Vacantes (Orden: ID, Puesto, Fecha, Desc, Provincia, Estado)
+    // 3. Cargar Tabla de Vacantes
     async function cargarTablaVacantes() {
         try {
             const response = await fetch(SCRIPT_URL + "?type=getBusquedas");
@@ -206,7 +206,7 @@
         } catch (e) { console.log("Error cargando vacantes"); }
     }
 
-    // 4. Monitor de Candidatos
+    // 4. Cargar Monitor de Candidatos con nuevo formato
     async function cargarCandidatos() {
         const tabla = document.getElementById('tablaCandidatos');
         try {
@@ -220,17 +220,20 @@
             }
 
             datos.forEach(row => {
+                // Estructura esperada de la fila en Google Sheets:
+                // [0]DNI, [1]Nombre, [2]Puesto, [3]Consultor, [4]CV_Link, [5]Video_Link, [6]Estado, [7]Provincia
                 tabla.innerHTML += `
                     <tr data-puesto="${row[2]}">
                         <td>${row[0]}</td>
-                        <td>${row[1]}</td>
+                        <td style="font-weight:600;">${row[1]}</td>
                         <td>${row[2]}</td>
-                        <td>${row[3]}</td>
-                        <td>
-                            <a href="${row[4]}" target="_blank" style="color:var(--secondary); margin-right:10px;"><i class="fas fa-file-pdf"></i> CV</a>
-                            <a href="${row[5]}" target="_blank" style="color:var(--danger);"><i class="fas fa-video"></i> Video</a>
-                        </td>
+                        <td>${row[7] || 'No especificada'}</td>
                         <td><span class="badge badge-process">${row[6] || 'En Revisión'}</span></td>
+                        <td>
+                            <button class="btn-accion btn-ver" onclick="abrirArchivos('${row[4]}', '${row[5]}')" title="Ver Informe/Video">
+                                <i class="fas fa-folder-open"></i> Ver Archivos
+                            </button>
+                        </td>
                     </tr>`;
             });
         } catch (error) {
@@ -238,15 +241,17 @@
         }
     }
 
-    // 5. Filtrado
+    // 5. Lógica de Filtrado y Scroll
     function filtrarPorVacante(puesto) {
         const filas = document.querySelectorAll("#tablaCandidatos tr");
         const titulo = document.getElementById('titulo-tabla');
+        let contador = 0;
         
         filas.forEach(fila => {
             const puestoFila = fila.getAttribute('data-puesto');
             if (puesto === 'todas' || puestoFila === puesto) {
                 fila.style.display = "";
+                contador++;
             } else {
                 fila.style.display = "none";
             }
@@ -254,9 +259,21 @@
         
         titulo.innerHTML = puesto === 'todas' ? 
             `<i class="fas fa-list"></i> Monitor General de Candidatos` : 
-            `<i class="fas fa-filter"></i> Postulantes para: ${puesto}`;
+            `<i class="fas fa-filter"></i> Postulantes para: ${puesto} (${contador})`;
             
         document.getElementById('candidatos').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // 6. Abrir links de archivos
+    function abrirArchivos(cv, video) {
+        if (cv && cv !== "#" && cv !== "") window.open(cv, '_blank');
+        if (video && video !== "#" && video !== "") {
+            setTimeout(() => {
+                if(confirm("¿Deseas abrir también el video de la entrevista?")) window.open(video, '_blank');
+            }, 500);
+        } else if (!cv || cv === "#") {
+            alert("No hay archivos adjuntos para este candidato.");
+        }
     }
 
     window.onload = async () => {
