@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Consultor - Escencial Consultora</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #1a2a6c; --secondary: #3498db; --bg: #f4f7f6; --success: #27ae60; --danger: #e74c3c; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 550px; }
+        .card { background: white; padding: 35px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        .logo { max-width: 180px; margin: 0 auto 25px auto; display: block; }
+        h2 { text-align: center; color: var(--primary); font-size: 1.5rem; margin-bottom: 30px; }
+        
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; font-size: 0.9rem; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 1rem; transition: 0.3s; }
+        input:focus { border-color: var(--secondary); outline: none; box-shadow: 0 0 8px rgba(52, 152, 219, 0.2); }
+        
+        #dni-status { font-size: 0.8rem; margin-top: 6px; font-weight: bold; height: 20px; }
+        .disponible { color: var(--success); }
+        .duplicado { color: var(--danger); }
+
+        button { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        button:disabled { background: #cbd5e0; cursor: not-allowed; transform: none !important; }
+        button:hover:not(:disabled) { background: #121d4d; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        
+        .nav-back { display: block; text-align: center; margin-top: 20px; color: #7f8c8d; text-decoration: none; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <img src="logo.png" alt="Escencial Consultora" class="logo">
+        <h2><i class="fas fa-user-plus"></i> Carga de Candidatos</h2>
+        
+        <form id="formCandidato">
+            <div class="form-group">
+                <label>Búsqueda Asignada</label>
+                <select id="puestoSeleccionado" required>
+                    <option value="">Cargando búsquedas activas...</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>DNI del Candidato (Sin puntos)</label>
+                <input type="number" id="dni" placeholder="Ej: 12345678" required onblur="validarDNI()">
+                <div id="dni-status"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Nombre y Apellido</label>
+                <input type="text" id="nombreCandidato" placeholder="Nombre completo del postulante" required>
+            </div>
+
+            <div class="form-group">
+                <label>Enlace CV (Drive / Dropbox)</label>
+                <input type="url" id="cvLink" placeholder="https://link-al-archivo.com" required>
+            </div>
+
+            <div class="form-group">
+                <label>Enlace Video Entrevista</label>
+                <input type="url" id="videoLink" placeholder="https://link-al-video.com">
+            </div>
+
+            <button type="submit" id="btnEnviar">Registrar Candidato</button>
+        </form>
+        <a href="index.html" class="nav-back"><i class="fas fa-arrow-left"></i> Volver al Inicio</a>
+    </div>
+</div>
+
+<script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-Q1S3S15loP-wlW2dcD1pZWPh4kmUyL-wUw5xJn50a836kR-Ca7-ufKv1-YtXSdA9/exec";
+
+    // 1. Cargar vacantes desde Google Sheets
+    async function cargarVacantes() {
+        const select = document.getElementById('puestoSeleccionado');
+        try {
+            const response = await fetch(SCRIPT_URL + "?type=getBusquedas");
+            const vacantes = await response.json();
+            select.innerHTML = '<option value="">-- Selecciona el puesto --</option>';
+            vacantes.forEach(v => {
+                let option = document.createElement('option');
+                option.value = v[1]; 
+                option.textContent = v[1];
+                select.appendChild(option);
+            });
+        } catch (e) { select.innerHTML = '<option>Error al cargar búsquedas</option>'; }
+    }
+
+    // 2. Validar DNI en tiempo real
+    async function validarDNI() {
+        const dni = document.getElementById('dni').value;
+        const status = document.getElementById('dni-status');
+        const btn = document.getElementById('btnEnviar');
+        if(!dni || dni.length < 6) return;
+
+        status.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Verificando base de datos...";
+        status.className = "";
+        
+        try {
+            const response = await fetch(SCRIPT_URL);
+            const candidatos = await response.json();
+            const existe = candidatos.some(c => c[0].toString() === dni);
+
+            if(existe) {
+                status.innerHTML = "⚠️ Este candidato ya fue presentado por otro selector.";
+                status.className = "duplicado";
+                btn.disabled = true;
+            } else {
+                status.innerHTML = "✅ Candidato disponible para presentar.";
+                status.className = "disponible";
+                btn.disabled = false;
+            }
+        } catch (e) { status.innerHTML = "Error de conexión."; }
+    }
+
+    // 3. Enviar Formulario
+    document.getElementById('formCandidato').onsubmit = async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btnEnviar');
+        const consultorLogueado = localStorage.getItem('consultorNombre') || "Consultor Externo";
+        
+        btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Enviando a Escencial...";
+        btn.disabled = true;
+
+        const datos = {
+            type: "CargarCandidato",
+            dni: document.getElementById('dni').value,
+            nombre: document.getElementById('nombreCandidato').value,
+            puesto: document.getElementById('puestoSeleccionado').value,
+            cv: document.getElementById('cvLink').value,
+            video: document.getElementById('videoLink').value,
+            consultor: consultorLogueado
+        };
+
+        try {
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify(datos)
+            });
+            alert("¡Éxito! El candidato ha sido registrado correctamente.");
+            location.reload();
+        } catch (error) { 
+            alert("Error al enviar. Intenta de nuevo."); 
+            btn.innerHTML = "Registrar Candidato"; 
+            btn.disabled = false; 
+        }
+    };
+
+    window.onload = cargarVacantes;
+</script>
+</body>
+</html>
