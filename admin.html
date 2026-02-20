@@ -43,11 +43,42 @@
         .badge-process { background: #e1f5fe; color: #0288d1; }
         
         .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+        /* Modal Styles */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
+        .modal-content { background-color: white; margin: 10% auto; padding: 25px; border-radius: 12px; width: 400px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
         
-        @media (max-width: 900px) { .grid-container { grid-template-columns: 1fr; } }
+        @media (max-width: 900px) { .grid-container { grid-template-columns: 1fr; } .modal-content { width: 90%; } }
     </style>
 </head>
 <body>
+
+<div id="modalEditar" class="modal">
+    <div class="modal-content">
+        <h3><i class="fas fa-edit"></i> Editar Vacante</h3>
+        <input type="hidden" id="edit-id">
+        <div class="form-group">
+            <label>Puesto</label>
+            <input type="text" id="edit-puesto">
+        </div>
+        <div class="form-group">
+            <label>Ubicación</label>
+            <input type="text" id="edit-provincia">
+        </div>
+        <div class="form-group">
+            <label>Estado</label>
+            <select id="edit-estado">
+                <option value="Activa">Activa</option>
+                <option value="Cerrada">Cerrada</option>
+                <option value="Pausada">Pausada</option>
+            </select>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button onclick="guardarEdicion()" style="background: var(--success);">Guardar Cambios</button>
+            <button onclick="cerrarModal()" style="background: var(--danger);">Cancelar</button>
+        </div>
+    </div>
+</div>
 
 <div class="sidebar">
     <h2>Escencial Admin</h2>
@@ -134,51 +165,49 @@
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-Q1S3S15loP-wlW2dcD1pZWPh4kmUyL-wUw5xJn50a836kR-Ca7-ufKv1-YtXSdA9/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwC49d85GabEmGJcneK0dOyXXzqT2UxixTqEqsYlHHfCyAy_o5GZAiYWDFx0qBFk6Rl/exec";
+
+    // CARGAR DATOS INICIALES
+    window.onload = async () => {
+        await cargarCandidatos();
+        await cargarTablaVacantes();
+    };
 
     // 1. Crear Vacante
     async function crearBusqueda() {
         const puesto = document.getElementById('puesto').value;
         const provincia = document.getElementById('provincia').value;
         const descripcion = document.getElementById('descripcion').value;
-
-        if(!puesto) return alert("Por favor indica el nombre del Puesto.");
-        
+        if(!puesto) return alert("Indica el nombre del Puesto.");
         try {
             await fetch(SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
-                body: JSON.stringify({ 
-                    type: 'Busquedas', 
-                    puesto: puesto, 
-                    provincia: provincia,
-                    descripcion: descripcion
-                })
+                body: JSON.stringify({ type: 'Busquedas', puesto, provincia, descripcion })
             });
-            alert("Búsqueda publicada correctamente.");
+            alert("Búsqueda publicada.");
             location.reload(); 
-        } catch (error) { alert("Error al conectar con la base de datos."); }
+        } catch (error) { alert("Error de conexión."); }
     }
 
-    // 2. Crear Consultor
+    // 2. Registrar Consultor
     async function crearConsultor() {
         const nombre = document.getElementById('nombreConsultor').value;
         const email = document.getElementById('emailConsultor').value;
-        if(!nombre || !email) return alert("Completa los campos del consultor.");
-        
+        if(!nombre || !email) return alert("Completa los campos.");
         try {
             await fetch(SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
                 body: JSON.stringify({ type: 'Consultores', nombre, email })
             });
-            alert("Consultor registrado con éxito.");
+            alert("Consultor registrado.");
             document.getElementById('nombreConsultor').value = "";
             document.getElementById('emailConsultor').value = "";
         } catch (error) { console.error(error); }
     }
 
-    // 3. Cargar Tabla de Vacantes
+    // 3. Cargar Tabla de Vacantes con función de Edición
     async function cargarTablaVacantes() {
         try {
             const response = await fetch(SCRIPT_URL + "?type=getBusquedas");
@@ -192,12 +221,14 @@
                     <td>${v[0] || '---'}</td>
                     <td style="font-weight: bold; color: var(--primary);">${v[1]}</td>
                     <td>${v[4] || 'No especificada'}</td>
-                    <td><span class="badge badge-success">${v[5] || 'Activa'}</span></td>
+                    <td><span class="badge ${v[5] === 'Cerrada' ? 'badge-danger' : 'badge-success'}">${v[5] || 'Activa'}</span></td>
                     <td style="text-align: right;">
                         <button class="btn-accion btn-ver" onclick="filtrarPorVacante('${v[1]}')">
                             <i class="fas fa-sign-in-alt"></i> Ingresar
                         </button>
-                        <button class="btn-accion btn-editar" title="Editar"><i class="fas fa-edit"></i></button>
+                        <button class="btn-accion btn-editar" onclick="abrirModalEdicion('${v[0]}', '${v[1]}', '${v[4]}', '${v[5]}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
                         <button class="btn-accion btn-borrar" title="Eliminar"><i class="fas fa-trash"></i></button>
                     </td>
                 `;
@@ -206,80 +237,79 @@
         } catch (e) { console.log("Error cargando vacantes"); }
     }
 
-    // 4. Cargar Monitor de Candidatos con nuevo formato
+    // 4. Lógica del Modal de Edición
+    function abrirModalEdicion(id, puesto, provincia, estado) {
+        document.getElementById('edit-id').value = id;
+        document.getElementById('edit-puesto').value = puesto;
+        document.getElementById('edit-provincia').value = provincia;
+        document.getElementById('edit-estado').value = estado || 'Activa';
+        document.getElementById('modalEditar').style.display = "block";
+    }
+
+    function cerrarModal() { document.getElementById('modalEditar').style.display = "none"; }
+
+    async function guardarEdicion() {
+        const id = document.getElementById('edit-id').value;
+        const puesto = document.getElementById('edit-puesto').value;
+        const provincia = document.getElementById('edit-provincia').value;
+        const estado = document.getElementById('edit-estado').value;
+
+        try {
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify({ type: 'EditarBusqueda', id, puesto, provincia, estado })
+            });
+            alert("Cambios guardados correctamente.");
+            location.reload();
+        } catch (e) { alert("Error al guardar cambios."); }
+    }
+
+    // 5. Monitor de Candidatos
     async function cargarCandidatos() {
         const tabla = document.getElementById('tablaCandidatos');
         try {
             const response = await fetch(SCRIPT_URL);
             const datos = await response.json();
             tabla.innerHTML = ""; 
-            
             if (datos.length === 0) {
-                tabla.innerHTML = "<tr><td colspan='6' style='text-align:center;'>No hay candidatos registrados aún.</td></tr>";
+                tabla.innerHTML = "<tr><td colspan='6' style='text-align:center;'>No hay candidatos registrados.</td></tr>";
                 return;
             }
-
             datos.forEach(row => {
-                // Estructura esperada de la fila en Google Sheets:
-                // [0]DNI, [1]Nombre, [2]Puesto, [3]Consultor, [4]CV_Link, [5]Video_Link, [6]Estado, [7]Provincia
                 tabla.innerHTML += `
                     <tr data-puesto="${row[2]}">
                         <td>${row[0]}</td>
                         <td style="font-weight:600;">${row[1]}</td>
                         <td>${row[2]}</td>
-                        <td>${row[7] || 'No especificada'}</td>
+                        <td>${row[7] || '---'}</td>
                         <td><span class="badge badge-process">${row[6] || 'En Revisión'}</span></td>
                         <td>
-                            <button class="btn-accion btn-ver" onclick="abrirArchivos('${row[4]}', '${row[5]}')" title="Ver Informe/Video">
+                            <button class="btn-accion btn-ver" onclick="abrirArchivos('${row[4]}', '${row[5]}')">
                                 <i class="fas fa-folder-open"></i> Ver Archivos
                             </button>
                         </td>
                     </tr>`;
             });
-        } catch (error) {
-            tabla.innerHTML = "<tr><td colspan='6' style='text-align:center; color:red;'>Error al cargar datos.</td></tr>";
-        }
+        } catch (error) { tabla.innerHTML = "<tr><td colspan='6' style='text-align:center; color:red;'>Error de datos.</td></tr>"; }
     }
 
-    // 5. Lógica de Filtrado y Scroll
     function filtrarPorVacante(puesto) {
         const filas = document.querySelectorAll("#tablaCandidatos tr");
         const titulo = document.getElementById('titulo-tabla');
-        let contador = 0;
-        
-        filas.forEach(fila => {
-            const puestoFila = fila.getAttribute('data-puesto');
-            if (puesto === 'todas' || puestoFila === puesto) {
-                fila.style.display = "";
-                contador++;
-            } else {
-                fila.style.display = "none";
-            }
+        let c = 0;
+        filas.forEach(f => {
+            if (puesto === 'todas' || f.getAttribute('data-puesto') === puesto) { f.style.display = ""; c++; }
+            else f.style.display = "none";
         });
-        
-        titulo.innerHTML = puesto === 'todas' ? 
-            `<i class="fas fa-list"></i> Monitor General de Candidatos` : 
-            `<i class="fas fa-filter"></i> Postulantes para: ${puesto} (${contador})`;
-            
+        titulo.innerHTML = puesto === 'todas' ? `<i class="fas fa-list"></i> Monitor General` : `<i class="fas fa-filter"></i> ${puesto} (${c})`;
         document.getElementById('candidatos').scrollIntoView({ behavior: 'smooth' });
     }
 
-    // 6. Abrir links de archivos
-    function abrirArchivos(cv, video) {
-        if (cv && cv !== "#" && cv !== "") window.open(cv, '_blank');
-        if (video && video !== "#" && video !== "") {
-            setTimeout(() => {
-                if(confirm("¿Deseas abrir también el video de la entrevista?")) window.open(video, '_blank');
-            }, 500);
-        } else if (!cv || cv === "#") {
-            alert("No hay archivos adjuntos para este candidato.");
-        }
+    function abrirArchivos(cv, v) {
+        if (cv && cv !== "#") window.open(cv, '_blank');
+        if (v && v !== "#") setTimeout(() => { if(confirm("¿Ver video?")) window.open(v, '_blank'); }, 500);
     }
-
-    window.onload = async () => {
-        await cargarCandidatos();
-        await cargarTablaVacantes();
-    };
 </script>
 
 </body>
