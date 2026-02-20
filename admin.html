@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Escencial Consultora</title>
+    <title>Panel Admin - Escencial Consultora</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --primary: #2c3e50; --secondary: #3498db; --success: #27ae60; --danger: #e74c3c; --warning: #f1c40f; --bg: #f4f7f6; }
@@ -20,60 +20,74 @@
         .main-content { margin-left: 250px; padding: 40px; width: calc(100% - 250px); }
         .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
         
-        /* Forms */
+        /* Forms & Inputs */
         .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
-        input, select, textarea, button { width: 100%; padding: 12px; margin-top: 5px; border-radius: 5px; border: 1px solid #ddd; box-sizing: border-box; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; font-size: 0.9rem;}
+        input, select, textarea, button { width: 100%; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #ddd; box-sizing: border-box; font-family: inherit; }
+        .search-bar { width: 300px; padding: 8px 12px; border-radius: 20px; border: 1px solid #ccc; outline: none; }
         
-        /* Buttons */
-        .btn-accion { width: auto; padding: 8px 12px; border-radius: 4px; border: none; color: white; cursor: pointer; margin-left: 5px; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 5px; }
-        .btn-ver { background-color: var(--secondary); }
-        .btn-editar { background-color: var(--success); }
-        .btn-borrar { background-color: var(--danger); }
-        .btn-accion:hover { opacity: 0.8; }
+        /* Botones de Acción */
+        .btn-accion { width: auto; padding: 8px 10px; border-radius: 4px; border: none; color: white; cursor: pointer; margin-left: 3px; font-size: 0.85rem; display: inline-flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .btn-ingresar { background-color: var(--secondary); } /* Azul */
+        .btn-estado { background-color: var(--warning); color: #333; } /* Amarillo */
+        .btn-asignar { background-color: #8e44ad; } /* Morado */
+        .btn-editar { background-color: var(--success); } /* Verde */
+        .btn-accion:hover { opacity: 0.8; transform: translateY(-1px); }
 
         /* Tables */
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
         table th, table td { padding: 12px; border-bottom: 1px solid #ddd; text-align: left; }
-        table th { background: #f8f9fa; font-size: 0.75rem; color: #777; }
+        table th { background: #f8f9fa; color: var(--primary); text-transform: uppercase; font-size: 0.75rem; }
         
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
+        .badge { padding: 5px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
         .badge-activa { background: #e8f5e9; color: #2e7d32; }
-        .badge-cerrada { background: #ffebee; color: #c62828; }
-        .badge-pausada { background: #fff3e0; color: #ef6c00; }
-
-        /* Modal */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
-        .modal-content { background: white; margin: 10% auto; padding: 25px; border-radius: 12px; width: 400px; }
-
+        .badge-deshabilitada { background: #ffebee; color: #c62828; }
+        .badge-proceso { background: #e1f5fe; color: #0288d1; }
+        
         .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+        /* Modals */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
+        .modal-content { background-color: white; margin: 5% auto; padding: 25px; border-radius: 12px; width: 400px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
+        .modal-header { font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;}
+        
+        @media (max-width: 900px) { .grid-container { grid-template-columns: 1fr; } .modal-content { width: 90%; } }
     </style>
 </head>
 <body>
 
-<div id="modalEditar" class="modal">
+<div id="modalAsignar" class="modal">
     <div class="modal-content">
-        <h3><i class="fas fa-edit"></i> Editar Vacante</h3>
-        <input type="hidden" id="edit-id">
+        <div class="modal-header"><i class="fas fa-user-tag"></i> Asignar Consultor</div>
+        <input type="hidden" id="asig-id">
         <div class="form-group">
-            <label>Puesto</label>
-            <input type="text" id="edit-puesto">
-        </div>
-        <div class="form-group">
-            <label>Ubicación</label>
-            <input type="text" id="edit-provincia">
-        </div>
-        <div class="form-group">
-            <label>Estado de la Búsqueda</label>
-            <select id="edit-estado">
-                <option value="Activa">Activa</option>
-                <option value="Pausada">Pausada</option>
-                <option value="Cerrada">Cerrada</option>
+            <label>Selecciona el consultor a cargo:</label>
+            <select id="select-consultores">
+                <option value="Sin Asignar">Sin Asignar (Dejar libre)</option>
             </select>
         </div>
         <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button onclick="guardarEdicion()" style="background: var(--success); color:white;">Actualizar</button>
-            <button onclick="cerrarModal()" style="background: #ccc; color:white;">Cancelar</button>
+            <button onclick="guardarAsignacion()" style="background: var(--success); color: white;">Guardar</button>
+            <button onclick="cerrarModales()" style="background: var(--danger); color: white;">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<div id="modalEditar" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><i class="fas fa-edit"></i> Editar Búsqueda</div>
+        <input type="hidden" id="edit-id">
+        <div class="form-group">
+            <label>Nombre del Puesto</label>
+            <input type="text" id="edit-puesto">
+        </div>
+        <div class="form-group">
+            <label>Provincia / Ubicación</label>
+            <input type="text" id="edit-provincia">
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button onclick="guardarEdicion()" style="background: var(--success); color: white;">Actualizar</button>
+            <button onclick="cerrarModales()" style="background: var(--danger); color: white;">Cancelar</button>
         </div>
     </div>
 </div>
@@ -81,168 +95,297 @@
 <div class="sidebar">
     <h2>Escencial Admin</h2>
     <nav>
-        <a onclick="location.reload()" class="nav-link"><i class="fas fa-sync"></i> Refrescar Datos</a>
-        <a href="#vacantes-lista" class="nav-link"><i class="fas fa-briefcase"></i> Gestión de Vacantes</a>
-        <a href="#candidatos" class="nav-link"><i class="fas fa-users"></i> Ver Candidatos</a>
+        <a onclick="location.reload()" class="nav-link"><i class="fas fa-sync"></i> Actualizar Datos</a>
+        <a href="#seccion-vacantes" class="nav-link"><i class="fas fa-briefcase"></i> Gestión Vacantes</a>
+        <a href="#seccion-candidatos" class="nav-link"><i class="fas fa-users"></i> Ver Postulantes</a>
     </nav>
-    <a href="index.html" class="nav-link logout-link"><i class="fas fa-sign-out-alt"></i> Salir</a>
+    <a href="index.html" class="nav-link logout-link"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
 </div>
 
 <div class="main-content">
-    <h1>Consola de Administración</h1>
+    <h1>Panel de Control</h1>
 
     <div class="grid-container">
         <div class="card">
-            <h3><i class="fas fa-plus-circle"></i> Nueva Vacante</h3>
-            <input type="text" id="puesto" placeholder="Nombre del Puesto">
-            <input type="text" id="provincia" placeholder="Ubicación (Provincia)">
-            <textarea id="descripcion" rows="2" placeholder="Breve descripción..."></textarea>
-            <button onclick="crearBusqueda()" style="background: var(--secondary); color:white; margin-top:10px;">Publicar</button>
+            <h3><i class="fas fa-plus-circle"></i> Crear Nueva Vacante</h3>
+            <div class="form-group">
+                <label>Nombre de la Vacante</label>
+                <input type="text" id="nuevo-puesto" placeholder="Ej: Desarrollador Backend">
+            </div>
+            <div class="form-group">
+                <label>Provincia</label>
+                <input type="text" id="nueva-provincia" placeholder="Ej: Córdoba">
+            </div>
+            <div class="form-group">
+                <label>Descripción del Puesto</label>
+                <textarea id="nueva-desc" rows="2" placeholder="Requisitos, modalidad, etc..."></textarea>
+            </div>
+            <button onclick="crearBusqueda()" style="background: var(--secondary); color: white;">Publicar Búsqueda</button>
         </div>
 
         <div class="card">
-            <h3><i class="fas fa-user-shield"></i> Nuevo Consultor</h3>
-            <input type="text" id="nombreConsultor" placeholder="Nombre completo">
-            <input type="email" id="emailConsultor" placeholder="Email de acceso">
-            <button onclick="crearConsultor()" style="background: var(--primary); color:white; margin-top:10px;">Registrar</button>
+            <h3><i class="fas fa-user-plus"></i> Registrar Consultor</h3>
+            <div class="form-group">
+                <label>Nombre del Consultor</label>
+                <input type="text" id="nombreConsultor" placeholder="Nombre completo">
+            </div>
+            <div class="form-group">
+                <label>Email de Acceso</label>
+                <input type="email" id="emailConsultor" placeholder="correo@ejemplo.com">
+            </div>
+            <button onclick="crearConsultor()" style="background: var(--primary); color: white; margin-top: 15px;">Dar de Alta</button>
         </div>
     </div>
 
-    <div class="card" id="vacantes-lista">
-        <h3><i class="fas fa-table"></i> Búsquedas en Curso</h3>
+    <div class="card" id="seccion-vacantes">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3><i class="fas fa-list-alt"></i> Búsquedas Activas e Históricas</h3>
+            <input type="text" id="buscadorVacantes" class="search-bar" onkeyup="buscarVacantes()" placeholder="Buscar por puesto o provincia...">
+        </div>
+        
         <table>
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Puesto</th>
-                    <th>Ubicación</th>
+                    <th>Nombre / Puesto</th>
+                    <th>Provincia</th>
                     <th>Estado</th>
-                    <th style="text-align:right;">Acciones</th>
+                    <th style="text-align: right;">Acciones</th>
                 </tr>
             </thead>
-            <tbody id="cuerpo-vacantes"></tbody>
+            <tbody id="tabla-vacantes">
+                <tr><td colspan="5" style="text-align:center;">Cargando información...</td></tr>
+            </tbody>
         </table>
     </div>
 
-    <div class="card" id="candidatos">
-        <h3 id="titulo-tabla"><i class="fas fa-user-tie"></i> Monitor de Candidatos</h3>
+    <div class="card" id="seccion-candidatos">
+        <h3 id="titulo-candidatos"><i class="fas fa-user-tie"></i> Monitor General de Postulantes</h3>
         <table>
             <thead>
                 <tr>
                     <th>DNI</th>
-                    <th>Nombre</th>
-                    <th>Vacante</th>
-                    <th>Estado</th>
+                    <th>Nombre Completo</th>
+                    <th>Vacante Aplicada</th>
+                    <th>Consultor (Presentó)</th>
                     <th>Archivos</th>
+                    <th>Estado</th>
                 </tr>
             </thead>
-            <tbody id="tablaCandidatos"></tbody>
+            <tbody id="tabla-candidatos">
+                <tr><td colspan="6" style="text-align:center;">Cargando postulantes...</td></tr>
+            </tbody>
         </table>
     </div>
 </div>
 
 <script>
-    const SCRIPT_URL = "TU_URL_DE_GOOGLE_APPS_SCRIPT"; // Asegúrate de poner tu URL aquí
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby96zQ77NlTwdmQtjnJAyLhxFlmXJB2ebzAF3f5ynliW0jol9_gYkIuSm4iLGN0GqET/exec";
 
-    window.onload = () => { cargarCandidatos(); cargarTablaVacantes(); };
+    window.onload = async () => {
+        await cargarVacantes();
+        await cargarCandidatos();
+        await cargarConsultores();
+    };
 
-    // --- FUNCIONES DE BÚSQUEDAS ---
-    async function cargarTablaVacantes() {
-        const res = await fetch(SCRIPT_URL + "?type=getBusquedas");
-        const data = await res.json();
-        const tbody = document.getElementById('cuerpo-vacantes');
-        tbody.innerHTML = "";
-        data.forEach(v => {
-            const estadoClase = v[5].toLowerCase();
-            tbody.innerHTML += `
-                <tr>
-                    <td><small>${v[0].split('-')[1] || v[0]}</small></td>
-                    <td style="font-weight:bold;">${v[1]}</td>
-                    <td>${v[4]}</td>
-                    <td><span class="badge badge-${estadoClase}">${v[5]}</span></td>
-                    <td style="text-align:right;">
-                        <button class="btn-accion btn-ver" onclick="filtrarPorVacante('${v[1]}')"><i class="fas fa-eye"></i></button>
-                        <button class="btn-accion btn-editar" onclick="abrirModal('${v[0]}','${v[1]}','${v[4]}','${v[5]}')"><i class="fas fa-edit"></i></button>
-                        <button class="btn-accion btn-borrar" onclick="borrarVacante('${v[0]}')"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>`;
-        });
+    // --- FUNCIONES DE LECTURA (GET) ---
+
+    async function cargarVacantes() {
+        try {
+            const res = await fetch(SCRIPT_URL + "?type=getBusquedas");
+            const data = await res.json();
+            const tbody = document.getElementById('tabla-vacantes');
+            tbody.innerHTML = "";
+            
+            if(data.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>No hay vacantes creadas.</td></tr>";
+                return;
+            }
+
+            data.forEach(v => {
+                // v[0]:ID, v[1]:Puesto, v[2]:Fecha, v[3]:Desc, v[4]:Provincia, v[5]:Estado, v[6]:Consultor
+                const estado = v[5] || 'Activa';
+                const claseEstado = estado === 'Activa' ? 'badge-activa' : 'badge-deshabilitada';
+                const consultor = v[6] || 'Sin Asignar';
+
+                tbody.innerHTML += `
+                    <tr class="fila-vacante">
+                        <td><small style="color:#7f8c8d">${v[0]}</small></td>
+                        <td>
+                            <strong>${v[1]}</strong><br>
+                            <small style="color:#95a5a6;"><i class="fas fa-user"></i> Asignado a: ${consultor}</small>
+                        </td>
+                        <td class="col-prov">${v[4]}</td>
+                        <td><span class="badge ${claseEstado}">${estado}</span></td>
+                        <td style="text-align: right;">
+                            <button class="btn-accion btn-ingresar" onclick="ingresarVacante('${v[1]}')" title="Ingresar (Ver Candidatos)">
+                                <i class="fas fa-sign-in-alt"></i> Ingresar
+                            </button>
+                            <button class="btn-accion btn-estado" onclick="cambiarEstado('${v[0]}', '${estado}')" title="Habilitar/Deshabilitar">
+                                <i class="fas fa-power-off"></i>
+                            </button>
+                            <button class="btn-accion btn-asignar" onclick="abrirModalAsignar('${v[0]}', '${consultor}')" title="Asignar Consultor">
+                                <i class="fas fa-user-tag"></i>
+                            </button>
+                            <button class="btn-accion btn-editar" onclick="abrirModalEditar('${v[0]}', '${v[1]}', '${v[4]}')" title="Editar Búsqueda">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </td>
+                    </tr>`;
+            });
+        } catch (e) { console.error(e); }
     }
+
+    async function cargarCandidatos() {
+        try {
+            const res = await fetch(SCRIPT_URL + "?type=getCandidatos");
+            const data = await res.json();
+            const tbody = document.getElementById('tabla-candidatos');
+            tbody.innerHTML = "";
+
+            if(data.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>No hay postulantes registrados.</td></tr>";
+                return;
+            }
+
+            data.forEach(c => {
+                // c[0]:DNI, c[1]:Nombre, c[2]:Puesto, c[3]:Consultor, c[4]:CV, c[5]:Video, c[6]:Estado, c[7]:Provincia
+                tbody.innerHTML += `
+                    <tr class="fila-candidato" data-puesto="${c[2]}">
+                        <td>${c[0]}</td>
+                        <td style="font-weight:600;">${c[1]}</td>
+                        <td>${c[2]}</td>
+                        <td>${c[3]}</td>
+                        <td>
+                            <a href="${c[4]}" target="_blank" style="color:var(--secondary); text-decoration:none; margin-right:8px; font-weight:bold;"><i class="fas fa-file-pdf"></i> CV</a>
+                            <a href="${c[5]}" target="_blank" style="color:var(--danger); text-decoration:none; font-weight:bold;"><i class="fas fa-video"></i> Entrevista</a>
+                        </td>
+                        <td><span class="badge badge-proceso">${c[6] || 'En Revisión'}</span></td>
+                    </tr>`;
+            });
+        } catch (e) { console.error(e); }
+    }
+
+    async function cargarConsultores() {
+        try {
+            const res = await fetch(SCRIPT_URL + "?type=getConsultores");
+            const data = await res.json();
+            const select = document.getElementById('select-consultores');
+            data.forEach(con => {
+                // con[0]: Nombre del consultor
+                select.innerHTML += `<option value="${con[0]}">${con[0]}</option>`;
+            });
+        } catch (e) { console.error(e); }
+    }
+
+    // --- FUNCIONES DE ESCRITURA (POST) ---
 
     async function crearBusqueda() {
-        const puesto = document.getElementById('puesto').value;
-        const provincia = document.getElementById('provincia').value;
-        const descripcion = document.getElementById('descripcion').value;
-        if(!puesto) return alert("El puesto es obligatorio");
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'Busquedas', puesto, provincia, descripcion })});
-        alert("Publicado con éxito");
-        location.reload();
-    }
+        const puesto = document.getElementById('nuevo-puesto').value;
+        const provincia = document.getElementById('nueva-provincia').value;
+        const descripcion = document.getElementById('nueva-desc').value;
 
-    async function borrarVacante(id) {
-        if(!confirm("¿Seguro que deseas eliminar esta vacante? Los candidatos no se borrarán, pero la vacante desaparecerá de la lista.")) return;
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'BorrarBusqueda', id })});
-        alert("Vacante eliminada");
-        cargarTablaVacantes();
-    }
-
-    // --- MODAL EDICIÓN ---
-    function abrirModal(id, p, pr, e) {
-        document.getElementById('edit-id').value = id;
-        document.getElementById('edit-puesto').value = p;
-        document.getElementById('edit-provincia').value = pr;
-        document.getElementById('edit-estado').value = e;
-        document.getElementById('modalEditar').style.display = "block";
-    }
-    function cerrarModal() { document.getElementById('modalEditar').style.display = "none"; }
-
-    async function guardarEdicion() {
-        const id = document.getElementById('edit-id').value;
-        const puesto = document.getElementById('edit-puesto').value;
-        const provincia = document.getElementById('edit-provincia').value;
-        const estado = document.getElementById('edit-estado').value;
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'EditarBusqueda', id, puesto, provincia, estado })});
-        alert("Cambios guardados");
-        location.reload();
-    }
-
-    // --- CANDIDATOS ---
-    async function cargarCandidatos() {
-        const res = await fetch(SCRIPT_URL);
-        const data = await res.json();
-        const tbody = document.getElementById('tablaCandidatos');
-        tbody.innerHTML = "";
-        data.forEach(c => {
-            tbody.innerHTML += `
-                <tr data-puesto="${c[2]}">
-                    <td>${c[0]}</td>
-                    <td>${c[1]}</td>
-                    <td><small>${c[2]}</small></td>
-                    <td><span class="badge" style="background:#eee; color:#333;">${c[6]}</span></td>
-                    <td>
-                        <button class="btn-accion btn-ver" onclick="window.open('${c[4]}','_blank')">CV</button>
-                        <button class="btn-accion btn-ver" style="background:#6c5ce7" onclick="window.open('${c[5]}','_blank')">Video</button>
-                    </td>
-                </tr>`;
+        if(!puesto || !provincia) return alert("Por favor completa el Puesto y la Provincia.");
+        
+        await fetch(SCRIPT_URL, {
+            method: 'POST', mode: 'no-cors',
+            body: JSON.stringify({ type: 'Busquedas', puesto, provincia, descripcion })
         });
-    }
-
-    function filtrarPorVacante(puesto) {
-        const filas = document.querySelectorAll("#tablaCandidatos tr");
-        filas.forEach(f => {
-            f.style.display = (f.getAttribute('data-puesto') === puesto) ? "" : "none";
-        });
-        document.getElementById('titulo-tabla').innerText = `Candidatos: ${puesto}`;
-        document.getElementById('candidatos').scrollIntoView({behavior:'smooth'});
+        alert("Vacante creada con éxito.");
+        location.reload();
     }
 
     async function crearConsultor() {
         const nombre = document.getElementById('nombreConsultor').value;
         const email = document.getElementById('emailConsultor').value;
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'Consultores', nombre, email })});
-        alert("Consultor registrado");
-        document.getElementById('nombreConsultor').value = "";
-        document.getElementById('emailConsultor').value = "";
+        if(!nombre || !email) return alert("Completa los campos.");
+        
+        await fetch(SCRIPT_URL, {
+            method: 'POST', mode: 'no-cors',
+            body: JSON.stringify({ type: 'Consultores', nombre, email })
+        });
+        alert("Consultor registrado.");
+        location.reload();
+    }
+
+    // --- LÓGICA DE BOTONES Y MODALES ---
+
+    function buscarVacantes() {
+        let input = document.getElementById('buscadorVacantes').value.toLowerCase();
+        let filas = document.querySelectorAll('.fila-vacante');
+        filas.forEach(fila => {
+            let textoFila = fila.innerText.toLowerCase();
+            fila.style.display = textoFila.includes(input) ? "" : "none";
+        });
+    }
+
+    function ingresarVacante(puesto) {
+        let filas = document.querySelectorAll('.fila-candidato');
+        let contador = 0;
+        filas.forEach(fila => {
+            if (fila.getAttribute('data-puesto') === puesto) {
+                fila.style.display = "";
+                contador++;
+            } else {
+                fila.style.display = "none";
+            }
+        });
+        document.getElementById('titulo-candidatos').innerHTML = `<i class="fas fa-filter"></i> Postulantes para: ${puesto} (${contador})`;
+        document.getElementById('seccion-candidatos').scrollIntoView({behavior: 'smooth'});
+    }
+
+    async function cambiarEstado(id, estadoActual) {
+        const nuevoEstado = estadoActual === "Activa" ? "Deshabilitada" : "Activa";
+        if(confirm(`¿Deseas marcar esta vacante como ${nuevoEstado}?`)) {
+            await fetch(SCRIPT_URL, {
+                method: 'POST', mode: 'no-cors',
+                body: JSON.stringify({ type: 'EditarBusqueda', id: id, estado: nuevoEstado })
+            });
+            location.reload();
+        }
+    }
+
+    // Modal Asignar
+    function abrirModalAsignar(id, consultorActual) {
+        document.getElementById('asig-id').value = id;
+        document.getElementById('select-consultores').value = consultorActual;
+        document.getElementById('modalAsignar').style.display = "block";
+    }
+
+    async function guardarAsignacion() {
+        const id = document.getElementById('asig-id').value;
+        const consultor = document.getElementById('select-consultores').value;
+        await fetch(SCRIPT_URL, {
+            method: 'POST', mode: 'no-cors',
+            body: JSON.stringify({ type: 'EditarBusqueda', id: id, consultor: consultor })
+        });
+        alert("Consultor asignado correctamente.");
+        location.reload();
+    }
+
+    // Modal Editar
+    function abrirModalEditar(id, puesto, provincia) {
+        document.getElementById('edit-id').value = id;
+        document.getElementById('edit-puesto').value = puesto;
+        document.getElementById('edit-provincia').value = provincia;
+        document.getElementById('modalEditar').style.display = "block";
+    }
+
+    async function guardarEdicion() {
+        const id = document.getElementById('edit-id').value;
+        const puesto = document.getElementById('edit-puesto').value;
+        const provincia = document.getElementById('edit-provincia').value;
+        await fetch(SCRIPT_URL, {
+            method: 'POST', mode: 'no-cors',
+            body: JSON.stringify({ type: 'EditarBusqueda', id: id, puesto: puesto, provincia: provincia })
+        });
+        alert("Datos de la vacante actualizados.");
+        location.reload();
+    }
+
+    function cerrarModales() {
+        document.getElementById('modalAsignar').style.display = "none";
+        document.getElementById('modalEditar').style.display = "none";
     }
 </script>
 
