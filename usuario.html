@@ -3,155 +3,278 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Consultor - Escencial Consultora</title>
+    <title>Mi Panel - Escencial Consultores</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #1a2a6c; --secondary: #3498db; --bg: #f4f7f6; --success: #27ae60; --danger: #e74c3c; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .container { width: 100%; max-width: 550px; }
-        .card { background: white; padding: 35px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); border: 1px solid #eee; }
-        .logo { max-width: 180px; margin: 0 auto 25px auto; display: block; }
-        h2 { text-align: center; color: var(--primary); font-size: 1.5rem; margin-bottom: 30px; }
+        :root { --primary: #2c3e50; --secondary: #3498db; --success: #27ae60; --danger: #e74c3c; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; display: flex; }
         
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; font-size: 0.9rem; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 1rem; transition: 0.3s; }
-        input:focus { border-color: var(--secondary); outline: none; box-shadow: 0 0 8px rgba(52, 152, 219, 0.2); }
-        
-        #dni-status { font-size: 0.8rem; margin-top: 6px; font-weight: bold; height: 20px; }
-        .disponible { color: var(--success); }
-        .duplicado { color: var(--danger); }
+        .sidebar { width: 250px; height: 100vh; background: var(--primary); color: white; padding: 20px; position: fixed; display: flex; flex-direction: column; }
+        .sidebar h2 { font-size: 1.2rem; border-bottom: 1px solid #ffffff33; padding-bottom: 10px; margin-bottom: 20px; }
+        .nav-link { display: block; color: white; text-decoration: none; padding: 15px 0; transition: 0.3s; cursor: pointer; }
+        .nav-link:hover { color: var(--secondary); }
+        .logout-link { margin-top: auto; color: #fab1a0; border-top: 1px solid #ffffff33; padding-top: 20px; }
 
-        button { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-        button:disabled { background: #cbd5e0; cursor: not-allowed; transform: none !important; }
-        button:hover:not(:disabled) { background: #121d4d; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .main-content { margin-left: 250px; padding: 40px; width: calc(100% - 250px); }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; border-top: 4px solid var(--secondary); }
         
-        .nav-back { display: block; text-align: center; margin-top: 20px; color: #7f8c8d; text-decoration: none; font-size: 0.85rem; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; font-size: 0.9rem;}
+        input, select, button { width: 100%; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #ddd; box-sizing: border-box; font-family: inherit; }
+        
+        .btn-ingresar { background-color: var(--secondary); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
+        .btn-ingresar:hover { opacity: 0.9; }
+        .btn-volver { background-color: #7f8c8d; width: auto; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; margin-bottom: 20px;}
+
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
+        table th, table td { padding: 12px; border-bottom: 1px solid #ddd; text-align: left; }
+        table th { background: #f8f9fa; color: var(--primary); text-transform: uppercase; font-size: 0.75rem; }
+        
+        .badge-proceso { background: #e1f5fe; color: #0288d1; padding: 5px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
+        
+        .grid-container { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
+        .oculto { display: none !important; }
+
+        @media (max-width: 900px) { .grid-container { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="card">
-        <img src="logo.png" alt="Escencial Consultora" class="logo">
-        <h2><i class="fas fa-user-plus"></i> Carga de Candidatos</h2>
-        
-        <form id="formCandidato">
-            <div class="form-group">
-                <label>Búsqueda Asignada</label>
-                <select id="puestoSeleccionado" required>
-                    <option value="">Cargando búsquedas activas...</option>
-                </select>
+<div class="sidebar">
+    <h2 id="nombre-sidebar">Consultor</h2>
+    <nav>
+        <a onclick="location.reload()" class="nav-link"><i class="fas fa-sync"></i> Actualizar Datos</a>
+        <a onclick="volverInicio()" class="nav-link"><i class="fas fa-briefcase"></i> Mis Búsquedas</a>
+    </nav>
+    <a href="login_consultor.html" class="nav-link logout-link" onclick="cerrarSesion()"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+</div>
+
+<div class="main-content">
+    
+    <div id="vista-principal">
+        <h1>Mi Espacio de Trabajo</h1>
+
+        <div class="grid-container">
+            
+            <div class="card">
+                <h3><i class="fas fa-user-plus"></i> Presentar Candidato</h3>
+                <div class="form-group">
+                    <label>DNI (Sin puntos)</label>
+                    <input type="number" id="c-dni" placeholder="Ej: 35123456" required>
+                </div>
+                <div class="form-group">
+                    <label>Nombre Completo</label>
+                    <input type="text" id="c-nombre" placeholder="Nombre del postulante" required>
+                </div>
+                <div class="form-group">
+                    <label>Vacante a la que aplica</label>
+                    <select id="c-vacante">
+                        <option value="">Cargando vacantes asignadas...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Link del CV (Drive/PDF)</label>
+                    <input type="url" id="c-cv" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label>Link de Entrevista/Video</label>
+                    <input type="url" id="c-video" placeholder="https://...">
+                </div>
+                <button onclick="cargarCandidato()" style="background: var(--success); color: white; font-weight: bold; margin-top: 10px;"><i class="fas fa-upload"></i> Subir Candidato</button>
             </div>
 
-            <div class="form-group">
-                <label>DNI del Candidato (Sin puntos)</label>
-                <input type="number" id="dni" placeholder="Ej: 12345678" required onblur="validarDNI()">
-                <div id="dni-status"></div>
+            <div class="card">
+                <h3><i class="fas fa-briefcase"></i> Búsquedas Asignadas a mí</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Vacante</th>
+                            <th>Provincia</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-mis-vacantes">
+                        <tr><td colspan="3" style="text-align:center;">Buscando asignaciones...</td></tr>
+                    </tbody>
+                </table>
             </div>
-
-            <div class="form-group">
-                <label>Nombre y Apellido</label>
-                <input type="text" id="nombreCandidato" placeholder="Nombre completo del postulante" required>
-            </div>
-
-            <div class="form-group">
-                <label>Enlace CV (Drive / Dropbox)</label>
-                <input type="url" id="cvLink" placeholder="https://link-al-archivo.com" required>
-            </div>
-
-            <div class="form-group">
-                <label>Enlace Video Entrevista</label>
-                <input type="url" id="videoLink" placeholder="https://link-al-video.com">
-            </div>
-
-            <button type="submit" id="btnEnviar">Registrar Candidato</button>
-        </form>
-        <a href="index.html" class="nav-back"><i class="fas fa-arrow-left"></i> Volver al Inicio</a>
+        </div>
     </div>
+
+    <div id="vista-detalle" class="oculto">
+        <button onclick="volverInicio()" class="btn-volver"><i class="fas fa-arrow-left"></i> Volver al panel</button>
+
+        <div class="card" style="border-left: 5px solid var(--secondary);">
+            <h2 id="detalle-titulo" style="margin: 0; color: var(--primary);"><i class="fas fa-folder-open"></i> Vacante: -</h2>
+        </div>
+
+        <div class="card">
+            <h3><i class="fas fa-users"></i> Mis Postulantes Presentados</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>DNI</th>
+                        <th>Nombre</th>
+                        <th>Archivos</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-mis-candidatos">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwC49d85GabEmGJcneK0dOyXXzqT2UxixTqEqsYlHHfCyAy_o5GZAiYWDFx0qBFk6Rl/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-Q1S3S15loP-wlW2dcD1pZWPh4kmUyL-wUw5xJn50a836kR-Ca7-ufKv1-YtXSdA9/exec";
+    
+    // 1. Obtener identidad del consultor
+    const MI_NOMBRE = localStorage.getItem('consultorNombre');
+    let misVacantesData = [];
 
-    // 1. Cargar vacantes desde Google Sheets
-    async function cargarVacantes() {
-        const select = document.getElementById('puestoSeleccionado');
-        try {
-            const response = await fetch(SCRIPT_URL + "?type=getBusquedas");
-            const vacantes = await response.json();
-            select.innerHTML = '<option value="">-- Selecciona el puesto --</option>';
-            vacantes.forEach(v => {
-                let option = document.createElement('option');
-                option.value = v[1]; 
-                option.textContent = v[1];
-                select.appendChild(option);
-            });
-        } catch (e) { select.innerHTML = '<option>Error al cargar búsquedas</option>'; }
-    }
-
-    // 2. Validar DNI en tiempo real
-    async function validarDNI() {
-        const dni = document.getElementById('dni').value;
-        const status = document.getElementById('dni-status');
-        const btn = document.getElementById('btnEnviar');
-        if(!dni || dni.length < 6) return;
-
-        status.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Verificando base de datos...";
-        status.className = "";
-        
-        try {
-            const response = await fetch(SCRIPT_URL);
-            const candidatos = await response.json();
-            const existe = candidatos.some(c => c[0].toString() === dni);
-
-            if(existe) {
-                status.innerHTML = "⚠️ Este candidato ya fue presentado por otro selector.";
-                status.className = "duplicado";
-                btn.disabled = true;
-            } else {
-                status.innerHTML = "✅ Candidato disponible para presentar.";
-                status.className = "disponible";
-                btn.disabled = false;
-            }
-        } catch (e) { status.innerHTML = "Error de conexión."; }
-    }
-
-    // 3. Enviar Formulario
-    document.getElementById('formCandidato').onsubmit = async (e) => {
-        e.preventDefault();
-        const btn = document.getElementById('btnEnviar');
-        const consultorLogueado = localStorage.getItem('consultorNombre') || "Consultor Externo";
-        
-        btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Enviando a Escencial...";
-        btn.disabled = true;
-
-        const datos = {
-            type: "CargarCandidato",
-            dni: document.getElementById('dni').value,
-            nombre: document.getElementById('nombreCandidato').value,
-            puesto: document.getElementById('puestoSeleccionado').value,
-            cv: document.getElementById('cvLink').value,
-            video: document.getElementById('videoLink').value,
-            consultor: consultorLogueado
-        };
-
-        try {
-            await fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                body: JSON.stringify(datos)
-            });
-            alert("¡Éxito! El candidato ha sido registrado correctamente.");
-            location.reload();
-        } catch (error) { 
-            alert("Error al enviar. Intenta de nuevo."); 
-            btn.innerHTML = "Registrar Candidato"; 
-            btn.disabled = false; 
+    window.onload = async () => {
+        if (!MI_NOMBRE) {
+            window.location.href = "login_consultor.html"; // Redirige si no está logueado
+            return;
         }
+        document.getElementById('nombre-sidebar').innerHTML = `<i class="fas fa-user-circle"></i> ${MI_NOMBRE}`;
+        await cargarMisVacantes();
     };
 
-    window.onload = cargarVacantes;
+    function cerrarSesion() {
+        localStorage.removeItem('consultorNombre');
+    }
+
+    // --- CARGAR VACANTES ASIGNADAS AL CONSULTOR ---
+    async function cargarMisVacantes() {
+        try {
+            const res = await fetch(SCRIPT_URL + "?type=getBusquedas");
+            const data = await res.json();
+            
+            // Filtra vacantes activas que incluyan el nombre de este consultor
+            misVacantesData = data.filter(v => v[5] === 'Activa' && v[6] && v[6].includes(MI_NOMBRE));
+            
+            const tbody = document.getElementById('tabla-mis-vacantes');
+            const select = document.getElementById('c-vacante');
+            
+            tbody.innerHTML = "";
+            select.innerHTML = '<option value="">Selecciona una vacante...</option>';
+
+            if (misVacantesData.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='3' style='text-align:center;'>No tienes búsquedas asignadas activas.</td></tr>";
+                select.innerHTML = '<option value="">No hay vacantes asignadas</option>';
+                return;
+            }
+
+            misVacantesData.forEach(v => {
+                // v[1] = Puesto, v[4] = Provincia
+                select.innerHTML += `<option value="${v[1]}">${v[1]} - ${v[4]}</option>`;
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="font-weight:bold;">${v[1]}</td>
+                        <td>${v[4]}</td>
+                        <td style="text-align:right;">
+                            <button class="btn-ingresar" onclick="ingresarCarpeta('${v[1]}')"><i class="fas fa-folder-open"></i> Ver Mis Postulantes</button>
+                        </td>
+                    </tr>`;
+            });
+        } catch (error) { console.error(error); }
+    }
+
+    // --- VERIFICAR Y CARGAR CANDIDATO ---
+    async function cargarCandidato() {
+        const dni = document.getElementById('c-dni').value;
+        const nombre = document.getElementById('c-nombre').value;
+        const puesto = document.getElementById('c-vacante').value;
+        const cv = document.getElementById('c-cv').value;
+        const video = document.getElementById('c-video').value;
+
+        if (!dni || !nombre || !puesto) return alert("DNI, Nombre y Vacante son obligatorios.");
+
+        // Buscar la provincia de la vacante seleccionada
+        const vacanteSeleccionada = misVacantesData.find(v => v[1] === puesto);
+        const provincia = vacanteSeleccionada ? vacanteSeleccionada[4] : "";
+
+        // Cambiar botón a estado de carga
+        const btn = document.querySelector('button[onclick="cargarCandidato()"]');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subiendo...';
+        btn.disabled = true;
+
+        try {
+            const res = await fetch(SCRIPT_URL, {
+                method: 'POST', mode: 'no-cors',
+                body: JSON.stringify({ 
+                    type: 'CargarCandidato', 
+                    dni: dni, 
+                    nombre: nombre, 
+                    puesto: puesto, 
+                    consultor: MI_NOMBRE, 
+                    cv: cv, 
+                    video: video,
+                    provincia: provincia 
+                })
+            });
+
+            // Usamos un pequeño delay porque no-cors no nos deja leer la respuesta directamente,
+            // pero sabemos que nuestro backend del Apps Script ya está manejando el rechazo de duplicados.
+            // Para confirmarlo visualmente sin fallos:
+            setTimeout(() => {
+                alert("Petición procesada. (Si el DNI ya existía, el sistema lo bloqueó automáticamente).");
+                location.reload();
+            }, 1000);
+
+        } catch (error) {
+            alert("Error al conectar.");
+            btn.innerHTML = '<i class="fas fa-upload"></i> Subir Candidato';
+            btn.disabled = false;
+        }
+    }
+
+    // --- CARPETA DE LA VACANTE (Ver postulantes propios) ---
+    async function ingresarCarpeta(puesto) {
+        document.getElementById('vista-principal').classList.add('oculto');
+        document.getElementById('vista-detalle').classList.remove('oculto');
+        document.getElementById('detalle-titulo').innerHTML = `<i class="fas fa-folder-open"></i> Vacante: ${puesto}`;
+        
+        const tbody = document.getElementById('tabla-mis-candidatos');
+        tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'><i class='fas fa-spinner fa-spin'></i> Cargando tus postulantes...</td></tr>";
+
+        try {
+            const res = await fetch(SCRIPT_URL + "?type=getCandidatos");
+            const data = await res.json();
+            
+            // Filtrar SOLO los candidatos de ESTE consultor para ESTA vacante
+            const misCandidatos = data.filter(c => c[2] === puesto && c[3] === MI_NOMBRE);
+            
+            tbody.innerHTML = "";
+            if (misCandidatos.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Aún no has presentado candidatos para esta búsqueda.</td></tr>";
+                return;
+            }
+
+            misCandidatos.forEach(c => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${c[0]}</td>
+                        <td style="font-weight:600;">${c[1]}</td>
+                        <td>
+                            <a href="${c[4]}" target="_blank" style="color:var(--secondary); text-decoration:none; margin-right:8px; font-weight:bold;"><i class="fas fa-file-pdf"></i> CV</a>
+                            <a href="${c[5]}" target="_blank" style="color:var(--danger); text-decoration:none; font-weight:bold;"><i class="fas fa-video"></i> Link</a>
+                        </td>
+                        <td><span class="badge-proceso">${c[6] || 'En Revisión'}</span></td>
+                    </tr>`;
+            });
+        } catch (error) { console.error(error); }
+    }
+
+    function volverInicio() {
+        document.getElementById('vista-detalle').classList.add('oculto');
+        document.getElementById('vista-principal').classList.remove('oculto');
+    }
 </script>
+
 </body>
 </html>
