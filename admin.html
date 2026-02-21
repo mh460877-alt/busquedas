@@ -26,19 +26,23 @@
         input, select, textarea, button { width: 100%; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #ddd; box-sizing: border-box; font-family: inherit; }
         .search-bar { width: 300px; padding: 8px 12px; border-radius: 20px; border: 1px solid #ccc; outline: none; }
         
-        /* Botones de Acción */
-        .btn-accion { width: auto; padding: 8px 12px; border-radius: 4px; border: none; color: white; cursor: pointer; margin-left: 3px; font-size: 0.85rem; display: inline-flex; align-items: center; justify-content: center; transition: 0.2s; }
+        /* Botones de Acción Estéticos (Solo Íconos para la tabla) */
+        .btn-accion { width: 34px; height: 34px; border-radius: 4px; border: none; color: white; cursor: pointer; margin-left: 3px; font-size: 0.95rem; display: inline-flex; align-items: center; justify-content: center; transition: 0.2s; }
         .btn-ingresar { background-color: var(--secondary); } 
         .btn-estado { background-color: var(--warning); color: #333; } 
+        .btn-borrar { background-color: var(--danger); }
+        
+        /* Botones anchos para acciones de carpeta */
+        .btn-carpeta { width: auto; padding: 8px 15px; border-radius: 4px; border: none; color: white; cursor: pointer; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 5px; transition: 0.2s;}
         .btn-asignar { background-color: #8e44ad; } 
         .btn-editar { background-color: var(--success); }
-        .btn-borrar { background-color: var(--danger); }
         .btn-volver { background-color: #7f8c8d; margin-bottom: 20px; font-size: 0.95rem; }
-        .btn-accion:hover { opacity: 0.8; transform: translateY(-1px); }
+        
+        .btn-accion:hover, .btn-carpeta:hover { opacity: 0.8; transform: translateY(-1px); }
 
         /* Tables */
         table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
-        table th, table td { padding: 12px; border-bottom: 1px solid #ddd; text-align: left; }
+        table th, table td { padding: 12px; border-bottom: 1px solid #ddd; text-align: left; vertical-align: middle; }
         table th { background: #f8f9fa; color: var(--primary); text-transform: uppercase; font-size: 0.75rem; }
         
         .badge { padding: 5px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
@@ -53,6 +57,11 @@
         .modal-content { background-color: white; margin: 5% auto; padding: 25px; border-radius: 12px; width: 400px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
         .modal-header { font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;}
         
+        /* Checkbox list personalizada */
+        .checkbox-list { max-height: 180px; overflow-y: auto; border: 1px solid #ddd; padding: 15px; border-radius: 5px; display: flex; flex-direction: column; gap: 10px; background: #fafafa; }
+        .checkbox-item { display: flex; align-items: center; gap: 10px; font-weight: normal; cursor: pointer; font-size: 0.95rem; }
+        .checkbox-item input { width: 18px; height: 18px; margin: 0; cursor: pointer; }
+
         /* Ocultar elementos */
         .oculto { display: none !important; }
 
@@ -63,15 +72,15 @@
 
 <div id="modalAsignar" class="modal">
     <div class="modal-content">
-        <div class="modal-header"><i class="fas fa-user-tag"></i> Asignar Consultores</div>
+        <div class="modal-header"><i class="fas fa-users"></i> Asignar Consultores</div>
         <input type="hidden" id="asig-id">
         <div class="form-group">
-            <label>Selecciona o escribe el/los consultores a cargo:</label>
-            <input type="text" id="input-consultores" list="lista-consultores" placeholder="Ej: Juan Perez">
-            <datalist id="lista-consultores"></datalist>
+            <label>Selecciona los consultores a cargo de la búsqueda:</label>
+            <div id="lista-consultores-checkbox" class="checkbox-list">
+                </div>
         </div>
         <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button onclick="guardarAsignacion()" style="background: var(--success); color: white;">Guardar</button>
+            <button onclick="guardarAsignacion()" style="background: var(--success); color: white;">Guardar Selección</button>
             <button onclick="cerrarModales()" style="background: var(--danger); color: white;">Cancelar</button>
         </div>
     </div>
@@ -108,7 +117,7 @@
 <div class="main-content">
     
     <div id="vista-principal">
-        <h1>Panel de Control</h1>
+        <h1>Panel de Control Administrativo</h1>
 
         <div class="grid-container">
             <div class="card">
@@ -165,10 +174,9 @@
         </div>
     </div>
 
-
     <div id="vista-detalle" class="oculto">
         
-        <button onclick="volverInicio()" class="btn-accion btn-volver"><i class="fas fa-arrow-left"></i> Volver a Búsquedas</button>
+        <button onclick="volverInicio()" class="btn-carpeta btn-volver"><i class="fas fa-arrow-left"></i> Volver a Búsquedas</button>
 
         <div class="card" style="border-left: 5px solid var(--secondary);">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
@@ -177,8 +185,8 @@
                     <p id="detalle-info" style="margin: 8px 0 0 0; color: #7f8c8d; font-size: 0.95rem;">Cargando detalles...</p>
                 </div>
                 <div>
-                    <button id="btn-detalle-asignar" class="btn-accion btn-asignar"><i class="fas fa-user-tag"></i> Asignar Consultores</button>
-                    <button id="btn-detalle-editar" class="btn-accion btn-editar"><i class="fas fa-edit"></i> Editar Datos</button>
+                    <button id="btn-detalle-asignar" class="btn-carpeta btn-asignar"><i class="fas fa-user-plus"></i> Asignar Consultores</button>
+                    <button id="btn-detalle-editar" class="btn-carpeta btn-editar"><i class="fas fa-edit"></i> Editar Datos</button>
                 </div>
             </div>
         </div>
@@ -205,7 +213,8 @@
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyOpou55z0_UuYkgp38_ljaJmyp1-5ADs28xULcpyJ8XNSLYjs1dHFNCs6C8vwVWII/exec";
+    // URL DE TU SCRIPT DE GOOGLE
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-Q1S3S15loP-wlW2dcD1pZWPh4kmUyL-wUw5xJn50a836kR-Ca7-ufKv1-YtXSdA9/exec";
 
     window.onload = async () => {
         await cargarVacantes();
@@ -230,7 +239,7 @@
             data.forEach(v => {
                 const estado = v[5] || 'Activa';
                 const claseEstado = estado === 'Activa' ? 'badge-activa' : 'badge-deshabilitada';
-                const consultor = v[6] || 'Sin asignar';
+                const consultores = v[6] || ''; 
 
                 tbody.innerHTML += `
                     <tr class="fila-vacante">
@@ -238,9 +247,9 @@
                         <td style="font-weight:bold; font-size: 1rem;">${v[1]}</td>
                         <td>${v[4]}</td>
                         <td><span class="badge ${claseEstado}">${estado}</span></td>
-                        <td style="text-align: right;">
-                            <button class="btn-accion btn-ingresar" onclick="abrirCarpeta('${v[0]}', '${v[1]}', '${v[4]}', '${consultor}')" title="Ingresar a la Carpeta">
-                                <i class="fas fa-folder-open"></i> Ingresar
+                        <td style="text-align: right; white-space: nowrap;">
+                            <button class="btn-accion btn-ingresar" onclick="abrirCarpeta('${v[0]}', '${v[1]}', '${v[4]}', '${consultores}')" title="Ingresar">
+                                <i class="fas fa-sign-in-alt"></i>
                             </button>
                             <button class="btn-accion btn-estado" onclick="cambiarEstado('${v[0]}', '${estado}')" title="Habilitar/Deshabilitar">
                                 <i class="fas fa-power-off"></i>
@@ -286,29 +295,34 @@
         try {
             const res = await fetch(SCRIPT_URL + "?type=getConsultores");
             const data = await res.json();
-            const datalist = document.getElementById('lista-consultores');
+            const contenedorCheckbox = document.getElementById('lista-consultores-checkbox');
+            contenedorCheckbox.innerHTML = "";
+            
             data.forEach(con => {
-                datalist.innerHTML += `<option value="${con[0]}">`;
+                contenedorCheckbox.innerHTML += `
+                    <label class="checkbox-item">
+                        <input type="checkbox" class="check-consultor" value="${con[0]}">
+                        <span>${con[0]}</span>
+                    </label>`;
             });
         } catch (e) { console.error(e); }
     }
 
     // --- NAVEGACIÓN (CARPETAS) ---
 
-    function abrirCarpeta(id, puesto, provincia, consultores) {
-        // 1. Ocultar vista principal y mostrar detalle
+    function abrirCarpeta(id, puesto, provincia, consultoresStr) {
         document.getElementById('vista-principal').classList.add('oculto');
         document.getElementById('vista-detalle').classList.remove('oculto');
 
-        // 2. Llenar los datos de la cabecera
+        // Parsear para mostrar amigablemente
+        const textoConsultores = consultoresStr ? consultoresStr : 'Ninguno asignado aún';
+
         document.getElementById('detalle-titulo').innerHTML = `<i class="fas fa-folder-open"></i> Vacante: ${puesto}`;
-        document.getElementById('detalle-info').innerHTML = `<strong>ID:</strong> ${id} &nbsp;|&nbsp; <strong>Ubicación:</strong> ${provincia} &nbsp;|&nbsp; <strong>Consultores:</strong> <span style="color:var(--secondary)">${consultores}</span>`;
+        document.getElementById('detalle-info').innerHTML = `<strong>ID:</strong> ${id} &nbsp;|&nbsp; <strong>Ubicación:</strong> ${provincia} &nbsp;|&nbsp; <strong>Consultores a cargo:</strong> <span style="color:var(--secondary)">${textoConsultores}</span>`;
         
-        // 3. Conectar los botones de Asignar y Editar a ESTA vacante
-        document.getElementById('btn-detalle-asignar').onclick = () => abrirModalAsignar(id, consultores);
+        document.getElementById('btn-detalle-asignar').onclick = () => abrirModalAsignar(id, consultoresStr);
         document.getElementById('btn-detalle-editar').onclick = () => abrirModalEditar(id, puesto, provincia);
 
-        // 4. Filtrar la tabla de candidatos para mostrar SOLO los de esta vacante
         let filas = document.querySelectorAll('.fila-candidato');
         let contador = 0;
         filas.forEach(fila => {
@@ -320,13 +334,10 @@
             }
         });
         document.getElementById('titulo-candidatos').innerHTML = `<i class="fas fa-users"></i> Candidatos Presentados (${contador})`;
-        
-        // Subir al tope de la página
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function volverInicio() {
-        // Ocultar detalle y volver al dashboard general
         document.getElementById('vista-detalle').classList.add('oculto');
         document.getElementById('vista-principal').classList.remove('oculto');
     }
@@ -379,20 +390,39 @@
         }
     }
 
-    // --- MODALES ---
+    // --- MODALES MULTI-ASIGNACIÓN ---
 
-    function abrirModalAsignar(id, consultoresActuales) {
+    function abrirModalAsignar(id, consultoresActualesStr) {
         document.getElementById('asig-id').value = id;
-        document.getElementById('input-consultores').value = consultoresActuales === 'Sin asignar' ? '' : consultoresActuales;
+        
+        // Desmarcar todos primero
+        const checkboxes = document.querySelectorAll('.check-consultor');
+        checkboxes.forEach(cb => cb.checked = false);
+
+        // Marcar los que ya estaban asignados (separados por coma)
+        if (consultoresActualesStr) {
+            const asignados = consultoresActualesStr.split(',').map(c => c.trim());
+            checkboxes.forEach(cb => {
+                if (asignados.includes(cb.value)) {
+                    cb.checked = true;
+                }
+            });
+        }
+
         document.getElementById('modalAsignar').style.display = "block";
     }
 
     async function guardarAsignacion() {
         const id = document.getElementById('asig-id').value;
-        const consultor = document.getElementById('input-consultores').value; 
+        
+        // Recopilar todos los checkboxes marcados
+        const seleccionados = Array.from(document.querySelectorAll('.check-consultor:checked'))
+                                   .map(cb => cb.value)
+                                   .join(', '); // Los une con coma y espacio
+
         await fetch(SCRIPT_URL, {
             method: 'POST', mode: 'no-cors',
-            body: JSON.stringify({ type: 'EditarBusqueda', id: id, consultor: consultor })
+            body: JSON.stringify({ type: 'EditarBusqueda', id: id, consultor: seleccionados })
         });
         location.reload();
     }
