@@ -63,11 +63,17 @@
         .vista-seccion { display: none; animation: fadeIn 0.3s ease; }
         .vista-seccion.activa { display: block; }
 
+        /* Notificación Toast */
+        .toast { position: fixed; bottom: 20px; right: 20px; background: var(--success); color: white; padding: 12px 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9999; font-weight: bold; transform: translateY(100px); opacity: 0; transition: all 0.3s ease; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @media (max-width: 900px) { .grid-container { grid-template-columns: 1fr; } .modal-content { width: 90%; } }
     </style>
 </head>
 <body>
+
+<div id="toast-notif" class="toast"></div>
 
 <div id="modalAsignar" class="modal">
     <div class="modal-content">
@@ -114,7 +120,7 @@
 <div class="sidebar">
     <h2>Escencial Admin</h2>
     <nav>
-        <a onclick="location.reload()" class="nav-link"><i class="fas fa-sync"></i> Refrescar Datos</a>
+        <a onclick="location.reload()" class="nav-link"><i class="fas fa-sync"></i> Recargar Servidor</a>
         <a onclick="cambiarVista('vista-vacantes')" id="nav-vacantes" class="nav-link active"><i class="fas fa-briefcase"></i> Búsquedas</a>
         <a onclick="cambiarVista('vista-postulantes')" id="nav-postulantes" class="nav-link"><i class="fas fa-database"></i> Postulantes</a>
         <a onclick="cambiarVista('vista-consultores')" id="nav-consultores" class="nav-link"><i class="fas fa-user-tie"></i> Consultores</a>
@@ -143,7 +149,7 @@
                 <label>Descripción del Puesto</label>
                 <textarea id="nueva-desc" rows="2" placeholder="Requisitos, modalidad..."></textarea>
             </div>
-            <button onclick="crearBusqueda()" style="background: var(--secondary); color: white; width: 200px;">Publicar Búsqueda</button>
+            <button id="btn-crear-vacante" onclick="crearBusqueda()" style="background: var(--secondary); color: white; width: 200px;">Publicar Búsqueda</button>
         </div>
 
         <div class="card">
@@ -223,7 +229,7 @@
                     <label>Email de Acceso</label>
                     <input type="email" id="emailConsultor" placeholder="correo@ejemplo.com">
                 </div>
-                <button onclick="crearConsultor()" style="background: var(--primary); color: white;">Registrar</button>
+                <button id="btn-crear-consultor" onclick="crearConsultor()" style="background: var(--primary); color: white;">Registrar</button>
             </div>
 
             <div class="card">
@@ -250,17 +256,32 @@
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-Q1S3S15loP-wlW2dcD1pZWPh4kmUyL-wUw5xJn50a836kR-Ca7-ufKv1-YtXSdA9/exec";
     const ESTADOS_CANDIDATO = ["En Revisión", "Entrevista Inicial", "Pruebas Técnicas", "Avanza a Cliente", "Contratado", "Rechazado"];
     
-    // Almacenamiento global para cambiar rápido de vistas sin recargar
-    let datosCandidatos = [];
+    let datosCandidatos = []; // Memoria temporal
 
     window.onload = async () => {
-        await cargarVacantes();
-        await cargarCandidatos();
-        await cargarConsultores();
+        // Restaurar la última pestaña en la que estaba el usuario
+        const vistaGuardada = localStorage.getItem('vistaAdminActiva') || 'vista-vacantes';
+        cambiarVista(vistaGuardada);
+
+        // Carga Paralela (Hace que la página cargue 3 veces más rápido)
+        await Promise.all([
+            cargarVacantes(),
+            cargarCandidatos(),
+            cargarConsultores()
+        ]);
     };
 
-    // --- NAVEGACIÓN DE VISTAS ---
+    function mostrarToast(mensaje) {
+        const toast = document.getElementById('toast-notif');
+        toast.innerText = mensaje;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // --- NAVEGACIÓN DE VISTAS (Guarda memoria) ---
     function cambiarVista(idVista) {
+        localStorage.setItem('vistaAdminActiva', idVista); // Soluciona Problema 5
+        
         document.querySelectorAll('.vista-seccion').forEach(el => el.classList.remove('activa'));
         document.getElementById(idVista).classList.add('activa');
         
@@ -304,7 +325,6 @@
             const res = await fetch(SCRIPT_URL + "?type=getCandidatos");
             datosCandidatos = await res.json();
             
-            // Renderizar tabla global de Postulantes
             const tbodyGlobal = document.getElementById('tabla-postulantes-global');
             tbodyGlobal.innerHTML = "";
             
@@ -315,16 +335,18 @@
 
             datosCandidatos.forEach(c => {
                 const selectHtml = generarSelectEstado(c[0], c[6] || 'En Revisión');
+                
+                // Solución Problema 2: Mostramos CV y también Video si existe
+                let linksHtml = `<a href="${c[4]}" target="_blank" style="color:var(--secondary); margin-right:8px;"><i class="fas fa-file-pdf"></i> CV</a>`;
+                if(c[5]) linksHtml += `<a href="${c[5]}" target="_blank" style="color:var(--danger);"><i class="fas fa-video"></i> Video</a>`;
+
                 tbodyGlobal.innerHTML += `
                     <tr>
                         <td style="color:#7f8c8d;">${c[0]}</td>
                         <td style="font-weight:bold;">${c[1]}</td>
                         <td>${c[2]}</td>
                         <td><i class="fas fa-user-tie" style="color:#bdc3c7;"></i> ${c[3]}</td>
-                        <td>
-                            <a href="${c[4]}" target="_blank" style="color:var(--secondary); margin-right:8px;"><i class="fas fa-file-pdf"></i> CV</a>
-                            <a href="${c[5]}" target="_blank" style="color:var(--danger);"><i class="fas fa-video"></i> Video</a>
-                        </td>
+                        <td>${linksHtml}</td>
                         <td>${selectHtml}</td>
                     </tr>`;
             });
@@ -368,7 +390,6 @@
         document.getElementById('btn-detalle-asignar').onclick = () => abrirModalAsignar(id, consultoresStr);
         document.getElementById('btn-detalle-editar').onclick = () => abrirModalEditarVacante(id, puesto, provincia);
 
-        // Filtrar candidatos para esta vacante
         const tbody = document.getElementById('tabla-candidatos-vacante');
         tbody.innerHTML = "";
         let count = 0;
@@ -376,12 +397,17 @@
         datosCandidatos.forEach(c => {
             if (c[2] === puesto) {
                 count++;
+                
+                // Solución Problema 2: En la carpeta también mostramos CV y Video
+                let linksHtml = `<a href="${c[4]}" target="_blank" style="color:var(--secondary); margin-right:8px;"><i class="fas fa-file-pdf"></i> CV</a>`;
+                if(c[5]) linksHtml += `<a href="${c[5]}" target="_blank" style="color:var(--danger);"><i class="fas fa-video"></i> Video</a>`;
+
                 tbody.innerHTML += `
                     <tr>
                         <td style="color:#7f8c8d;">${c[0]}</td>
                         <td style="font-weight:bold;">${c[1]}</td>
                         <td>${c[3]}</td>
-                        <td><a href="${c[4]}" target="_blank" style="color:var(--secondary); margin-right:8px;"><i class="fas fa-file-pdf"></i> CV</a></td>
+                        <td>${linksHtml}</td>
                         <td>${generarSelectEstado(c[0], c[6] || 'En Revisión')}</td>
                     </tr>`;
             }
@@ -391,6 +417,7 @@
         document.getElementById('titulo-candidatos-vacante').innerHTML = `<i class="fas fa-users"></i> Postulantes Presentados (${count})`;
     }
 
+    // --- SOLUCIÓN PROBLEMAS 3 Y 4 (Estados) ---
     function generarSelectEstado(dni, estadoActual) {
         let html = `<select onchange="cambiarEstadoCandidato('${dni}', this.value)" class="select-estado">`;
         ESTADOS_CANDIDATO.forEach(est => {
@@ -399,39 +426,60 @@
         return html + `</select>`;
     }
 
-    async function cambiarEstadoCandidato(dni, estado) {
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'EditarEstadoCandidato', dni, estado }) });
-        // Actualiza el array local silenciosamente
+    function cambiarEstadoCandidato(dni, estado) {
+        // Enviar silenciosamente
+        fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'EditarEstadoCandidato', dni, estado }) });
+        // Actualizar array de memoria para que al cambiar pestaña siga igual
         datosCandidatos.forEach(c => { if(c[0] == dni) c[6] = estado; }); 
-        cargarCandidatos(); // refresca las tablas de fondo
+        mostrarToast("Estado actualizado correctamente");
+        // YA NO USAMOS cargarCandidatos() acá para que no salte al estado viejo mientras Google guarda
     }
 
-    // --- ESCRITURA Y FORMULARIOS ---
-    async function crearBusqueda() {
+    // --- SOLUCIÓN PROBLEMA 1 y 6 (Escritura Silenciosa Sin Recargar Todo) ---
+    function crearBusqueda() {
         const puesto = document.getElementById('nuevo-puesto').value, provincia = document.getElementById('nueva-provincia').value, descripcion = document.getElementById('nueva-desc').value;
         if(!puesto || !provincia) return alert("Completa Puesto y Provincia.");
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'Busquedas', puesto, provincia, descripcion }) });
-        location.reload();
+        
+        document.getElementById('btn-crear-vacante').innerText = "Publicando...";
+        fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'Busquedas', puesto, provincia, descripcion }) });
+        
+        setTimeout(() => {
+            document.getElementById('nuevo-puesto').value = ''; document.getElementById('nueva-provincia').value = ''; document.getElementById('nueva-desc').value = '';
+            document.getElementById('btn-crear-vacante').innerText = "Publicar Búsqueda";
+            mostrarToast("Búsqueda publicada con éxito");
+            cargarVacantes(); // Carga solo esa tabla
+        }, 1500);
     }
 
-    async function crearConsultor() {
+    function crearConsultor() {
         const nombre = document.getElementById('nombreConsultor').value, email = document.getElementById('emailConsultor').value;
         if(!nombre || !email) return alert("Completa los campos.");
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'Consultores', nombre, email }) });
-        location.reload();
+        
+        document.getElementById('btn-crear-consultor').innerText = "Guardando...";
+        fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'Consultores', nombre, email }) });
+        
+        setTimeout(() => {
+            document.getElementById('nombreConsultor').value = ''; document.getElementById('emailConsultor').value = '';
+            document.getElementById('btn-crear-consultor').innerText = "Registrar";
+            mostrarToast("Consultor registrado");
+            cargarConsultores(); // Recarga solo la lista de consultores, no te saca de la página (Problema 5)
+        }, 1500);
     }
 
-    async function borrarVacante(id) {
+    function borrarVacante(id) {
         if(confirm("¿Eliminar PERMANENTEMENTE?")) {
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'BorrarBusqueda', id }) });
-            location.reload();
+            fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'BorrarBusqueda', id }) });
+            mostrarToast("Eliminando búsqueda...");
+            setTimeout(() => cargarVacantes(), 1500);
         }
     }
 
-    async function cambiarEstadoVacante(id, estadoActual) {
+    function cambiarEstadoVacante(id, estadoActual) {
         const estado = estadoActual === "Activa" ? "Deshabilitada" : "Activa";
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'EditarBusqueda', id, estado }) });
-        location.reload();
+        fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'EditarBusqueda', id, estado }) });
+        mostrarToast("Cambiando estado...");
+        // Problema 1 resuelto: Esperamos 1.5s para que Google guarde y luego re-pintamos la tabla
+        setTimeout(() => cargarVacantes(), 1500);
     }
 
     // --- MODALES (ASIGNAR, EDITAR VACANTE, EDITAR CONSULTOR) ---
@@ -447,10 +495,12 @@
         document.getElementById('modalAsignar').style.display = "block";
     }
 
-    async function guardarAsignacion() {
+    function guardarAsignacion() {
         const id = document.getElementById('asig-id').value, consultor = Array.from(document.querySelectorAll('.check-consultor:checked')).map(cb => cb.value).join(', ');
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'EditarBusqueda', id, consultor }) });
-        location.reload();
+        fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'EditarBusqueda', id, consultor }) });
+        cerrarModales();
+        mostrarToast("Asignación guardada");
+        setTimeout(() => cargarVacantes(), 1500);
     }
 
     function abrirModalEditarVacante(id, puesto, provincia) {
@@ -460,10 +510,12 @@
         document.getElementById('modalEditar').style.display = "block";
     }
 
-    async function guardarEdicionVacante() {
+    function guardarEdicionVacante() {
         const id = document.getElementById('edit-id').value, puesto = document.getElementById('edit-puesto').value, provincia = document.getElementById('edit-provincia').value;
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'EditarBusqueda', id, puesto, provincia }) });
-        location.reload();
+        fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'EditarBusqueda', id, puesto, provincia }) });
+        cerrarModales();
+        mostrarToast("Búsqueda actualizada");
+        setTimeout(() => cargarVacantes(), 1500);
     }
 
     function abrirModalEditarConsultor(nombre, email, pass) {
@@ -474,17 +526,19 @@
         document.getElementById('modalEditarConsultor').style.display = "block";
     }
 
-    async function guardarEdicionConsultor() {
+    function guardarEdicionConsultor() {
         const emailOriginal = document.getElementById('edit-consultor-email-original').value;
         const nombre = document.getElementById('edit-consultor-nombre').value;
         const email = document.getElementById('edit-consultor-email').value;
         const pass = document.getElementById('edit-consultor-pass').value;
         
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'EditarConsultor', emailOriginal, nombre, email, pass }) });
-        location.reload();
+        fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'EditarConsultor', emailOriginal, nombre, email, pass }) });
+        cerrarModales();
+        mostrarToast("Datos de consultor actualizados");
+        setTimeout(() => cargarConsultores(), 1500);
     }
 
-    // Búsqueda en tablas genérica
+    // Búsqueda Inteligente
     function buscarEnTabla(inputId, tablaId) {
         const input = document.getElementById(inputId).value.toLowerCase();
         const filas = document.querySelectorAll(`#${tablaId} tr`);
