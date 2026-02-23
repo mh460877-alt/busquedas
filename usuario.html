@@ -12,7 +12,7 @@
         .sidebar { width: 250px; height: 100vh; background: var(--primary); color: white; padding: 20px; position: fixed; display: flex; flex-direction: column; }
         .sidebar h2 { font-size: 1.2rem; border-bottom: 1px solid #ffffff33; padding-bottom: 10px; margin-bottom: 20px; }
         
-        /* Estilos del menú lateral con indicador activo */
+        /* Estilos del menú lateral */
         .nav-link { display: block; color: white; text-decoration: none; padding: 15px 0; transition: 0.3s; cursor: pointer; border-left: 3px solid transparent; padding-left: 10px; }
         .nav-link:hover, .nav-link.active { color: var(--secondary); border-left: 3px solid var(--secondary); background: rgba(255,255,255,0.05); }
         .logout-link { margin-top: auto; color: #fab1a0; border-top: 1px solid #ffffff33; padding-top: 20px; }
@@ -24,6 +24,7 @@
         label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; font-size: 0.9rem;}
         input, select, button { width: 100%; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #ddd; box-sizing: border-box; font-family: inherit; }
         input:disabled { background-color: #f1f1f1; color: #777; cursor: not-allowed; }
+        .search-bar { width: 100%; max-width: 400px; padding: 10px 15px; border-radius: 20px; border: 1px solid #ccc; outline: none; }
         
         .btn-ingresar { background-color: var(--secondary); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; transition: 0.2s;}
         .btn-ingresar:hover { opacity: 0.9; transform: translateY(-1px); }
@@ -35,16 +36,17 @@
         
         .badge-proceso { background: #e1f5fe; color: #0288d1; padding: 5px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
         
-        /* Control de Vistas (Pestañas) */
+        /* Control de Vistas */
         .vista-seccion { display: none; animation: fadeIn 0.3s ease; }
         .vista-seccion.activa { display: block; }
         
-        /* Formato para la descripción del puesto */
+        /* Formato descripción */
         .descripcion-puesto { background: #f9fbfd; padding: 15px; border-radius: 5px; border: 1px solid #eee; color: #444; font-size: 0.95rem; white-space: pre-wrap; line-height: 1.5; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .oculto { display: none !important; }
 
+        @media (max-width: 900px) { .grid-container { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -55,6 +57,7 @@
         <a onclick="location.reload()" class="nav-link"><i class="fas fa-sync"></i> Actualizar Datos</a>
         <a onclick="cambiarVista('vista-carga')" id="nav-carga" class="nav-link active"><i class="fas fa-user-plus"></i> Presentar Candidato</a>
         <a onclick="cambiarVista('vista-asignaciones')" id="nav-asignaciones" class="nav-link"><i class="fas fa-briefcase"></i> Mis Búsquedas</a>
+        <a onclick="cambiarVista('vista-historial-candidatos')" id="nav-historial" class="nav-link"><i class="fas fa-users"></i> Mis Postulantes</a>
     </nav>
     <a href="login_consultor.html" class="nav-link logout-link" onclick="cerrarSesion()"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
 </div>
@@ -134,9 +137,7 @@
                     <p id="detalle-provincia" style="margin: 0; color: #7f8c8d; font-size: 0.95rem;"><strong>Ubicación:</strong> -</p>
                     
                     <h4 style="margin: 15px 0 5px 0; color: #555;">Descripción del Puesto:</h4>
-                    <div id="detalle-descripcion" class="descripcion-puesto">
-                        Cargando descripción...
-                    </div>
+                    <div id="detalle-descripcion" class="descripcion-puesto">Cargando descripción...</div>
                 </div>
             </div>
         </div>
@@ -152,8 +153,34 @@
                         <th>Estado del Proceso</th>
                     </tr>
                 </thead>
-                <tbody id="tabla-mis-candidatos">
-                    </tbody>
+                <tbody id="tabla-mis-candidatos-vacante">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="vista-historial-candidatos" class="vista-seccion">
+        <h1>Mi Base de Datos de Postulantes</h1>
+
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                <h3 style="margin-top: 0; margin-bottom: 0;"><i class="fas fa-database"></i> Todos mis candidatos presentados</h3>
+                <input type="text" id="buscadorMisCandidatos" class="search-bar" onkeyup="buscarEnTabla('buscadorMisCandidatos', 'tabla-historial-global')" placeholder="Buscar por Nombre, DNI o Vacante...">
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>DNI</th>
+                        <th>Nombre Completo</th>
+                        <th>Vacante Aplicada</th>
+                        <th>Archivos</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-historial-global">
+                    <tr><td colspan="5" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Cargando tu historial...</td></tr>
+                </tbody>
             </table>
         </div>
     </div>
@@ -163,7 +190,6 @@
 <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-Q1S3S15loP-wlW2dcD1pZWPh4kmUyL-wUw5xJn50a836kR-Ca7-ufKv1-YtXSdA9/exec";
     
-    // Identidad del consultor
     const MI_NOMBRE = localStorage.getItem('consultorNombre');
     let misVacantesData = [];
 
@@ -173,7 +199,10 @@
             return;
         }
         document.getElementById('nombre-sidebar').innerHTML = `<i class="fas fa-user-circle"></i> ${MI_NOMBRE}`;
+        
+        // Cargamos todas las bases simultáneamente para que la navegación sea instantánea
         await cargarMisVacantes();
+        await cargarHistorialGlobal();
     };
 
     function cerrarSesion() {
@@ -182,24 +211,32 @@
 
     // --- NAVEGACIÓN DE PESTAÑAS ---
     function cambiarVista(idVista) {
-        // Ocultar todas
         document.querySelectorAll('.vista-seccion').forEach(el => el.classList.remove('activa'));
-        // Mostrar la solicitada
         document.getElementById(idVista).classList.add('activa');
         
-        // Actualizar el menú lateral
         document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
         if(idVista === 'vista-carga') document.getElementById('nav-carga').classList.add('active');
         if(idVista === 'vista-asignaciones' || idVista === 'vista-detalle') document.getElementById('nav-asignaciones').classList.add('active');
+        if(idVista === 'vista-historial-candidatos') document.getElementById('nav-historial').classList.add('active');
     }
 
-    // --- CARGAR VACANTES ASIGNADAS AL CONSULTOR ---
+    // --- BUSCADOR GENÉRICO PARA TABLAS ---
+    function buscarEnTabla(inputId, tablaId) {
+        const input = document.getElementById(inputId).value.toLowerCase();
+        const filas = document.querySelectorAll(`#${tablaId} tr`);
+        filas.forEach(fila => {
+            if(fila.cells.length > 1) { // Evita ocultar el mensaje de "Cargando" si lo hubiera
+                fila.style.display = fila.innerText.toLowerCase().includes(input) ? "" : "none";
+            }
+        });
+    }
+
+    // --- CARGAR VACANTES ASIGNADAS ---
     async function cargarMisVacantes() {
         try {
             const res = await fetch(SCRIPT_URL + "?type=getBusquedas");
             const data = await res.json();
             
-            // Filtra vacantes activas que incluyan el nombre de este consultor
             misVacantesData = data.filter(v => v[5] === 'Activa' && v[6] && v[6].includes(MI_NOMBRE));
             
             const tbody = document.getElementById('tabla-mis-vacantes');
@@ -215,10 +252,7 @@
             }
 
             misVacantesData.forEach(v => {
-                // Llenar selector para cargar candidato
                 select.innerHTML += `<option value="${v[1]}">${v[1]} - ${v[4]}</option>`;
-                
-                // Llenar tabla de "Mis Búsquedas"
                 tbody.innerHTML += `
                     <tr>
                         <td style="font-weight:bold; color:var(--primary);">${v[1]}</td>
@@ -231,7 +265,41 @@
         } catch (error) { console.error(error); }
     }
 
-    // --- PASO 1: VERIFICAR DNI ---
+    // --- CARGAR HISTORIAL GLOBAL (NUEVA PESTAÑA) ---
+    async function cargarHistorialGlobal() {
+        try {
+            const res = await fetch(SCRIPT_URL + "?type=getCandidatos");
+            const data = await res.json();
+            
+            // Filtramos SOLO los candidatos que haya subido ESTE consultor en toda la historia
+            const misCandidatosGlobal = data.filter(c => c[3] === MI_NOMBRE);
+            
+            const tbody = document.getElementById('tabla-historial-global');
+            tbody.innerHTML = "";
+            
+            if (misCandidatosGlobal.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:#7f8c8d;'>Aún no has presentado ningún candidato en el sistema.</td></tr>";
+                return;
+            }
+
+            misCandidatosGlobal.forEach(c => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="color:#7f8c8d;">${c[0]}</td>
+                        <td style="font-weight:bold;">${c[1]}</td>
+                        <td style="color:var(--primary); font-weight:600;">${c[2]}</td>
+                        <td>
+                            <a href="${c[4]}" target="_blank" style="color:var(--secondary); text-decoration:none; margin-right:8px; font-weight:bold;"><i class="fas fa-file-pdf"></i> CV</a>
+                            <a href="${c[5]}" target="_blank" style="color:var(--danger); text-decoration:none; font-weight:bold;"><i class="fas fa-video"></i> Video</a>
+                        </td>
+                        <td><span class="badge-proceso">${c[6] || 'En Revisión'}</span></td>
+                    </tr>`;
+            });
+        } catch (error) { console.error(error); }
+    }
+
+
+    // --- PASO 1 Y 2: VERIFICAR Y CARGAR ---
     async function verificarDNI() {
         const dniInput = document.getElementById('c-dni');
         const dniValue = dniInput.value.trim();
@@ -261,7 +329,6 @@
                 btn.style.display = 'none'; 
                 document.getElementById('paso-2-formulario').classList.remove('oculto');
             }
-
         } catch (error) {
             msg.innerHTML = '<span style="color:var(--danger)">Error al conectar con el servidor. Intenta de nuevo.</span>';
             btn.innerHTML = '<i class="fas fa-search"></i> Verificar DNI en base de datos';
@@ -279,7 +346,6 @@
         document.getElementById('paso-2-formulario').classList.add('oculto');
     }
 
-    // --- PASO 2: CARGAR CANDIDATO FINAL ---
     async function cargarCandidato() {
         const dni = document.getElementById('c-dni').value;
         const nombre = document.getElementById('c-nombre').value;
@@ -309,7 +375,6 @@
                 alert("Candidato presentado con éxito para la vacante: " + puesto);
                 location.reload();
             }, 1000);
-
         } catch (error) {
             alert("Error de conexión.");
             btn.innerHTML = '<i class="fas fa-upload"></i> Guardar Candidato';
@@ -317,28 +382,25 @@
         }
     }
 
-    // --- CARPETA DE LA VACANTE (Detalle y Postulantes) ---
+    // --- CARPETA DE LA VACANTE ---
     async function ingresarCarpeta(puesto) {
         cambiarVista('vista-detalle');
         
-        // Buscar los datos de la vacante seleccionada
         const vacante = misVacantesData.find(v => v[1] === puesto);
         const provincia = vacante[4] || 'No especificada';
         const descripcion = vacante[3] || 'El administrador no ha añadido una descripción para esta búsqueda.';
 
-        // Llenar la cabecera
         document.getElementById('detalle-titulo').innerHTML = `<i class="fas fa-folder-open"></i> Vacante: ${puesto}`;
         document.getElementById('detalle-provincia').innerHTML = `<strong>Ubicación:</strong> ${provincia}`;
-        document.getElementById('detalle-descripcion').innerText = descripcion; // innerText respeta los saltos de línea (pre-wrap)
+        document.getElementById('detalle-descripcion').innerText = descripcion;
         
-        const tbody = document.getElementById('tabla-mis-candidatos');
+        const tbody = document.getElementById('tabla-mis-candidatos-vacante');
         tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'><i class='fas fa-spinner fa-spin'></i> Buscando tus postulantes...</td></tr>";
 
         try {
             const res = await fetch(SCRIPT_URL + "?type=getCandidatos");
             const data = await res.json();
             
-            // Filtra los candidatos de ESTA vacante presentados por ESTE consultor
             const misCandidatos = data.filter(c => c[2] === puesto && c[3] === MI_NOMBRE);
             
             tbody.innerHTML = "";
@@ -361,7 +423,6 @@
             });
         } catch (error) { console.error(error); }
     }
-
 </script>
 
 </body>

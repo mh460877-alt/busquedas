@@ -13,23 +13,22 @@
             --dark: #2d3436;
             --white: #ffffff;
             --gradient: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            --footer-bg: #222222;
         }
 
         body {
             font-family: 'Inter', sans-serif;
             margin: 0;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            flex-direction: column;
+            min-height: 100vh;
             background: #f0f2f5;
-            overflow: hidden;
         }
 
-        /* Fondo Decorativo */
+        /* Fondo Decorativo Animado Fijo */
         body::before {
             content: "";
-            position: absolute;
+            position: fixed; /* Cambiado a fixed para que no se corte al scrollear */
             top: -50%;
             left: -50%;
             width: 200%;
@@ -44,6 +43,15 @@
         @keyframes moveBg {
             from { transform: rotate(0deg); }
             to { transform: rotate(10deg); }
+        }
+
+        /* Contenedor Principal (Donde está la tarjeta) */
+        .main-wrapper {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
         }
 
         .login-card {
@@ -63,169 +71,216 @@
         .logo-area { margin-bottom: 25px; }
         .logo-area img { max-width: 220px; height: auto; }
         
-        .subtitle {
-            color: #636e72;
-            margin-top: 10px;
-            margin-bottom: 30px;
-            font-size: 0.9rem;
-            font-weight: 400;
-        }
+        .subtitle { color: #636e72; margin-top: 10px; margin-bottom: 30px; font-size: 0.9rem; font-weight: 400; }
 
-        .btn-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+        .btn-group { display: flex; flex-direction: column; gap: 12px; }
 
         .btn-access {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 14px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: none;
-            font-family: inherit;
-            width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            padding: 14px; border-radius: 12px; text-decoration: none;
+            font-weight: 600; font-size: 0.95rem; transition: all 0.3s ease;
+            cursor: pointer; border: none; font-family: inherit; width: 100%;
         }
 
-        .admin-btn {
-            background: var(--primary);
-            color: var(--white);
-            box-shadow: 0 4px 12px rgba(26, 42, 108, 0.2);
-        }
+        .admin-btn { background: var(--primary); color: var(--white); box-shadow: 0 4px 12px rgba(26, 42, 108, 0.2); }
+        .consultor-btn { background: var(--white); color: var(--primary); border: 2px solid var(--primary); }
 
-        .consultor-btn {
-            background: var(--white);
-            color: var(--primary);
-            border: 2px solid var(--primary);
-        }
-
-        .btn-access:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-        }
-
+        .btn-access:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
         .consultor-btn:hover { background: var(--primary); color: var(--white); }
 
         /* Formulario oculto del Administrador */
-        #admin-form {
-            display: none;
-            margin-top: 15px;
-            text-align: left;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-            animation: fadeIn 0.4s ease;
-        }
+        #admin-form { display: none; margin-top: 15px; text-align: left; padding-top: 20px; border-top: 1px solid #eee; animation: fadeIn 0.4s ease; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .form-label {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--primary);
-            display: block;
-            margin-bottom: 6px;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-family: inherit;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
+        .form-label { font-size: 0.85rem; font-weight: 600; color: var(--primary); display: block; margin-bottom: 6px; }
+        .form-input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-family: inherit; outline: none; transition: border-color 0.2s; }
         .form-input:focus { border-color: var(--primary); }
         
-        #error-msg {
-            color: #e74c3c;
-            font-size: 0.85rem;
-            display: none;
-            text-align: center;
-            margin-top: 10px;
-            font-weight: 600;
+        #error-msg { color: #e74c3c; font-size: 0.85rem; display: none; text-align: center; margin-top: 10px; font-weight: 600; }
+
+        /* ================= FOOTER INSTITUCIONAL ================= */
+        .site-footer {
+            background-color: var(--footer-bg);
+            color: #d1d1d1;
+            padding: 50px 20px 20px 20px;
+            font-family: 'Inter', sans-serif;
+            border-top: 4px solid var(--primary);
         }
 
-        .footer-text { margin-top: 35px; font-size: 0.75rem; color: #b2bec3; letter-spacing: 0.5px; }
+        .social-icons {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .social-icons a {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            border: 1px solid #777;
+            color: #aaa;
+            text-decoration: none;
+            margin: 0 8px;
+            font-size: 1.1rem;
+            transition: 0.3s;
+        }
+
+        .social-icons a:hover {
+            color: #fff;
+            border-color: #fff;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .footer-columns {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+        }
+
+        .branch h3 {
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 400;
+            margin-top: 0;
+            margin-bottom: 10px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .branch ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .branch ul li {
+            padding: 12px 0;
+            border-bottom: 1px dashed rgba(255,255,255,0.1);
+            font-size: 0.85rem;
+            font-weight: 300;
+            letter-spacing: 0.3px;
+            line-height: 1.5;
+        }
+
+        .branch ul li:last-child {
+            border-bottom: none;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.75rem;
+            color: #777;
+            letter-spacing: 0.5px;
+        }
     </style>
 </head>
 <body>
 
-<div class="login-card">
-    <div class="logo-area">
-        <img src="logo.png" alt="Logo Escencial Consultora">
-        <div class="subtitle">Sistema de Gestión de Talento</div>
-    </div>
+<div class="main-wrapper">
+    <div class="login-card">
+        <div class="logo-area">
+            <img src="logo.png" alt="Logo Escencial Consultora">
+            <div class="subtitle">Sistema de Gestión de Talento</div>
+        </div>
 
-    <div class="btn-group" id="botones-principales">
-        <button class="btn-access admin-btn" onclick="mostrarLoginAdmin()">
-            <i class="fas fa-shield-halved"></i>
-            Acceso Administrador
-        </button>
-        
-        <a href="login_consultor.html" class="btn-access consultor-btn">
-            <i class="fas fa-users"></i>
-            Panel Consultores
-        </a>
-    </div>
+        <div class="btn-group" id="botones-principales">
+            <button class="btn-access admin-btn" onclick="mostrarLoginAdmin()">
+                <i class="fas fa-shield-halved"></i>
+                Acceso Administrador
+            </button>
+            <a href="login_consultor.html" class="btn-access consultor-btn">
+                <i class="fas fa-users"></i>
+                Panel Consultores
+            </a>
+        </div>
 
-    <div id="admin-form">
-        <label class="form-label">Usuario Admin:</label>
-        <input type="text" id="user" class="form-input" placeholder="Ingresa tu usuario">
-        
-        <label class="form-label">Contraseña:</label>
-        <input type="password" id="pass" class="form-input" placeholder="••••••••">
-        
-        <button class="btn-access admin-btn" onclick="validarAdmin()" style="margin-top: 5px;">
-            <i class="fas fa-sign-in-alt"></i> Ingresar al Panel
-        </button>
-        
-        <button class="btn-access consultor-btn" onclick="volverBotones()" style="margin-top: 10px; padding: 10px; font-size:0.85rem; border:none; background:transparent; color:#7f8c8d; box-shadow:none;">
-            <i class="fas fa-arrow-left"></i> Volver atrás
-        </button>
+        <div id="admin-form">
+            <label class="form-label">Usuario Admin:</label>
+            <input type="text" id="user" class="form-input" placeholder="Ingresa tu usuario">
+            
+            <label class="form-label">Contraseña:</label>
+            <input type="password" id="pass" class="form-input" placeholder="••••••••">
+            
+            <button class="btn-access admin-btn" onclick="validarAdmin()" style="margin-top: 5px;">
+                <i class="fas fa-sign-in-alt"></i> Ingresar al Panel
+            </button>
+            
+            <button class="btn-access consultor-btn" onclick="volverBotones()" style="margin-top: 10px; padding: 10px; font-size:0.85rem; border:none; background:transparent; color:#7f8c8d; box-shadow:none;">
+                <i class="fas fa-arrow-left"></i> Volver atrás
+            </button>
 
-        <div id="error-msg"><i class="fas fa-times-circle"></i> Credenciales incorrectas</div>
-    </div>
-
-    <div class="footer-text">
-        Copyright 2026 - Todos los derechos reservados
+            <div id="error-msg"><i class="fas fa-times-circle"></i> Credenciales incorrectas</div>
+        </div>
     </div>
 </div>
 
+<footer class="site-footer">
+    
+    <div class="social-icons">
+        <a href="#" target="_blank" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="#" target="_blank" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+    </div>
+
+    <div class="footer-columns">
+        <div class="branch">
+            <h3>Sucursal Tucumán</h3>
+            <ul>
+                <li>Email: info@escencialconsult.com.ar</li>
+                <li>Dirección: Catamarca 863 - San Miguel de Tucuman</li>
+                <li>Teléfono: +54 9 3816 22-1565</li>
+                <li>Celular: +54 9 3816 22-1565</li>
+            </ul>
+        </div>
+        
+        <div class="branch">
+            <h3>Sucursal Bolivia</h3>
+            <ul>
+                <li>Manzana 40, torre 2, piso 10</li>
+                <li>Santa Cruz de la Sierra, Bolivia</li>
+                <li>Teléfono: +591 76030430</li>
+            </ul>
+        </div>
+        
+        <div class="branch">
+            <h3>Sucursal Buenos Aires</h3>
+            <ul>
+                <li>Suipacha 946, C1008AAT</li>
+                <li>Cdad. Autónoma de Buenos Aires</li>
+                <li>Teléfono: +54 9 11 3358-8062</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        Copyright 2026 - Todos los derechos reservados | Escencial Consultora
+    </div>
+</footer>
+
 <script>
-    // Mostrar formulario
     function mostrarLoginAdmin() {
         document.getElementById('botones-principales').style.display = 'none';
         document.getElementById('admin-form').style.display = 'block';
     }
 
-    // Volver a la vista de botones
     function volverBotones() {
         document.getElementById('admin-form').style.display = 'none';
         document.getElementById('botones-principales').style.display = 'flex';
         document.getElementById('error-msg').style.display = 'none';
-        document.getElementById('pass').value = ''; // Limpiar contraseña por seguridad
+        document.getElementById('pass').value = ''; 
     }
 
-    // Validación de seguridad simple
     function validarAdmin() {
         const u = document.getElementById('user').value.trim();
         const p = document.getElementById('pass').value.trim();
         
-        // Aquí defines tu usuario y contraseña
         if (u === 'admin' && p === 'admin123') {
             window.location.href = 'admin.html';
         } else {
@@ -233,7 +288,6 @@
         }
     }
 
-    // Permitir ingresar presionando la tecla "Enter"
     document.getElementById("pass").addEventListener("keypress", function(event) {
         if (event.key === "Enter") {
             event.preventDefault();
