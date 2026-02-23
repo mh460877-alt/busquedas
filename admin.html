@@ -9,32 +9,36 @@
         :root { --primary: #2c3e50; --secondary: #3498db; --success: #27ae60; --danger: #e74c3c; --warning: #f1c40f; --bg: #f4f7f6; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; display: flex; }
         
+        /* Sidebar */
         .sidebar { width: 250px; height: 100vh; background: var(--primary); color: white; padding: 20px; position: fixed; display: flex; flex-direction: column; }
         .sidebar h2 { font-size: 1.2rem; border-bottom: 1px solid #ffffff33; padding-bottom: 10px; margin-bottom: 20px; }
-        .nav-link { display: block; color: white; text-decoration: none; padding: 15px 0; transition: 0.3s; cursor: pointer; }
-        .nav-link:hover { color: var(--secondary); }
+        .nav-link { display: block; color: white; text-decoration: none; padding: 15px 0; transition: 0.3s; cursor: pointer; border-left: 3px solid transparent; padding-left: 10px;}
+        .nav-link:hover, .nav-link.active { color: var(--secondary); border-left: 3px solid var(--secondary); background: rgba(255,255,255,0.05); }
         .logout-link { margin-top: auto; color: #fab1a0; border-top: 1px solid #ffffff33; padding-top: 20px; }
 
+        /* Main Content */
         .main-content { margin-left: 250px; padding: 40px; width: calc(100% - 250px); }
         .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
         
+        /* Forms & Inputs */
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; font-size: 0.9rem;}
         input, select, textarea, button { width: 100%; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #ddd; box-sizing: border-box; font-family: inherit; }
-        .search-bar { width: 300px; padding: 8px 12px; border-radius: 20px; border: 1px solid #ccc; outline: none; }
+        .search-bar { width: 100%; max-width: 400px; padding: 10px 15px; border-radius: 20px; border: 1px solid #ccc; outline: none; }
         
+        /* Botones */
         .btn-accion { width: 34px; height: 34px; border-radius: 4px; border: none; color: white; cursor: pointer; margin-left: 3px; font-size: 0.95rem; display: inline-flex; align-items: center; justify-content: center; transition: 0.2s; }
         .btn-ingresar { background-color: var(--secondary); } 
         .btn-estado { background-color: var(--warning); color: #333; } 
         .btn-borrar { background-color: var(--danger); }
+        .btn-editar { background-color: var(--success); }
         
         .btn-carpeta { width: auto; padding: 8px 15px; border-radius: 4px; border: none; color: white; cursor: pointer; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 5px; transition: 0.2s;}
         .btn-asignar { background-color: #8e44ad; } 
-        .btn-editar { background-color: var(--success); }
         .btn-volver { background-color: #7f8c8d; margin-bottom: 20px; font-size: 0.95rem; }
-        
         .btn-accion:hover, .btn-carpeta:hover { opacity: 0.8; transform: translateY(-1px); }
 
+        /* Tablas */
         table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
         table th, table td { padding: 12px; border-bottom: 1px solid #ddd; text-align: left; vertical-align: middle; }
         table th { background: #f8f9fa; color: var(--primary); text-transform: uppercase; font-size: 0.75rem; }
@@ -43,12 +47,11 @@
         .badge-activa { background: #e8f5e9; color: #2e7d32; }
         .badge-deshabilitada { background: #ffebee; color: #c62828; }
         
-        /* Select de Estado para Candidatos */
         .select-estado { padding: 6px; border-radius: 15px; border: 1px solid #ccc; font-size: 0.8rem; font-weight: bold; background: #e1f5fe; color: #0288d1; cursor: pointer; outline: none; }
-        .select-estado:hover { border-color: #0288d1; }
-
+        
         .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
+        /* Modales */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
         .modal-content { background-color: white; margin: 5% auto; padding: 25px; border-radius: 12px; width: 400px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
         .modal-header { font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;}
@@ -57,8 +60,10 @@
         .checkbox-item { display: flex; align-items: center; gap: 10px; font-weight: normal; cursor: pointer; font-size: 0.95rem; }
         .checkbox-item input { width: 18px; height: 18px; margin: 0; cursor: pointer; }
 
-        .oculto { display: none !important; }
+        .vista-seccion { display: none; animation: fadeIn 0.3s ease; }
+        .vista-seccion.activa { display: block; }
 
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @media (max-width: 900px) { .grid-container { grid-template-columns: 1fr; } .modal-content { width: 90%; } }
     </style>
 </head>
@@ -69,7 +74,7 @@
         <div class="modal-header"><i class="fas fa-users"></i> Asignar Consultores</div>
         <input type="hidden" id="asig-id">
         <div class="form-group">
-            <label>Selecciona los consultores a cargo de la búsqueda:</label>
+            <label>Selecciona los consultores a cargo:</label>
             <div id="lista-consultores-checkbox" class="checkbox-list"></div>
         </div>
         <div style="display: flex; gap: 10px; margin-top: 20px;">
@@ -83,16 +88,24 @@
     <div class="modal-content">
         <div class="modal-header"><i class="fas fa-edit"></i> Editar Búsqueda</div>
         <input type="hidden" id="edit-id">
-        <div class="form-group">
-            <label>Nombre del Puesto</label>
-            <input type="text" id="edit-puesto">
-        </div>
-        <div class="form-group">
-            <label>Provincia / Ubicación</label>
-            <input type="text" id="edit-provincia">
-        </div>
+        <div class="form-group"><label>Puesto</label><input type="text" id="edit-puesto"></div>
+        <div class="form-group"><label>Provincia</label><input type="text" id="edit-provincia"></div>
         <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button onclick="guardarEdicion()" style="background: var(--success); color: white;">Actualizar</button>
+            <button onclick="guardarEdicionVacante()" style="background: var(--success); color: white;">Actualizar</button>
+            <button onclick="cerrarModales()" style="background: var(--danger); color: white;">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<div id="modalEditarConsultor" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><i class="fas fa-user-edit"></i> Editar Consultor</div>
+        <input type="hidden" id="edit-consultor-email-original">
+        <div class="form-group"><label>Nombre Completo</label><input type="text" id="edit-consultor-nombre"></div>
+        <div class="form-group"><label>Email</label><input type="email" id="edit-consultor-email"></div>
+        <div class="form-group"><label>Contraseña</label><input type="text" id="edit-consultor-pass"></div>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button onclick="guardarEdicionConsultor()" style="background: var(--success); color: white;">Actualizar Consultor</button>
             <button onclick="cerrarModales()" style="background: var(--danger); color: white;">Cancelar</button>
         </div>
     </div>
@@ -101,20 +114,22 @@
 <div class="sidebar">
     <h2>Escencial Admin</h2>
     <nav>
-        <a onclick="location.reload()" class="nav-link"><i class="fas fa-sync"></i> Actualizar Datos</a>
-        <a onclick="volverInicio()" class="nav-link"><i class="fas fa-briefcase"></i> Gestión Vacantes</a>
+        <a onclick="location.reload()" class="nav-link"><i class="fas fa-sync"></i> Refrescar Datos</a>
+        <a onclick="cambiarVista('vista-vacantes')" id="nav-vacantes" class="nav-link active"><i class="fas fa-briefcase"></i> Búsquedas</a>
+        <a onclick="cambiarVista('vista-postulantes')" id="nav-postulantes" class="nav-link"><i class="fas fa-database"></i> Postulantes</a>
+        <a onclick="cambiarVista('vista-consultores')" id="nav-consultores" class="nav-link"><i class="fas fa-user-tie"></i> Consultores</a>
     </nav>
     <a href="index.html" class="nav-link logout-link"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
 </div>
 
 <div class="main-content">
     
-    <div id="vista-principal">
-        <h1>Panel de Control Administrativo</h1>
-
-        <div class="grid-container">
-            <div class="card">
-                <h3><i class="fas fa-plus-circle"></i> Crear Nueva Vacante</h3>
+    <div id="vista-vacantes" class="vista-seccion activa">
+        <h1>Gestión de Búsquedas</h1>
+        
+        <div class="card">
+            <h3><i class="fas fa-plus-circle"></i> Crear Nueva Vacante</h3>
+            <div class="grid-container">
                 <div class="form-group">
                     <label>Nombre de la Vacante</label>
                     <input type="text" id="nuevo-puesto" placeholder="Ej: Desarrollador Backend">
@@ -123,60 +138,32 @@
                     <label>Provincia</label>
                     <input type="text" id="nueva-provincia" placeholder="Ej: Córdoba">
                 </div>
-                <div class="form-group">
-                    <label>Descripción del Puesto</label>
-                    <textarea id="nueva-desc" rows="2" placeholder="Requisitos, modalidad, etc..."></textarea>
-                </div>
-                <button onclick="crearBusqueda()" style="background: var(--secondary); color: white;">Publicar Búsqueda</button>
             </div>
-
-            <div>
-                <div class="card" style="margin-bottom: 20px;">
-                    <h3><i class="fas fa-user-plus"></i> Registrar Consultor</h3>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" id="nombreConsultor" placeholder="Nombre completo">
-                        <input type="email" id="emailConsultor" placeholder="correo@ejemplo.com">
-                    </div>
-                    <button onclick="crearConsultor()" style="background: var(--primary); color: white; margin-top: 10px;">Dar de Alta</button>
-                </div>
-
-                <div class="card">
-                    <h3><i class="fas fa-address-book"></i> Consultores Registrados</h3>
-                    <div style="max-height: 180px; overflow-y: auto;">
-                        <table style="margin-top: 0;">
-                            <thead>
-                                <tr><th>Nombre</th><th>Email</th><th>Contraseña</th></tr>
-                            </thead>
-                            <tbody id="tabla-lista-consultores">
-                                <tr><td colspan="3" style="text-align:center;">Cargando...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            <div class="form-group">
+                <label>Descripción del Puesto</label>
+                <textarea id="nueva-desc" rows="2" placeholder="Requisitos, modalidad..."></textarea>
             </div>
+            <button onclick="crearBusqueda()" style="background: var(--secondary); color: white; width: 200px;">Publicar Búsqueda</button>
         </div>
 
         <div class="card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h3><i class="fas fa-list-alt"></i> Búsquedas Activas e Históricas</h3>
-                <input type="text" id="buscadorVacantes" class="search-bar" onkeyup="buscarVacantes()" placeholder="Buscar vacante...">
+                <input type="text" id="buscadorVacantes" class="search-bar" onkeyup="buscarEnTabla('buscadorVacantes', 'tabla-vacantes')" placeholder="Buscar vacante...">
             </div>
-            
             <table>
                 <thead>
-                    <tr>
-                        <th>ID</th><th>Puesto</th><th>Provincia</th><th>Estado</th><th style="text-align: right;">Acciones</th>
-                    </tr>
+                    <tr><th>ID</th><th>Puesto</th><th>Provincia</th><th>Estado</th><th style="text-align: right;">Acciones</th></tr>
                 </thead>
                 <tbody id="tabla-vacantes">
-                    <tr><td colspan="5" style="text-align:center;">Cargando información...</td></tr>
+                    <tr><td colspan="5" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <div id="vista-detalle" class="oculto">
-        <button onclick="volverInicio()" class="btn-carpeta btn-volver"><i class="fas fa-arrow-left"></i> Volver a Búsquedas</button>
+    <div id="vista-detalle-vacante" class="vista-seccion">
+        <button onclick="cambiarVista('vista-vacantes')" class="btn-carpeta btn-volver"><i class="fas fa-arrow-left"></i> Volver a Búsquedas</button>
 
         <div class="card" style="border-left: 5px solid var(--secondary);">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
@@ -192,26 +179,79 @@
         </div>
 
         <div class="card">
-            <h3 id="titulo-candidatos"><i class="fas fa-users"></i> Postulantes Presentados</h3>
+            <h3 id="titulo-candidatos-vacante"><i class="fas fa-users"></i> Postulantes Presentados</h3>
             <table>
                 <thead>
-                    <tr>
-                        <th>DNI</th><th>Nombre Completo</th><th>Consultor</th><th>Archivos</th><th>Estado del Proceso</th>
-                    </tr>
+                    <tr><th>DNI</th><th>Nombre Completo</th><th>Consultor</th><th>Archivos</th><th>Estado del Proceso</th></tr>
                 </thead>
-                <tbody id="tabla-candidatos">
-                    <tr><td colspan="5" style="text-align:center;">Cargando postulantes...</td></tr>
+                <tbody id="tabla-candidatos-vacante"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="vista-postulantes" class="vista-seccion">
+        <h1>Base de Datos de Postulantes</h1>
+        
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3><i class="fas fa-database"></i> Registro Global de Candidatos</h3>
+                <input type="text" id="buscadorPostulantes" class="search-bar" onkeyup="buscarEnTabla('buscadorPostulantes', 'tabla-postulantes-global')" placeholder="Buscar por DNI, Nombre, Vacante o Consultor...">
+            </div>
+            
+            <table>
+                <thead>
+                    <tr><th>DNI</th><th>Nombre</th><th>Vacante Aplicada</th><th>Consultor</th><th>Archivos</th><th>Estado</th></tr>
+                </thead>
+                <tbody id="tabla-postulantes-global">
+                    <tr><td colspan="6" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
+
+    <div id="vista-consultores" class="vista-seccion">
+        <h1>Gestión de Consultores</h1>
+        
+        <div class="grid-container">
+            <div class="card">
+                <h3><i class="fas fa-user-plus"></i> Alta de Consultor</h3>
+                <div class="form-group">
+                    <label>Nombre Completo</label>
+                    <input type="text" id="nombreConsultor" placeholder="Nombre y Apellido">
+                </div>
+                <div class="form-group">
+                    <label>Email de Acceso</label>
+                    <input type="email" id="emailConsultor" placeholder="correo@ejemplo.com">
+                </div>
+                <button onclick="crearConsultor()" style="background: var(--primary); color: white;">Registrar</button>
+            </div>
+
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3><i class="fas fa-address-book"></i> Consultores Registrados</h3>
+                </div>
+                <div style="overflow-y: auto; max-height: 400px;">
+                    <table>
+                        <thead>
+                            <tr><th>Nombre</th><th>Email</th><th>Contraseña</th><th>Acción</th></tr>
+                        </thead>
+                        <tbody id="tabla-lista-consultores">
+                            <tr><td colspan="4" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-Q1S3S15loP-wlW2dcD1pZWPh4kmUyL-wUw5xJn50a836kR-Ca7-ufKv1-YtXSdA9/exec";
-
-    // Opciones para el selector de estado
     const ESTADOS_CANDIDATO = ["En Revisión", "Entrevista Inicial", "Pruebas Técnicas", "Avanza a Cliente", "Contratado", "Rechazado"];
+    
+    // Almacenamiento global para cambiar rápido de vistas sin recargar
+    let datosCandidatos = [];
 
     window.onload = async () => {
         await cargarVacantes();
@@ -219,6 +259,18 @@
         await cargarConsultores();
     };
 
+    // --- NAVEGACIÓN DE VISTAS ---
+    function cambiarVista(idVista) {
+        document.querySelectorAll('.vista-seccion').forEach(el => el.classList.remove('activa'));
+        document.getElementById(idVista).classList.add('activa');
+        
+        document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+        if(idVista === 'vista-vacantes' || idVista === 'vista-detalle-vacante') document.getElementById('nav-vacantes').classList.add('active');
+        if(idVista === 'vista-postulantes') document.getElementById('nav-postulantes').classList.add('active');
+        if(idVista === 'vista-consultores') document.getElementById('nav-consultores').classList.add('active');
+    }
+
+    // --- LECTURA DE DATOS ---
     async function cargarVacantes() {
         try {
             const res = await fetch(SCRIPT_URL + "?type=getBusquedas");
@@ -226,26 +278,21 @@
             const tbody = document.getElementById('tabla-vacantes');
             tbody.innerHTML = "";
             
-            if(data.length === 0) {
-                tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>No hay vacantes creadas.</td></tr>";
-                return;
-            }
+            if(data.length === 0) return tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>No hay vacantes.</td></tr>";
 
             data.forEach(v => {
                 const estado = v[5] || 'Activa';
                 const claseEstado = estado === 'Activa' ? 'badge-activa' : 'badge-deshabilitada';
-                const consultores = v[6] || ''; 
-
                 tbody.innerHTML += `
-                    <tr class="fila-vacante">
+                    <tr>
                         <td style="font-weight:bold;">${v[0]}</td>
-                        <td style="font-weight:bold; font-size: 1rem;">${v[1]}</td>
+                        <td style="font-weight:bold;">${v[1]}</td>
                         <td>${v[4]}</td>
                         <td><span class="badge ${claseEstado}">${estado}</span></td>
                         <td style="text-align: right; white-space: nowrap;">
-                            <button class="btn-accion btn-ingresar" onclick="abrirCarpeta('${v[0]}', '${v[1]}', '${v[4]}', '${consultores}')" title="Ingresar"><i class="fas fa-sign-in-alt"></i></button>
-                            <button class="btn-accion btn-estado" onclick="cambiarEstado('${v[0]}', '${estado}')" title="Habilitar/Deshabilitar"><i class="fas fa-power-off"></i></button>
-                            <button class="btn-accion btn-borrar" onclick="borrarVacante('${v[0]}')" title="Eliminar Permanente"><i class="fas fa-trash"></i></button>
+                            <button class="btn-accion btn-ingresar" onclick="abrirCarpetaVacante('${v[0]}', '${v[1]}', '${v[4]}', '${v[6]||''}')" title="Ingresar"><i class="fas fa-folder-open"></i></button>
+                            <button class="btn-accion btn-estado" onclick="cambiarEstadoVacante('${v[0]}', '${estado}')" title="Activar/Pausar"><i class="fas fa-power-off"></i></button>
+                            <button class="btn-accion btn-borrar" onclick="borrarVacante('${v[0]}')" title="Eliminar"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>`;
             });
@@ -255,34 +302,28 @@
     async function cargarCandidatos() {
         try {
             const res = await fetch(SCRIPT_URL + "?type=getCandidatos");
-            const data = await res.json();
-            const tbody = document.getElementById('tabla-candidatos');
-            tbody.innerHTML = "";
-
-            if(data.length === 0) {
-                tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>No hay postulantes registrados.</td></tr>";
+            datosCandidatos = await res.json();
+            
+            // Renderizar tabla global de Postulantes
+            const tbodyGlobal = document.getElementById('tabla-postulantes-global');
+            tbodyGlobal.innerHTML = "";
+            
+            if(datosCandidatos.length === 0) {
+                tbodyGlobal.innerHTML = "<tr><td colspan='6' style='text-align:center;'>No hay postulantes registrados.</td></tr>";
                 return;
             }
 
-            data.forEach(c => {
-                const estadoActual = c[6] || 'En Revisión';
-                
-                // Generar el select dropdown de estado
-                let selectHtml = `<select onchange="cambiarEstadoCandidato('${c[0]}', this.value)" class="select-estado">`;
-                ESTADOS_CANDIDATO.forEach(est => {
-                    const seleccionado = (estadoActual === est) ? 'selected' : '';
-                    selectHtml += `<option value="${est}" ${seleccionado}>${est}</option>`;
-                });
-                selectHtml += `</select>`;
-
-                tbody.innerHTML += `
-                    <tr class="fila-candidato" data-puesto="${c[2]}">
-                        <td>${c[0]}</td>
-                        <td style="font-weight:600;">${c[1]}</td>
+            datosCandidatos.forEach(c => {
+                const selectHtml = generarSelectEstado(c[0], c[6] || 'En Revisión');
+                tbodyGlobal.innerHTML += `
+                    <tr>
+                        <td style="color:#7f8c8d;">${c[0]}</td>
+                        <td style="font-weight:bold;">${c[1]}</td>
+                        <td>${c[2]}</td>
                         <td><i class="fas fa-user-tie" style="color:#bdc3c7;"></i> ${c[3]}</td>
                         <td>
-                            <a href="${c[4]}" target="_blank" style="color:var(--secondary); text-decoration:none; margin-right:8px; font-weight:bold;"><i class="fas fa-file-pdf"></i> CV</a>
-                            <a href="${c[5]}" target="_blank" style="color:var(--danger); text-decoration:none; font-weight:bold;"><i class="fas fa-video"></i> Entrevista</a>
+                            <a href="${c[4]}" target="_blank" style="color:var(--secondary); margin-right:8px;"><i class="fas fa-file-pdf"></i> CV</a>
+                            <a href="${c[5]}" target="_blank" style="color:var(--danger);"><i class="fas fa-video"></i> Video</a>
                         </td>
                         <td>${selectHtml}</td>
                     </tr>`;
@@ -295,168 +336,162 @@
             const res = await fetch(SCRIPT_URL + "?type=getConsultores");
             const data = await res.json();
             
-            const contenedorCheckbox = document.getElementById('lista-consultores-checkbox');
-            const tablaConsultores = document.getElementById('tabla-lista-consultores');
+            const checkList = document.getElementById('lista-consultores-checkbox');
+            const tbody = document.getElementById('tabla-lista-consultores');
             
-            contenedorCheckbox.innerHTML = "";
-            tablaConsultores.innerHTML = "";
+            checkList.innerHTML = "";
+            tbody.innerHTML = "";
             
-            if(data.length === 0) {
-                tablaConsultores.innerHTML = "<tr><td colspan='3' style='text-align:center;'>No hay consultores.</td></tr>";
-                return;
-            }
+            if(data.length === 0) return tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>No hay consultores.</td></tr>";
 
             data.forEach(con => {
-                // Agregar al modal de asignación (Checkbox)
-                contenedorCheckbox.innerHTML += `
-                    <label class="checkbox-item">
-                        <input type="checkbox" class="check-consultor" value="${con[0]}">
-                        <span>${con[0]}</span>
-                    </label>`;
+                checkList.innerHTML += `<label class="checkbox-item"><input type="checkbox" class="check-consultor" value="${con[0]}"> <span>${con[0]}</span></label>`;
                 
-                // Agregar a la tabla visible en el panel admin
-                tablaConsultores.innerHTML += `
+                tbody.innerHTML += `
                     <tr>
                         <td style="font-weight:bold; color:var(--primary);">${con[0]}</td>
                         <td>${con[1]}</td>
                         <td style="color:#7f8c8d;">${con[2] || 'Pass123'}</td>
+                        <td><button class="btn-accion btn-editar" onclick="abrirModalEditarConsultor('${con[0]}', '${con[1]}', '${con[2] || 'Pass123'}')"><i class="fas fa-edit"></i></button></td>
                     </tr>`;
             });
         } catch (e) { console.error(e); }
     }
 
-    // --- ACCIÓN: ACTUALIZAR ESTADO DEL CANDIDATO (SIN RECARGAR PÁGINA) ---
-    async function cambiarEstadoCandidato(dni, nuevoEstado) {
-        try {
-            await fetch(SCRIPT_URL, {
-                method: 'POST', mode: 'no-cors',
-                body: JSON.stringify({ type: 'EditarEstadoCandidato', dni: dni, estado: nuevoEstado })
-            });
-            // Opcional: Mostrar una alerta pequeña tipo "toast", pero silencioso es mejor UX.
-        } catch (error) {
-            console.error("Error al actualizar estado: ", error);
-        }
-    }
-
-    // --- NAVEGACIÓN (CARPETAS) ---
-    function abrirCarpeta(id, puesto, provincia, consultoresStr) {
-        document.getElementById('vista-principal').classList.add('oculto');
-        document.getElementById('vista-detalle').classList.remove('oculto');
-
-        const textoConsultores = consultoresStr ? consultoresStr : 'Ninguno asignado aún';
+    // --- FUNCIONES DE VISTA DE VACANTE (CARPETA) ---
+    function abrirCarpetaVacante(id, puesto, provincia, consultoresStr) {
+        cambiarVista('vista-detalle-vacante');
+        
         document.getElementById('detalle-titulo').innerHTML = `<i class="fas fa-folder-open"></i> Vacante: ${puesto}`;
-        document.getElementById('detalle-info').innerHTML = `<strong>ID:</strong> ${id} &nbsp;|&nbsp; <strong>Ubicación:</strong> ${provincia} &nbsp;|&nbsp; <strong>Consultores a cargo:</strong> <span style="color:var(--secondary)">${textoConsultores}</span>`;
+        document.getElementById('detalle-info').innerHTML = `<strong>ID:</strong> ${id} &nbsp;|&nbsp; <strong>Provincia:</strong> ${provincia} &nbsp;|&nbsp; <strong>Consultores:</strong> <span style="color:var(--secondary)">${consultoresStr || 'No asignados'}</span>`;
         
         document.getElementById('btn-detalle-asignar').onclick = () => abrirModalAsignar(id, consultoresStr);
-        document.getElementById('btn-detalle-editar').onclick = () => abrirModalEditar(id, puesto, provincia);
+        document.getElementById('btn-detalle-editar').onclick = () => abrirModalEditarVacante(id, puesto, provincia);
 
-        let filas = document.querySelectorAll('.fila-candidato');
-        let contador = 0;
-        filas.forEach(fila => {
-            if (fila.getAttribute('data-puesto') === puesto) {
-                fila.style.display = "";
-                contador++;
-            } else {
-                fila.style.display = "none";
+        // Filtrar candidatos para esta vacante
+        const tbody = document.getElementById('tabla-candidatos-vacante');
+        tbody.innerHTML = "";
+        let count = 0;
+        
+        datosCandidatos.forEach(c => {
+            if (c[2] === puesto) {
+                count++;
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="color:#7f8c8d;">${c[0]}</td>
+                        <td style="font-weight:bold;">${c[1]}</td>
+                        <td>${c[3]}</td>
+                        <td><a href="${c[4]}" target="_blank" style="color:var(--secondary); margin-right:8px;"><i class="fas fa-file-pdf"></i> CV</a></td>
+                        <td>${generarSelectEstado(c[0], c[6] || 'En Revisión')}</td>
+                    </tr>`;
             }
         });
-        document.getElementById('titulo-candidatos').innerHTML = `<i class="fas fa-users"></i> Candidatos Presentados (${contador})`;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function volverInicio() {
-        document.getElementById('vista-detalle').classList.add('oculto');
-        document.getElementById('vista-principal').classList.remove('oculto');
-    }
-
-    // --- ESCRITURA Y BORRADO ---
-    async function crearBusqueda() {
-        const puesto = document.getElementById('nuevo-puesto').value;
-        const provincia = document.getElementById('nueva-provincia').value;
-        const descripcion = document.getElementById('nueva-desc').value;
-        if(!puesto || !provincia) return alert("Completa el Puesto y la Provincia.");
         
-        await fetch(SCRIPT_URL, {
-            method: 'POST', mode: 'no-cors',
-            body: JSON.stringify({ type: 'Busquedas', puesto, provincia, descripcion })
+        if(count === 0) tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Aún no hay postulantes presentados para esta búsqueda.</td></tr>";
+        document.getElementById('titulo-candidatos-vacante').innerHTML = `<i class="fas fa-users"></i> Postulantes Presentados (${count})`;
+    }
+
+    function generarSelectEstado(dni, estadoActual) {
+        let html = `<select onchange="cambiarEstadoCandidato('${dni}', this.value)" class="select-estado">`;
+        ESTADOS_CANDIDATO.forEach(est => {
+            html += `<option value="${est}" ${estadoActual === est ? 'selected' : ''}>${est}</option>`;
         });
+        return html + `</select>`;
+    }
+
+    async function cambiarEstadoCandidato(dni, estado) {
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'EditarEstadoCandidato', dni, estado }) });
+        // Actualiza el array local silenciosamente
+        datosCandidatos.forEach(c => { if(c[0] == dni) c[6] = estado; }); 
+        cargarCandidatos(); // refresca las tablas de fondo
+    }
+
+    // --- ESCRITURA Y FORMULARIOS ---
+    async function crearBusqueda() {
+        const puesto = document.getElementById('nuevo-puesto').value, provincia = document.getElementById('nueva-provincia').value, descripcion = document.getElementById('nueva-desc').value;
+        if(!puesto || !provincia) return alert("Completa Puesto y Provincia.");
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'Busquedas', puesto, provincia, descripcion }) });
         location.reload();
     }
 
     async function crearConsultor() {
-        const nombre = document.getElementById('nombreConsultor').value;
-        const email = document.getElementById('emailConsultor').value;
+        const nombre = document.getElementById('nombreConsultor').value, email = document.getElementById('emailConsultor').value;
         if(!nombre || !email) return alert("Completa los campos.");
-        
-        await fetch(SCRIPT_URL, {
-            method: 'POST', mode: 'no-cors',
-            body: JSON.stringify({ type: 'Consultores', nombre, email })
-        });
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'Consultores', nombre, email }) });
         location.reload();
     }
 
     async function borrarVacante(id) {
-        if(confirm("¿Deseas eliminar PERMANENTEMENTE esta búsqueda?")) {
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'BorrarBusqueda', id: id }) });
+        if(confirm("¿Eliminar PERMANENTEMENTE?")) {
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'BorrarBusqueda', id }) });
             location.reload();
         }
     }
 
-    async function cambiarEstado(id, estadoActual) {
-        const nuevoEstado = estadoActual === "Activa" ? "Deshabilitada" : "Activa";
-        if(confirm(`¿Deseas marcar esta vacante como ${nuevoEstado}?`)) {
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'EditarBusqueda', id: id, estado: nuevoEstado }) });
-            location.reload();
-        }
+    async function cambiarEstadoVacante(id, estadoActual) {
+        const estado = estadoActual === "Activa" ? "Deshabilitada" : "Activa";
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'EditarBusqueda', id, estado }) });
+        location.reload();
     }
 
-    // --- MODALES MULTI-ASIGNACIÓN Y EDICIÓN ---
-    function abrirModalAsignar(id, consultoresActualesStr) {
+    // --- MODALES (ASIGNAR, EDITAR VACANTE, EDITAR CONSULTOR) ---
+    function cerrarModales() { document.querySelectorAll('.modal').forEach(m => m.style.display = "none"); }
+
+    function abrirModalAsignar(id, consultoresStr) {
         document.getElementById('asig-id').value = id;
-        const checkboxes = document.querySelectorAll('.check-consultor');
-        checkboxes.forEach(cb => cb.checked = false);
-
-        if (consultoresActualesStr) {
-            const asignados = consultoresActualesStr.split(',').map(c => c.trim());
-            checkboxes.forEach(cb => {
-                if (asignados.includes(cb.value)) cb.checked = true;
-            });
+        document.querySelectorAll('.check-consultor').forEach(cb => cb.checked = false);
+        if (consultoresStr) {
+            const asignados = consultoresStr.split(',').map(c => c.trim());
+            document.querySelectorAll('.check-consultor').forEach(cb => { if (asignados.includes(cb.value)) cb.checked = true; });
         }
         document.getElementById('modalAsignar').style.display = "block";
     }
 
     async function guardarAsignacion() {
-        const id = document.getElementById('asig-id').value;
-        const seleccionados = Array.from(document.querySelectorAll('.check-consultor:checked')).map(cb => cb.value).join(', ');
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'EditarBusqueda', id: id, consultor: seleccionados }) });
+        const id = document.getElementById('asig-id').value, consultor = Array.from(document.querySelectorAll('.check-consultor:checked')).map(cb => cb.value).join(', ');
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'EditarBusqueda', id, consultor }) });
         location.reload();
     }
 
-    function abrirModalEditar(id, puesto, provincia) {
+    function abrirModalEditarVacante(id, puesto, provincia) {
         document.getElementById('edit-id').value = id;
         document.getElementById('edit-puesto').value = puesto;
         document.getElementById('edit-provincia').value = provincia;
         document.getElementById('modalEditar').style.display = "block";
     }
 
-    async function guardarEdicion() {
-        const id = document.getElementById('edit-id').value;
-        const puesto = document.getElementById('edit-puesto').value;
-        const provincia = document.getElementById('edit-provincia').value;
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'EditarBusqueda', id: id, puesto: puesto, provincia: provincia }) });
+    async function guardarEdicionVacante() {
+        const id = document.getElementById('edit-id').value, puesto = document.getElementById('edit-puesto').value, provincia = document.getElementById('edit-provincia').value;
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'EditarBusqueda', id, puesto, provincia }) });
         location.reload();
     }
 
-    function cerrarModales() {
-        document.getElementById('modalAsignar').style.display = "none";
-        document.getElementById('modalEditar').style.display = "none";
+    function abrirModalEditarConsultor(nombre, email, pass) {
+        document.getElementById('edit-consultor-email-original').value = email;
+        document.getElementById('edit-consultor-nombre').value = nombre;
+        document.getElementById('edit-consultor-email').value = email;
+        document.getElementById('edit-consultor-pass').value = pass;
+        document.getElementById('modalEditarConsultor').style.display = "block";
     }
 
-    function buscarVacantes() {
-        let input = document.getElementById('buscadorVacantes').value.toLowerCase();
-        let filas = document.querySelectorAll('.fila-vacante');
+    async function guardarEdicionConsultor() {
+        const emailOriginal = document.getElementById('edit-consultor-email-original').value;
+        const nombre = document.getElementById('edit-consultor-nombre').value;
+        const email = document.getElementById('edit-consultor-email').value;
+        const pass = document.getElementById('edit-consultor-pass').value;
+        
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'EditarConsultor', emailOriginal, nombre, email, pass }) });
+        location.reload();
+    }
+
+    // Búsqueda en tablas genérica
+    function buscarEnTabla(inputId, tablaId) {
+        const input = document.getElementById(inputId).value.toLowerCase();
+        const filas = document.querySelectorAll(`#${tablaId} tr`);
         filas.forEach(fila => {
-            fila.style.display = fila.innerText.toLowerCase().includes(input) ? "" : "none";
+            if(fila.cells.length > 1) { // Ignora el "Cargando..."
+                fila.style.display = fila.innerText.toLowerCase().includes(input) ? "" : "none";
+            }
         });
     }
 </script>
