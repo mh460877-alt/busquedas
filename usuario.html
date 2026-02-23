@@ -11,8 +11,10 @@
         
         .sidebar { width: 250px; height: 100vh; background: var(--primary); color: white; padding: 20px; position: fixed; display: flex; flex-direction: column; }
         .sidebar h2 { font-size: 1.2rem; border-bottom: 1px solid #ffffff33; padding-bottom: 10px; margin-bottom: 20px; }
-        .nav-link { display: block; color: white; text-decoration: none; padding: 15px 0; transition: 0.3s; cursor: pointer; }
-        .nav-link:hover { color: var(--secondary); }
+        
+        /* Estilos del menú lateral con indicador activo */
+        .nav-link { display: block; color: white; text-decoration: none; padding: 15px 0; transition: 0.3s; cursor: pointer; border-left: 3px solid transparent; padding-left: 10px; }
+        .nav-link:hover, .nav-link.active { color: var(--secondary); border-left: 3px solid var(--secondary); background: rgba(255,255,255,0.05); }
         .logout-link { margin-top: auto; color: #fab1a0; border-top: 1px solid #ffffff33; padding-top: 20px; }
 
         .main-content { margin-left: 250px; padding: 40px; width: calc(100% - 250px); }
@@ -24,7 +26,7 @@
         input:disabled { background-color: #f1f1f1; color: #777; cursor: not-allowed; }
         
         .btn-ingresar { background-color: var(--secondary); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; transition: 0.2s;}
-        .btn-ingresar:hover { opacity: 0.9; }
+        .btn-ingresar:hover { opacity: 0.9; transform: translateY(-1px); }
         .btn-volver { background-color: #7f8c8d; width: auto; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; margin-bottom: 20px;}
 
         table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
@@ -33,10 +35,16 @@
         
         .badge-proceso { background: #e1f5fe; color: #0288d1; padding: 5px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
         
-        .grid-container { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
+        /* Control de Vistas (Pestañas) */
+        .vista-seccion { display: none; animation: fadeIn 0.3s ease; }
+        .vista-seccion.activa { display: block; }
+        
+        /* Formato para la descripción del puesto */
+        .descripcion-puesto { background: #f9fbfd; padding: 15px; border-radius: 5px; border: 1px solid #eee; color: #444; font-size: 0.95rem; white-space: pre-wrap; line-height: 1.5; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .oculto { display: none !important; }
 
-        @media (max-width: 900px) { .grid-container { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -45,91 +53,103 @@
     <h2 id="nombre-sidebar"><i class="fas fa-spinner fa-spin"></i> Cargando...</h2>
     <nav>
         <a onclick="location.reload()" class="nav-link"><i class="fas fa-sync"></i> Actualizar Datos</a>
-        <a onclick="volverInicio()" class="nav-link"><i class="fas fa-briefcase"></i> Mis Búsquedas</a>
+        <a onclick="cambiarVista('vista-carga')" id="nav-carga" class="nav-link active"><i class="fas fa-user-plus"></i> Presentar Candidato</a>
+        <a onclick="cambiarVista('vista-asignaciones')" id="nav-asignaciones" class="nav-link"><i class="fas fa-briefcase"></i> Mis Búsquedas</a>
     </nav>
     <a href="login_consultor.html" class="nav-link logout-link" onclick="cerrarSesion()"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
 </div>
 
 <div class="main-content">
     
-    <div id="vista-principal">
-        <h1>Mi Espacio de Trabajo</h1>
+    <div id="vista-carga" class="vista-seccion activa">
+        <h1>Presentar Candidato</h1>
 
-        <div class="grid-container">
+        <div class="card" style="max-width: 600px;">
+            <h3 style="margin-top: 0;"><i class="fas fa-user-check"></i> Formulario de Postulación</h3>
             
-            <div class="card">
-                <h3><i class="fas fa-user-plus"></i> Presentar Candidato</h3>
-                
-                <div id="paso-1-verificacion">
-                    <div class="form-group">
-                        <label>DNI del Postulante (Sin puntos)</label>
-                        <input type="number" id="c-dni" placeholder="Ej: 35123456" required>
-                    </div>
-                    <button id="btn-verificar" onclick="verificarDNI()" style="background: var(--primary); color: white; font-weight: bold;">
-                        <i class="fas fa-search"></i> Verificar DNI en base de datos
-                    </button>
-                    <div id="msg-verificacion" style="margin-top: 10px; font-size: 0.9rem; font-weight: bold;"></div>
+            <div id="paso-1-verificacion">
+                <div class="form-group">
+                    <label>DNI del Postulante (Sin puntos)</label>
+                    <input type="number" id="c-dni" placeholder="Ej: 35123456" required>
                 </div>
-
-                <div id="paso-2-formulario" class="oculto" style="margin-top: 20px; padding-top: 20px; border-top: 1px dashed #ccc;">
-                    <div class="form-group">
-                        <label>Nombre Completo</label>
-                        <input type="text" id="c-nombre" placeholder="Nombre y Apellido" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Vacante a la que aplica</label>
-                        <select id="c-vacante">
-                            <option value="">Cargando vacantes asignadas...</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Link del CV (Drive/PDF)</label>
-                        <input type="url" id="c-cv" placeholder="https://...">
-                    </div>
-                    <div class="form-group">
-                        <label>Link de Entrevista/Video</label>
-                        <input type="url" id="c-video" placeholder="https://...">
-                    </div>
-                    <button id="btn-subir" onclick="cargarCandidato()" style="background: var(--success); color: white; font-weight: bold; margin-top: 10px;">
-                        <i class="fas fa-upload"></i> Guardar Candidato
-                    </button>
-                </div>
+                <button id="btn-verificar" onclick="verificarDNI()" style="background: var(--primary); color: white; font-weight: bold;">
+                    <i class="fas fa-search"></i> Verificar DNI en base de datos
+                </button>
+                <div id="msg-verificacion" style="margin-top: 10px; font-size: 0.9rem; font-weight: bold;"></div>
             </div>
 
-            <div class="card">
-                <h3><i class="fas fa-briefcase"></i> Búsquedas Asignadas a mí</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Vacante</th>
-                            <th>Provincia</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-mis-vacantes">
-                        <tr><td colspan="3" style="text-align:center;">Buscando asignaciones...</td></tr>
-                    </tbody>
-                </table>
+            <div id="paso-2-formulario" class="oculto" style="margin-top: 20px; padding-top: 20px; border-top: 1px dashed #ccc;">
+                <div class="form-group">
+                    <label>Nombre Completo</label>
+                    <input type="text" id="c-nombre" placeholder="Nombre y Apellido" required>
+                </div>
+                <div class="form-group">
+                    <label>Vacante a la que aplica</label>
+                    <select id="c-vacante">
+                        <option value="">Cargando vacantes asignadas...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Link del CV (Drive/PDF)</label>
+                    <input type="url" id="c-cv" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label>Link de Entrevista/Video</label>
+                    <input type="url" id="c-video" placeholder="https://...">
+                </div>
+                <button id="btn-subir" onclick="cargarCandidato()" style="background: var(--success); color: white; font-weight: bold; margin-top: 10px;">
+                    <i class="fas fa-upload"></i> Guardar Candidato
+                </button>
             </div>
         </div>
     </div>
 
-    <div id="vista-detalle" class="oculto">
-        <button onclick="volverInicio()" class="btn-volver"><i class="fas fa-arrow-left"></i> Volver al panel principal</button>
+    <div id="vista-asignaciones" class="vista-seccion">
+        <h1>Mis Búsquedas Asignadas</h1>
+
+        <div class="card">
+            <h3 style="margin-top: 0;"><i class="fas fa-list-alt"></i> Vacantes en curso</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Puesto / Vacante</th>
+                        <th>Provincia</th>
+                        <th style="text-align: right;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-mis-vacantes">
+                    <tr><td colspan="3" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Buscando asignaciones...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="vista-detalle" class="vista-seccion">
+        <button onclick="cambiarVista('vista-asignaciones')" class="btn-volver"><i class="fas fa-arrow-left"></i> Volver a Mis Búsquedas</button>
 
         <div class="card" style="border-left: 5px solid var(--secondary);">
-            <h2 id="detalle-titulo" style="margin: 0; color: var(--primary);"><i class="fas fa-folder-open"></i> Vacante: -</h2>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px;">
+                <div style="flex: 1; min-width: 300px;">
+                    <h2 id="detalle-titulo" style="margin: 0 0 5px 0; color: var(--primary);"><i class="fas fa-folder-open"></i> Vacante: -</h2>
+                    <p id="detalle-provincia" style="margin: 0; color: #7f8c8d; font-size: 0.95rem;"><strong>Ubicación:</strong> -</p>
+                    
+                    <h4 style="margin: 15px 0 5px 0; color: #555;">Descripción del Puesto:</h4>
+                    <div id="detalle-descripcion" class="descripcion-puesto">
+                        Cargando descripción...
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="card">
-            <h3><i class="fas fa-users"></i> Mis Postulantes Presentados</h3>
+            <h3 style="margin-top: 0;"><i class="fas fa-users"></i> Mis Postulantes para esta Búsqueda</h3>
             <table>
                 <thead>
                     <tr>
                         <th>DNI</th>
-                        <th>Nombre</th>
+                        <th>Nombre Completo</th>
                         <th>Archivos</th>
-                        <th>Estado</th>
+                        <th>Estado del Proceso</th>
                     </tr>
                 </thead>
                 <tbody id="tabla-mis-candidatos">
@@ -149,7 +169,7 @@
 
     window.onload = async () => {
         if (!MI_NOMBRE) {
-            window.location.href = "login_consultor.html"; // Redirige si no está logueado
+            window.location.href = "login_consultor.html"; 
             return;
         }
         document.getElementById('nombre-sidebar').innerHTML = `<i class="fas fa-user-circle"></i> ${MI_NOMBRE}`;
@@ -158,6 +178,19 @@
 
     function cerrarSesion() {
         localStorage.removeItem('consultorNombre');
+    }
+
+    // --- NAVEGACIÓN DE PESTAÑAS ---
+    function cambiarVista(idVista) {
+        // Ocultar todas
+        document.querySelectorAll('.vista-seccion').forEach(el => el.classList.remove('activa'));
+        // Mostrar la solicitada
+        document.getElementById(idVista).classList.add('activa');
+        
+        // Actualizar el menú lateral
+        document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+        if(idVista === 'vista-carga') document.getElementById('nav-carga').classList.add('active');
+        if(idVista === 'vista-asignaciones' || idVista === 'vista-detalle') document.getElementById('nav-asignaciones').classList.add('active');
     }
 
     // --- CARGAR VACANTES ASIGNADAS AL CONSULTOR ---
@@ -182,14 +215,16 @@
             }
 
             misVacantesData.forEach(v => {
+                // Llenar selector para cargar candidato
                 select.innerHTML += `<option value="${v[1]}">${v[1]} - ${v[4]}</option>`;
                 
+                // Llenar tabla de "Mis Búsquedas"
                 tbody.innerHTML += `
                     <tr>
                         <td style="font-weight:bold; color:var(--primary);">${v[1]}</td>
                         <td>${v[4]}</td>
                         <td style="text-align:right;">
-                            <button class="btn-ingresar" onclick="ingresarCarpeta('${v[1]}')"><i class="fas fa-folder-open"></i> Ver Postulantes</button>
+                            <button class="btn-ingresar" onclick="ingresarCarpeta('${v[1]}')"><i class="fas fa-info-circle"></i> Ver Detalles y Postulantes</button>
                         </td>
                     </tr>`;
             });
@@ -212,26 +247,18 @@
         btn.disabled = true;
 
         try {
-            // Llama a la base de datos de candidatos
             const res = await fetch(SCRIPT_URL + "?type=getCandidatos");
             const candidatos = await res.json();
-            
-            // Extrae los DNIs registrados (Columna 0 de la hoja "Candidatos")
             const dnisRegistrados = candidatos.map(c => String(c[0]).trim());
 
             if (dnisRegistrados.includes(dniValue)) {
-                // EL DNI YA EXISTE
-                msg.innerHTML = '<span style="color:var(--danger)"><i class="fas fa-times-circle"></i> Este DNI ya se encuentra registrado en el sistema. No se puede cargar duplicados.</span>';
+                msg.innerHTML = '<span style="color:var(--danger)"><i class="fas fa-times-circle"></i> Este DNI ya se encuentra registrado en el sistema. No se puede duplicar.</span>';
                 btn.innerHTML = '<i class="fas fa-search"></i> Verificar DNI en base de datos';
                 btn.disabled = false;
             } else {
-                // EL DNI ES NUEVO
                 msg.innerHTML = '<span style="color:var(--success)"><i class="fas fa-check-circle"></i> DNI libre. Puedes proceder a cargar el candidato.</span> <a href="#" onclick="resetDNI()" style="font-size:0.8rem; color:#3498db; margin-left:10px;">Modificar DNI</a>';
-                
-                dniInput.disabled = true; // Bloquea el input para que no lo modifique a escondidas
-                btn.style.display = 'none'; // Oculta el botón de verificar
-                
-                // Muestra el Paso 2 (El resto del formulario)
+                dniInput.disabled = true; 
+                btn.style.display = 'none'; 
                 document.getElementById('paso-2-formulario').classList.remove('oculto');
             }
 
@@ -242,7 +269,6 @@
         }
     }
 
-    // Por si el usuario se equivocó de número y quiere corregirlo
     function resetDNI() {
         document.getElementById('c-dni').disabled = false;
         document.getElementById('c-dni').focus();
@@ -255,7 +281,6 @@
 
     // --- PASO 2: CARGAR CANDIDATO FINAL ---
     async function cargarCandidato() {
-        // Obtenemos los valores
         const dni = document.getElementById('c-dni').value;
         const nombre = document.getElementById('c-nombre').value;
         const puesto = document.getElementById('c-vacante').value;
@@ -264,11 +289,9 @@
 
         if (!nombre || !puesto) return alert("Por favor, completa el nombre del candidato y la vacante.");
 
-        // Obtenemos la provincia de la vacante seleccionada
         const vacanteSeleccionada = misVacantesData.find(v => v[1] === puesto);
         const provincia = vacanteSeleccionada ? vacanteSeleccionada[4] : "";
 
-        // Cambiar botón a estado de carga
         const btn = document.getElementById('btn-subir');
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subiendo al servidor...';
         btn.disabled = true;
@@ -278,13 +301,7 @@
                 method: 'POST', mode: 'no-cors',
                 body: JSON.stringify({ 
                     type: 'CargarCandidato', 
-                    dni: dni, 
-                    nombre: nombre, 
-                    puesto: puesto, 
-                    consultor: MI_NOMBRE, 
-                    cv: cv, 
-                    video: video,
-                    provincia: provincia 
+                    dni: dni, nombre: nombre, puesto: puesto, consultor: MI_NOMBRE, cv: cv, video: video, provincia: provincia 
                 })
             });
 
@@ -300,11 +317,19 @@
         }
     }
 
-    // --- CARPETA DE LA VACANTE (Ver postulantes propios) ---
+    // --- CARPETA DE LA VACANTE (Detalle y Postulantes) ---
     async function ingresarCarpeta(puesto) {
-        document.getElementById('vista-principal').classList.add('oculto');
-        document.getElementById('vista-detalle').classList.remove('oculto');
+        cambiarVista('vista-detalle');
+        
+        // Buscar los datos de la vacante seleccionada
+        const vacante = misVacantesData.find(v => v[1] === puesto);
+        const provincia = vacante[4] || 'No especificada';
+        const descripcion = vacante[3] || 'El administrador no ha añadido una descripción para esta búsqueda.';
+
+        // Llenar la cabecera
         document.getElementById('detalle-titulo').innerHTML = `<i class="fas fa-folder-open"></i> Vacante: ${puesto}`;
+        document.getElementById('detalle-provincia').innerHTML = `<strong>Ubicación:</strong> ${provincia}`;
+        document.getElementById('detalle-descripcion').innerText = descripcion; // innerText respeta los saltos de línea (pre-wrap)
         
         const tbody = document.getElementById('tabla-mis-candidatos');
         tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'><i class='fas fa-spinner fa-spin'></i> Buscando tus postulantes...</td></tr>";
@@ -337,10 +362,6 @@
         } catch (error) { console.error(error); }
     }
 
-    function volverInicio() {
-        document.getElementById('vista-detalle').classList.add('oculto');
-        document.getElementById('vista-principal').classList.remove('oculto');
-    }
 </script>
 
 </body>
