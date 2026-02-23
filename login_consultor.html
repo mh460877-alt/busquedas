@@ -5,62 +5,244 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acceso Consultores - Escencial</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .login-card { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 350px; text-align: center; border-top: 5px solid #3498db; }
-        .login-card h2 { color: #2c3e50; margin-bottom: 5px; }
-        .login-card p { color: #7f8c8d; font-size: 0.9rem; margin-bottom: 25px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #3498db; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px;}
-        button:hover { background: #2980b9; }
-        #mensaje { margin-top: 15px; font-size: 0.85rem; color: #e74c3c; display: none; }
-        .loader { display: none; margin-top: 15px; color: #3498db; }
+        :root {
+            --primary: #1a2a6c;
+            --accent: #00a8ff;
+            --dark: #2d3436;
+            --white: #ffffff;
+            --gradient: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #f0f2f5;
+            overflow: hidden;
+        }
+
+        /* Fondo Decorativo Idéntico al Admin */
+        body::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: var(--gradient);
+            z-index: -1;
+            filter: blur(80px);
+            opacity: 0.15;
+            animation: moveBg 20s infinite alternate;
+        }
+
+        @keyframes moveBg {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(10deg); }
+        }
+
+        /* Tarjeta Glassmorphism */
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.3);
+            z-index: 1;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo-area { margin-bottom: 25px; }
+        .logo-area img { max-width: 220px; height: auto; }
+        
+        .subtitle {
+            color: #636e72;
+            margin-top: 10px;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+
+        .form-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary);
+            display: block;
+            margin-bottom: 6px;
+            text-align: left;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus { border-color: var(--primary); }
+
+        /* Estilos de Botones */
+        .btn-access {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            width: 100%;
+        }
+
+        .admin-btn {
+            background: var(--primary);
+            color: var(--white);
+            box-shadow: 0 4px 12px rgba(26, 42, 108, 0.2);
+        }
+
+        .btn-access:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        }
+
+        .consultor-btn {
+            background: transparent;
+            color: #7f8c8d;
+            box-shadow: none;
+            padding: 10px;
+            font-size: 0.85rem;
+        }
+        
+        .consultor-btn:hover { color: var(--primary); transform: none; box-shadow: none; }
+
+        /* Mensajes y Loader */
+        #mensaje {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .loader {
+            display: none;
+            margin-top: 15px;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .footer-text { margin-top: 35px; font-size: 0.75rem; color: #b2bec3; letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
 
-    <div class="login-card">
-        <i class="fas fa-user-circle" style="font-size: 3rem; color: #3498db;"></i>
-        <h2>Portal Consultores</h2>
-        <p>Escencial Consultora</p>
-        
-        <input type="email" id="email" placeholder="Ingresa tu email registrado" required>
-        <button onclick="iniciarSesion()">Ingresar al Panel</button>
-        
-        <div id="loader" class="loader"><i class="fas fa-spinner fa-spin"></i> Verificando credenciales...</div>
-        <div id="mensaje">Usuario no encontrado o no autorizado.</div>
+<div class="login-card">
+    <div class="logo-area">
+        <img src="logo.png" alt="Logo Escencial Consultora">
+        <div class="subtitle">Portal de Consultores</div>
     </div>
 
-    <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-Q1S3S15loP-wlW2dcD1pZWPh4kmUyL-wUw5xJn50a836kR-Ca7-ufKv1-YtXSdA9/exec";
+    <div id="consultor-form">
+        <label class="form-label">Email de acceso:</label>
+        <input type="email" id="email" class="form-input" placeholder="Ingresa tu correo registrado" required>
+        
+        <button id="btn-ingresar" class="btn-access admin-btn" onclick="iniciarSesion()" style="margin-top: 5px;">
+            <i class="fas fa-sign-in-alt"></i> Ingresar al Panel
+        </button>
+        
+        <a href="index.html" class="btn-access consultor-btn" style="margin-top: 10px;">
+            <i class="fas fa-arrow-left"></i> Volver atrás
+        </a>
 
-        async function iniciarSesion() {
-            const emailIngresado = document.getElementById('email').value.trim().toLowerCase();
-            if (!emailIngresado) return alert("Por favor ingresa tu email.");
+        <div id="loader" class="loader"><i class="fas fa-spinner fa-spin"></i> Verificando credenciales...</div>
+        <div id="mensaje"><i class="fas fa-times-circle"></i> Correo no autorizado.</div>
+    </div>
 
-            document.getElementById('loader').style.display = 'block';
-            document.getElementById('mensaje').style.display = 'none';
+    <div class="footer-text">
+        Copyright 2026 - Todos los derechos reservados
+    </div>
+</div>
 
-            try {
-                const response = await fetch(SCRIPT_URL + "?type=getConsultores");
-                const consultores = await response.json();
-                
-                // Buscar si el email existe en la base de datos
-                const consultorValido = consultores.find(c => c[1].trim().toLowerCase() === emailIngresado);
+<script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-Q1S3S15loP-wlW2dcD1pZWPh4kmUyL-wUw5xJn50a836kR-Ca7-ufKv1-YtXSdA9/exec";
 
-                if (consultorValido) {
-                    // Guarda el NOMBRE del consultor en la memoria del navegador
-                    localStorage.setItem('consultorNombre', consultorValido[0]);
-                    window.location.href = "usuario.html"; // Redirige al panel
-                } else {
-                    document.getElementById('loader').style.display = 'none';
-                    document.getElementById('mensaje').style.display = 'block';
-                }
-            } catch (error) {
-                alert("Error de conexión con el servidor.");
-                document.getElementById('loader').style.display = 'none';
-            }
+    async function iniciarSesion() {
+        const emailIngresado = document.getElementById('email').value.trim().toLowerCase();
+        const btn = document.getElementById('btn-ingresar');
+        const loader = document.getElementById('loader');
+        const mensaje = document.getElementById('mensaje');
+
+        if (!emailIngresado) {
+            mensaje.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Por favor ingresa tu email.';
+            mensaje.style.display = 'block';
+            return;
         }
-    </script>
+
+        // Mostrar estado de carga
+        btn.style.display = 'none';
+        loader.style.display = 'block';
+        mensaje.style.display = 'none';
+
+        try {
+            const response = await fetch(SCRIPT_URL + "?type=getConsultores");
+            const consultores = await response.json();
+            
+            // Buscar si el email existe en la base de datos de la columna 2
+            const consultorValido = consultores.find(c => c[1] && c[1].trim().toLowerCase() === emailIngresado);
+
+            if (consultorValido) {
+                // Guarda el NOMBRE del consultor en la memoria y redirige
+                localStorage.setItem('consultorNombre', consultorValido[0]);
+                window.location.href = "usuario.html";
+            } else {
+                // Falla validación
+                loader.style.display = 'none';
+                btn.style.display = 'flex';
+                mensaje.innerHTML = '<i class="fas fa-times-circle"></i> El correo no está registrado.';
+                mensaje.style.display = 'block';
+            }
+        } catch (error) {
+            loader.style.display = 'none';
+            btn.style.display = 'flex';
+            mensaje.innerHTML = '<i class="fas fa-wifi"></i> Error de conexión con el servidor.';
+            mensaje.style.display = 'block';
+        }
+    }
+
+    // Permitir ingresar presionando la tecla "Enter"
+    document.getElementById("email").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            iniciarSesion();
+        }
+    });
+</script>
+
 </body>
 </html>
