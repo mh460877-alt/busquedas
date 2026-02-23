@@ -57,17 +57,12 @@
             text-align: center;
             border: 1px solid rgba(255,255,255,0.3);
             z-index: 1;
+            transition: all 0.3s ease;
         }
 
-        .logo-area {
-            margin-bottom: 25px;
-        }
-
-        .logo-area img {
-            max-width: 220px; /* Tamaño ajustado para resaltar tu logo de Canva */
-            height: auto;
-        }
-
+        .logo-area { margin-bottom: 25px; }
+        .logo-area img { max-width: 220px; height: auto; }
+        
         .subtitle {
             color: #636e72;
             margin-top: 10px;
@@ -93,6 +88,10 @@
             font-weight: 600;
             font-size: 0.95rem;
             transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            width: 100%;
         }
 
         .admin-btn {
@@ -112,17 +111,55 @@
             box-shadow: 0 6px 15px rgba(0,0,0,0.1);
         }
 
-        .consultor-btn:hover {
-            background: var(--primary);
-            color: var(--white);
+        .consultor-btn:hover { background: var(--primary); color: var(--white); }
+
+        /* Formulario oculto del Administrador */
+        #admin-form {
+            display: none;
+            margin-top: 15px;
+            text-align: left;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            animation: fadeIn 0.4s ease;
         }
 
-        .footer-text {
-            margin-top: 35px;
-            font-size: 0.75rem;
-            color: #b2bec3;
-            letter-spacing: 0.5px;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
+
+        .form-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary);
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus { border-color: var(--primary); }
+        
+        #error-msg {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .footer-text { margin-top: 35px; font-size: 0.75rem; color: #b2bec3; letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
@@ -133,11 +170,11 @@
         <div class="subtitle">Sistema de Gestión de Talento</div>
     </div>
 
-    <div class="btn-group">
-        <a href="admin.html" class="btn-access admin-btn">
+    <div class="btn-group" id="botones-principales">
+        <button class="btn-access admin-btn" onclick="mostrarLoginAdmin()">
             <i class="fas fa-shield-halved"></i>
             Acceso Administrador
-        </a>
+        </button>
         
         <a href="login_consultor.html" class="btn-access consultor-btn">
             <i class="fas fa-users"></i>
@@ -145,10 +182,65 @@
         </a>
     </div>
 
+    <div id="admin-form">
+        <label class="form-label">Usuario Admin:</label>
+        <input type="text" id="user" class="form-input" placeholder="Ingresa tu usuario">
+        
+        <label class="form-label">Contraseña:</label>
+        <input type="password" id="pass" class="form-input" placeholder="••••••••">
+        
+        <button class="btn-access admin-btn" onclick="validarAdmin()" style="margin-top: 5px;">
+            <i class="fas fa-sign-in-alt"></i> Ingresar al Panel
+        </button>
+        
+        <button class="btn-access consultor-btn" onclick="volverBotones()" style="margin-top: 10px; padding: 10px; font-size:0.85rem; border:none; background:transparent; color:#7f8c8d; box-shadow:none;">
+            <i class="fas fa-arrow-left"></i> Volver atrás
+        </button>
+
+        <div id="error-msg"><i class="fas fa-times-circle"></i> Credenciales incorrectas</div>
+    </div>
+
     <div class="footer-text">
         Copyright 2026 - Todos los derechos reservados
     </div>
 </div>
+
+<script>
+    // Mostrar formulario
+    function mostrarLoginAdmin() {
+        document.getElementById('botones-principales').style.display = 'none';
+        document.getElementById('admin-form').style.display = 'block';
+    }
+
+    // Volver a la vista de botones
+    function volverBotones() {
+        document.getElementById('admin-form').style.display = 'none';
+        document.getElementById('botones-principales').style.display = 'flex';
+        document.getElementById('error-msg').style.display = 'none';
+        document.getElementById('pass').value = ''; // Limpiar contraseña por seguridad
+    }
+
+    // Validación de seguridad simple
+    function validarAdmin() {
+        const u = document.getElementById('user').value.trim();
+        const p = document.getElementById('pass').value.trim();
+        
+        // Aquí defines tu usuario y contraseña
+        if (u === 'admin' && p === 'admin123') {
+            window.location.href = 'admin.html';
+        } else {
+            document.getElementById('error-msg').style.display = 'block';
+        }
+    }
+
+    // Permitir ingresar presionando la tecla "Enter"
+    document.getElementById("pass").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            validarAdmin();
+        }
+    });
+</script>
 
 </body>
 </html>
