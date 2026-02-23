@@ -28,7 +28,7 @@
         /* Fondo Decorativo Animado Fijo */
         body::before {
             content: "";
-            position: fixed; /* Cambiado a fixed para que no se corte al scrollear */
+            position: fixed;
             top: -50%;
             left: -50%;
             width: 200%;
@@ -75,15 +75,27 @@
 
         .btn-group { display: flex; flex-direction: column; gap: 12px; }
 
+        /* Estilo unificado para que ambos botones sean idénticos en tamaño */
         .btn-access {
             display: flex; align-items: center; justify-content: center; gap: 10px;
             padding: 14px; border-radius: 12px; text-decoration: none;
             font-weight: 600; font-size: 0.95rem; transition: all 0.3s ease;
-            cursor: pointer; border: none; font-family: inherit; width: 100%;
+            cursor: pointer; font-family: inherit; width: 100%;
+            box-sizing: border-box; height: 52px; /* Altura fija para igualarlos */
         }
 
-        .admin-btn { background: var(--primary); color: var(--white); box-shadow: 0 4px 12px rgba(26, 42, 108, 0.2); }
-        .consultor-btn { background: var(--white); color: var(--primary); border: 2px solid var(--primary); }
+        .admin-btn { 
+            background: var(--primary); 
+            color: var(--white); 
+            border: 2px solid var(--primary); /* Se agregó borde para igualar la caja */
+            box-shadow: 0 4px 12px rgba(26, 42, 108, 0.2); 
+        }
+        
+        .consultor-btn { 
+            background: var(--white); 
+            color: var(--primary); 
+            border: 2px solid var(--primary); 
+        }
 
         .btn-access:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
         .consultor-btn:hover { background: var(--primary); color: var(--white); }
@@ -212,7 +224,7 @@
                 <i class="fas fa-sign-in-alt"></i> Ingresar al Panel
             </button>
             
-            <button class="btn-access consultor-btn" onclick="volverBotones()" style="margin-top: 10px; padding: 10px; font-size:0.85rem; border:none; background:transparent; color:#7f8c8d; box-shadow:none;">
+            <button class="btn-access consultor-btn" onclick="volverBotones()" style="margin-top: 10px; font-size:0.85rem; border:none; background:transparent; color:#7f8c8d; box-shadow:none;">
                 <i class="fas fa-arrow-left"></i> Volver atrás
             </button>
 
@@ -224,9 +236,9 @@
 <footer class="site-footer">
     
     <div class="social-icons">
-        <a href="#" target="_blank" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-        <a href="#" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
-        <a href="#" target="_blank" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+        <a href="https://www.facebook.com/escencialconsultora" target="_blank" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://www.instagram.com/escencialconsultora/" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="https://www.linkedin.com/company/escencialconsultora/posts/?feedView=all" target="_blank" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
     </div>
 
     <div class="footer-columns">
