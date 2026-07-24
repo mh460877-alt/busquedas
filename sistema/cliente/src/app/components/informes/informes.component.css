@@ -1,0 +1,38 @@
+.periodo-sel { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
+
+.resumen-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px;
+}
+.res-box { border: 1px solid #eef1f3; border-radius: 9px; padding: 14px; text-align: center; background: #fafcfe; }
+.res-box .n { font-size: 1.7rem; font-weight: 700; color: var(--secondary); line-height: 1.1; }
+.res-box .l { font-size: 0.72rem; color: #7a8894; text-transform: uppercase; letter-spacing: .4px; margin-top: 3px; }
+
+/* barra de % en KPIs */
+.barra-kpi { position: relative; background: #eef1f3; border-radius: 12px; height: 20px; min-width: 120px; overflow: hidden; }
+.barra-fill { height: 100%; border-radius: 12px; transition: width .3s; }
+.barra-fill.ok { background: #27ae60; }
+.barra-fill.medio { background: #f1c40f; }
+.barra-fill.bajo { background: #e74c3c; }
+.barra-kpi span { position: absolute; right: 8px; top: 0; line-height: 20px; font-size: 0.72rem; font-weight: 700; color: #2c3e50; }
+
+/* gráfico de temporadas */
+.grafico {
+  display: flex; align-items: flex-end; gap: 8px; height: 200px; padding: 10px 0 0;
+  border-bottom: 2px solid #eef1f3;
+}
+.col-mes { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; }
+.barra-cont { flex: 1; width: 100%; display: flex; align-items: flex-end; justify-content: center; }
+.barra {
+  width: 60%; max-width: 34px; background: linear-gradient(180deg, #3498db, #2c80b4);
+  border-radius: 5px 5px 0 0; min-height: 2px; transition: height .3s;
+}
+.mes-label { font-size: 0.68rem; color: #7a8894; margin-top: 6px; }
+.mes-num { font-size: 0.72rem; font-weight: 700; color: #2c3e50; }
+.mes-num.cero { color: #c3ccc9; }
+
+@media (max-width: 640px) {
+  .resumen-grid { grid-template-columns: repeat(2, 1fr); }
+  .grafico { gap: 3px; height: 160px; }
+  .mes-label { font-size: 0.58rem; }
+  .barra { width: 80%; }
+}

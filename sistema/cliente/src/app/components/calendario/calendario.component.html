@@ -1,0 +1,90 @@
+<div class="card acento">
+  <div class="card-header">
+    <div>
+      <h2><i class="fas fa-calendar-days"></i> Calendario</h2>
+      <p class="desc">Pendientes, viajes y cumpleaños del equipo, día por día.</p>
+    </div>
+    <div class="cal-nav">
+      <button class="btn gris chico" (click)="mesAnterior()"><i class="fas fa-chevron-left"></i></button>
+      <button class="btn gris chico" (click)="hoy()">Hoy</button>
+      <button class="btn gris chico" (click)="mesSiguiente()"><i class="fas fa-chevron-right"></i></button>
+    </div>
+  </div>
+
+  <h3 class="cal-titulo">{{ titulo }}</h3>
+
+  <div class="cal-leyenda">
+    <span><i class="punto p-pendiente"></i> Pendiente</span>
+    <span><i class="punto p-finalizada"></i> Finalizada</span>
+    <span><i class="punto p-viaje"></i> Viaje</span>
+    <span><i class="punto p-cumple"></i> Cumpleaños</span>
+  </div>
+
+  <p class="mensaje" *ngIf="mensaje">{{ mensaje }}</p>
+  <p class="vacio" *ngIf="cargando"><i class="fas fa-spinner fa-spin"></i> Cargando…</p>
+
+  <div class="cal-grid" *ngIf="!cargando">
+    <div class="cal-dow" *ngFor="let d of diasSemana">{{ d }}</div>
+
+    <div *ngFor="let c of celdas"
+         class="cal-celda"
+         [class.vacia]="!c.dia"
+         [class.hoy]="c.hoy"
+         [class.sel]="c.dia && c.dia === diaSeleccionado"
+         (click)="seleccionar(c)">
+      <ng-container *ngIf="c.dia">
+        <div class="cal-num">{{ c.dia }}</div>
+        <div class="cal-ev" *ngFor="let e of c.eventos.slice(0, 3)"
+             [ngClass]="'ev-' + e.tipo"
+             [title]="e.titulo + (e.responsable ? ' · ' + e.responsable : '')">
+          {{ e.titulo }}
+        </div>
+        <div class="cal-mas" *ngIf="c.eventos.length > 3">+{{ c.eventos.length - 3 }} más</div>
+      </ng-container>
+    </div>
+  </div>
+</div>
+
+<!-- Detalle del día elegido -->
+<div class="card" *ngIf="diaSeleccionado">
+  <div class="card-header">
+    <h3><i class="fas fa-calendar-day"></i> {{ diaSeleccionado }} de {{ meses[ref.getMonth()] }}</h3>
+    <button class="btn chico" (click)="abrirNuevo(diaSeleccionado)"><i class="fas fa-plus"></i> Agregar pendiente</button>
+  </div>
+  <div *ngIf="eventosDelDia.length; else sinEventos">
+    <div class="dia-item" *ngFor="let e of eventosDelDia">
+      <span class="punto" [ngClass]="'p-' + e.tipo"></span>
+      <div>
+        <strong>{{ e.titulo }}</strong>
+        <span class="chico" *ngIf="e.responsable"> · {{ e.responsable }}</span>
+        <div class="chico" *ngIf="e.detalle">{{ e.detalle }}</div>
+      </div>
+    </div>
+  </div>
+  <ng-template #sinEventos>
+    <p class="vacio">No hay nada agendado para este día.</p>
+  </ng-template>
+</div>
+
+<!-- Alta rápida de pendiente -->
+<div class="modal-fondo" *ngIf="nuevo" (click)="nuevo = null">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header"><i class="fas fa-plus"></i> Nuevo pendiente · {{ nuevo.Fecha }}</div>
+    <div class="form-group"><label>Actividad</label><input type="text" [(ngModel)]="nuevo.Titulo" placeholder="Qué hay que hacer"></div>
+    <div class="grid-container">
+      <div class="form-group"><label>Tipo</label>
+        <select [(ngModel)]="nuevo.Tipo"><option value="">— Elegir —</option><option *ngFor="let t of tipos" [value]="t">{{ t }}</option></select>
+      </div>
+      <div class="form-group"><label>Responsable</label>
+        <select [(ngModel)]="nuevo.Responsable"><option value="">— Elegir —</option><option *ngFor="let p of equipo" [value]="p">{{ p }}</option></select>
+      </div>
+    </div>
+    <p class="mensaje error" *ngIf="mensaje">{{ mensaje }}</p>
+    <div class="acciones-modal">
+      <button class="btn gris" (click)="nuevo = null">Cancelar</button>
+      <button class="btn success" (click)="guardarNuevo()" [disabled]="guardando">
+        <i class="fas fa-save"></i> {{ guardando ? 'Guardando…' : 'Guardar' }}
+      </button>
+    </div>
+  </div>
+</div>

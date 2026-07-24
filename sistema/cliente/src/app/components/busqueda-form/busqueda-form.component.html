@@ -1,0 +1,53 @@
+<button class="btn-volver" (click)="volver()"><i class="fas fa-arrow-left"></i> Volver a Búsquedas</button>
+<div class="card acento" style="max-width:720px">
+  <h2>{{ esNueva ? 'Nueva búsqueda' : 'Editar búsqueda' }}</h2>
+  <p class="desc">El descriptivo es lo que van a leer los consultores asignados.</p>
+
+  <div class="form-group">
+    <label>Puesto</label>
+    <input type="text" name="puesto" [(ngModel)]="busqueda.Puesto" placeholder="Ej. Gerente de Sistemas">
+  </div>
+
+  <div class="grid-container">
+    <div class="form-group">
+      <label>Empresa</label>
+      <select name="empresa" [(ngModel)]="busqueda.EmpresaID">
+        <option value="">— Sin asignar —</option>
+        <option *ngFor="let e of empresas" [value]="e.ID">{{ e.Nombre }}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Provincia</label>
+      <select name="provincia" [(ngModel)]="busqueda.Provincia">
+        <option value="">— Elegir —</option>
+        <option *ngFor="let p of provincias" [value]="p">{{ p }}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Etapa</label>
+      <select name="etapa" [(ngModel)]="busqueda.Etapa">
+        <option *ngFor="let e of etapas" [value]="e">{{ e }}</option>
+      </select>
+    </div>
+    <div class="form-group" *ngIf="!esNueva">
+      <label>Estado</label>
+      <select name="estado" [(ngModel)]="busqueda.Estado">
+        <option *ngFor="let e of estados" [value]="e">{{ e }}</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>Descriptivo del puesto</label>
+    <textarea name="descripcion" [(ngModel)]="busqueda.Descripcion" rows="6"
+              placeholder="Qué buscamos, requisitos, condiciones…"></textarea>
+  </div>
+
+  <p class="mensaje error" *ngIf="mensaje">{{ mensaje }}</p>
+  <div class="acciones-modal">
+    <button class="btn gris" (click)="volver()">Cancelar</button>
+    <button class="btn success" (click)="guardar()" [disabled]="guardando">
+      <i class="fas fa-save"></i> {{ guardando ? 'Guardando…' : 'Guardar' }}
+    </button>
+  </div>
+</div>

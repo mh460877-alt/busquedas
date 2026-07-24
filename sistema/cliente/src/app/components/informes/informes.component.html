@@ -1,0 +1,77 @@
+<p class="mensaje" *ngIf="mensaje">{{ mensaje }}</p>
+<p class="vacio" *ngIf="cargando"><i class="fas fa-spinner fa-spin"></i> Cargando…</p>
+
+<ng-container *ngIf="!cargando">
+
+  <!-- Descargar informe del período -->
+  <div class="card acento">
+    <h2><i class="fas fa-file-arrow-down"></i> Descargar informe</h2>
+    <p class="desc">Para tener el balance listo antes de que te lo pidan.</p>
+
+    <div class="periodo-sel">
+      <button class="btn chico" [class.gris]="periodo !== 'semana'" (click)="periodo='semana'">Semana</button>
+      <button class="btn chico" [class.gris]="periodo !== 'mes'" (click)="periodo='mes'">Mes</button>
+      <button class="btn chico" [class.gris]="periodo !== 'semestre'" (click)="periodo='semestre'">Semestre</button>
+      <button class="btn chico" [class.gris]="periodo !== 'anio'" (click)="periodo='anio'">Año</button>
+    </div>
+
+    <div class="resumen-grid">
+      <div class="res-box"><div class="n">{{ resumenPeriodo.finalizadas.length }}</div><div class="l">Realizadas</div></div>
+      <div class="res-box"><div class="n">{{ resumenPeriodo.pendientes.length }}</div><div class="l">Pendientes</div></div>
+      <div class="res-box"><div class="n">{{ resumenPeriodo.viajes.length }}</div><div class="l">Viajes</div></div>
+      <div class="res-box"><div class="n">{{ resumenPeriodo.candidatos.length }}</div><div class="l">Candidatos</div></div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+      <span class="chico">Período: <strong>{{ resumenPeriodo.etiqueta }}</strong></span>
+      <button class="btn success" (click)="descargar()"><i class="fas fa-download"></i> Descargar informe</button>
+    </div>
+  </div>
+
+  <!-- KPIs de cumplimiento -->
+  <div class="card">
+    <h2><i class="fas fa-chart-line"></i> Cumplimiento por persona</h2>
+    <p class="desc">De lo asignado, cuánto se finalizó. Herramienta para ver qué se hizo y qué no.</p>
+
+    <div class="tabla-cont">
+      <table>
+        <thead><tr><th>Responsable</th><th>Asignadas</th><th>Cumplidas</th><th>% Cumplimiento</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let k of kpis">
+            <td data-label="Responsable"><strong>{{ k.persona }}</strong></td>
+            <td data-label="Asignadas">{{ k.asignadas }}</td>
+            <td data-label="Cumplidas">{{ k.cumplidas }}</td>
+            <td data-label="% Cumplimiento">
+              <div class="barra-kpi">
+                <div class="barra-fill" [style.width.%]="k.pct"
+                     [ngClass]="k.pct >= 70 ? 'ok' : (k.pct >= 40 ? 'medio' : 'bajo')"></div>
+                <span>{{ k.pct }}%</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="vacio" *ngIf="!kpis.length">Todavía no hay pendientes cargados para medir.</p>
+    </div>
+  </div>
+
+  <!-- Temporadas altas y bajas -->
+  <div class="card">
+    <h2><i class="fas fa-chart-column"></i> Temporadas del año {{ temporadas[0] ? '' : '' }}</h2>
+    <p class="desc">En qué meses hay más movimiento: búsquedas, candidatos y actividades.</p>
+
+    <div class="grafico">
+      <div class="col-mes" *ngFor="let t of temporadas" [title]="t.mes + ': ' + t.total + ' movimientos'">
+        <div class="barra-cont">
+          <div class="barra" [style.height.%]="altura(t.total)"></div>
+        </div>
+        <div class="mes-label">{{ t.mes }}</div>
+        <div class="mes-num" [class.cero]="!t.total">{{ t.total }}</div>
+      </div>
+    </div>
+    <p class="chico" style="text-align:center;margin-top:10px">
+      Cada barra suma búsquedas abiertas, candidatos presentados y actividades del mes.
+    </p>
+  </div>
+
+</ng-container>

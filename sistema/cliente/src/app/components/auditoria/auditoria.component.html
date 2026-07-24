@@ -1,0 +1,25 @@
+<div class="card acento">
+  <h2><i class="fas fa-clipboard-list"></i> Auditoría</h2>
+  <p class="desc">Cada movimiento del sistema, con su autor y su fecha.</p>
+
+  <input type="text" class="search-bar" placeholder="Buscar por persona, acción o tabla…" [(ngModel)]="filtro">
+
+  <p class="mensaje" *ngIf="mensaje">{{ mensaje }}</p>
+  <p class="vacio" *ngIf="cargando"><i class="fas fa-spinner fa-spin"></i> Cargando…</p>
+
+  <div class="tabla-cont" *ngIf="!cargando">
+    <table>
+      <thead><tr><th>Fecha</th><th>Quién</th><th>Qué hizo</th><th>Dónde</th><th>Detalle</th></tr></thead>
+      <tbody>
+        <tr *ngFor="let m of visibles">
+          <td data-label="Fecha" class="chico">{{ m.Fecha }}</td>
+          <td data-label="Quién"><strong>{{ m.UsuarioNombre }}</strong></td>
+          <td data-label="Qué hizo"><span class="badge badge-azul">{{ m.Accion }}</span></td>
+          <td data-label="Dónde" class="chico">{{ m.Entidad }}</td>
+          <td data-label="Detalle" class="chico">{{ m.Detalle }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="vacio" *ngIf="!visibles.length">Todavía no hay movimientos registrados.</p>
+  </div>
+</div>

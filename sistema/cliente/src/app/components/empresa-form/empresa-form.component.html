@@ -1,0 +1,63 @@
+<button class="btn-volver" (click)="volver()"><i class="fas fa-arrow-left"></i> Volver a Empresas</button>
+<div class="card acento" style="max-width:720px">
+  <h2>{{ esNueva ? 'Nueva empresa' : 'Editar empresa' }}</h2>
+  <p class="desc">Los datos que hoy están dispersos, en un solo lugar.</p>
+
+  <div class="form-group">
+    <label>Nombre del cliente</label>
+    <input type="text" name="nombre" [(ngModel)]="empresa.Nombre">
+  </div>
+
+  <div class="grid-container">
+    <div class="form-group">
+      <label>Línea</label>
+      <select name="linea" [(ngModel)]="empresa.Linea">
+        <option value="">— Elegir —</option>
+        <option *ngFor="let l of lineas" [value]="l">{{ l }}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Persona de contacto</label>
+      <input type="text" name="contacto" [(ngModel)]="empresa.Contacto">
+    </div>
+    <div class="form-group">
+      <label>Correo</label>
+      <input type="email" name="email" [(ngModel)]="empresa.Email">
+    </div>
+    <div class="form-group">
+      <label>Teléfono</label>
+      <input type="text" name="telefono" [(ngModel)]="empresa.Telefono">
+    </div>
+    <div class="form-group">
+      <label>Fecha de alta</label>
+      <input type="date" name="alta" [(ngModel)]="empresa.FechaAlta">
+    </div>
+    <div class="form-group" *ngIf="!esNueva">
+      <label>Estado</label>
+      <select name="estado" [(ngModel)]="empresa.Estado">
+        <option *ngFor="let e of estados" [value]="e">{{ e }}</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>Carpeta de informes</label>
+    <input type="url" name="informes" [(ngModel)]="empresa.LinkInformes" placeholder="https://…">
+  </div>
+  <div class="form-group">
+    <label>Carpeta de CV</label>
+    <input type="url" name="cvs" [(ngModel)]="empresa.LinkCVs" placeholder="https://…">
+  </div>
+
+  <div class="nota">
+    La fecha de alta es la referencia para saber desde cuándo corresponde facturarle a este cliente.
+  </div>
+
+  <p class="mensaje error" *ngIf="mensaje">{{ mensaje }}</p>
+  <div class="acciones-modal">
+    <button class="btn gris" (click)="volver()">Cancelar</button>
+    <button class="btn success" (click)="guardar()" [disabled]="guardando">
+      <i class="fas fa-save"></i> {{ guardando ? 'Guardando…' : 'Guardar' }}
+    </button>
+  </div>
+</div>

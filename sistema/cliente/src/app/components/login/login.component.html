@@ -1,0 +1,31 @@
+<div class="login-fondo">
+  <div class="login-card">
+    <div class="logo-area">
+      <img src="assets/logo.png" alt="Escencial Consultora">
+      <div class="subtitle">Sistema de Gestión de Talento</div>
+    </div>
+
+    <form (ngSubmit)="ingresar()">
+      <label>Usuario o correo</label>
+      <input type="text" name="identificador" autocomplete="username"
+             placeholder="Ingresá tu usuario o correo"
+             [(ngModel)]="identificador" [disabled]="cargando">
+
+      <label>Contraseña</label>
+      <input type="password" name="clave" autocomplete="current-password"
+             placeholder="••••••••" [(ngModel)]="clave" [disabled]="cargando">
+
+      <button type="submit" class="btn primary w-100" [disabled]="cargando" style="margin-top:5px">
+        <i class="fas fa-sign-in-alt"></i>
+        {{ cargando ? 'Ingresando…' : 'Ingresar' }}
+      </button>
+
+      <div class="login-msg" [class.error]="error" *ngIf="mensaje">{{ mensaje }}</div>
+    </form>
+
+    <p class="login-pie">
+      La contraseña se cifra en tu navegador antes de enviarse.
+      Nunca viaja ni se guarda en texto plano.
+    </p>
+  </div>
+</div>

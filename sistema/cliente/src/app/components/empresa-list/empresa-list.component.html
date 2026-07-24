@@ -1,0 +1,47 @@
+<div class="card acento">
+  <div class="card-header">
+    <div>
+      <h2><i class="fas fa-building"></i> Empresas</h2>
+      <p class="desc">Los clientes, con sus datos de contacto y sus carpetas de trabajo.</p>
+    </div>
+    <button class="btn" (click)="nueva()"><i class="fas fa-plus-circle"></i> Nueva empresa</button>
+  </div>
+
+  <input type="text" class="search-bar" placeholder="Buscar por nombre, línea o contacto…" [(ngModel)]="filtro">
+
+  <p class="mensaje" *ngIf="mensaje">{{ mensaje }}</p>
+  <p class="vacio" *ngIf="cargando"><i class="fas fa-spinner fa-spin"></i> Cargando…</p>
+
+  <div class="tabla-cont" *ngIf="!cargando">
+    <table>
+      <thead>
+        <tr><th>Cliente</th><th>Línea</th><th>Contacto</th><th>Búsquedas</th>
+            <th>Carpetas</th><th>Alta</th><th>Estado</th><th></th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let e of visibles">
+          <td data-label="Cliente"><strong>{{ e.Nombre }}</strong></td>
+          <td data-label="Línea" class="chico">{{ e.Linea || '—' }}</td>
+          <td data-label="Contacto" class="chico">
+            {{ e.Contacto || '—' }}
+            <div *ngIf="e.Email">{{ e.Email }}</div>
+            <div *ngIf="e.Telefono">{{ e.Telefono }}</div>
+          </td>
+          <td data-label="Búsquedas">{{ cantidadBusquedas(e) }}</td>
+          <td data-label="Carpetas" class="chico">
+            <a *ngIf="e.LinkInformes" [href]="e.LinkInformes" target="_blank" rel="noopener"><i class="fas fa-folder-open"></i> Informes</a>
+            <a *ngIf="e.LinkCVs" [href]="e.LinkCVs" target="_blank" rel="noopener"><i class="fas fa-folder"></i> CVs</a>
+            <span *ngIf="!e.LinkInformes && !e.LinkCVs">—</span>
+          </td>
+          <td data-label="Alta" class="chico">{{ e.FechaAlta || '—' }}</td>
+          <td data-label="Estado"><span class="badge" [ngClass]="e.Estado === 'Activo' ? 'badge-activa' : 'badge-gris'">{{ e.Estado }}</span></td>
+          <td class="acciones">
+            <button class="btn-accion btn-editar" title="Editar" (click)="editar(e)"><i class="fas fa-edit"></i></button>
+            <button class="btn-accion btn-volver" title="Cerrar cliente" style="width:34px;margin:0 0 0 3px" *ngIf="esAdmin" (click)="darDeBaja(e)"><i class="fas fa-lock"></i></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="vacio" *ngIf="!visibles.length">No hay empresas cargadas.</p>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+# Dependencias y builds (se regeneran, nunca se suben)
+sistema/cliente/node_modules/
+sistema/cliente/dist/
+sistema/cliente/.angular/
+node_modules/
+
+# Documentos internos / sensibles (no van al repo público)
+quiren.txt
+*.pdf
+agendarrhh/
+RESPALDO-*.js
+
+# Sistema operativo / editor
+.DS_Store
+*.log
+Thumbs.db

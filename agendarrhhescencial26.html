@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<base target="_top">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agenda Recursos Humanos · Escencial Consultora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ivory:#F6F3EA; --paper:#FFFFFF; --ink:#14302A; --forest:#1C5A4A; --forest2:#2A7361;
+    --sage:#E5EBDF; --line:#D4DDCC; --gold:#B6892F; --gold-soft:#F1E7CE; --bronze:#9A6B33;
+    --muted:#5C6E64; --rose:#9C4A52; --rose-soft:#F2DEDF; --blue:#3A5478; --blue-soft:#E3E9F2;
+    --ok:#2E8F62; --shadow:0 1px 2px rgba(20,48,42,.06),0 14px 34px -20px rgba(20,48,42,.30); --radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Manrope',-apple-system,sans-serif;background:var(--ivory);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(circle at 10% 6%,rgba(28,90,74,.06),transparent 42%),radial-gradient(circle at 92% 0,rgba(182,137,47,.06),transparent 40%)}
+  h1,h2,h3,h4{font-family:'Fraunces',Georgia,serif;font-weight:600;line-height:1.16;letter-spacing:-.01em}
+  a{color:var(--forest)}
+  .wrap{max-width:1280px;margin:0 auto;padding:0 26px}
+
+  /* topbar */
+  .topbar{position:sticky;top:0;z-index:60;background:rgba(246,243,234,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  .topbar-inner{max-width:1280px;margin:0 auto;padding:12px 26px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:12px;font-family:'Fraunces';font-weight:600;font-size:19px}
+  .brand .mark{width:38px;height:38px;border-radius:11px;flex:none;background:linear-gradient(145deg,var(--forest),var(--ink));display:grid;place-items:center;color:#EBF3D9;box-shadow:var(--shadow);font-size:18px}
+  .brand small{display:block;font-family:'Manrope';font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .nav{display:flex;gap:2px;flex-wrap:wrap;margin-left:auto}
+  .nav a{text-decoration:none;color:var(--muted);font-size:13px;font-weight:600;padding:6px 10px;border-radius:8px;white-space:nowrap;transition:.18s}
+  .nav a:hover{color:var(--ink);background:var(--sage)}
+  .status{font-size:11px;font-weight:700;padding:6px 11px;border-radius:30px;display:flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--paper)}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--gold)} .dot.live{background:var(--ok);box-shadow:0 0 0 4px rgba(46,143,98,.18)}
+
+  /* hero */
+  .hero{padding:56px 0 32px;display:grid;grid-template-columns:1.55fr 1fr;gap:44px;align-items:end}
+  .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:800;margin-bottom:16px}
+  .hero h1{font-size:clamp(34px,5vw,56px)} .hero h1 em{font-style:italic;color:var(--forest)}
+  .hero p.lead{font-size:17px;color:var(--muted);margin-top:18px;max-width:56ch}
+  .dir-card{background:var(--ink);color:#EAF1E2;border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);background-image:radial-gradient(circle at 92% -10%,rgba(182,137,47,.5),transparent 55%)}
+  .dir-card .k{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-soft);font-weight:700}
+  .dir-card h4{color:#fff;font-size:18px;margin:8px 0 14px}
+  .dir-people{display:flex;gap:10px;flex-wrap:wrap}
+  .dir-people .p{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:30px;padding:6px 13px 6px 6px;font-size:13px;font-weight:600}
+  .dir-people .av{width:28px;height:28px;border-radius:50%;background:linear-gradient(145deg,var(--gold),var(--bronze));display:grid;place-items:center;color:#fff;font-size:12px;font-weight:800;font-family:'Manrope'}
+  .philo{margin-top:16px;font-size:12.5px;color:#C9D6C7;border-top:1px solid rgba(255,255,255,.14);padding-top:14px}
+
+  /* sections */
+  section{padding:46px 0;border-top:1px solid var(--line)}
+  .sec-head{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+  .sec-ic{width:40px;height:40px;border-radius:11px;flex:none;display:grid;place-items:center;background:var(--sage);color:var(--forest)}
+  .sec-ic svg{width:21px;height:21px}
+  .sec-head h2{font-size:clamp(24px,3.2vw,32px)}
+  .sec-sub{color:var(--muted);font-size:15.5px;max-width:74ch;margin:4px 0 26px}
+
+  .grid{display:grid;gap:18px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+
+  /* accordion */
+  details.acc{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden}
+  details.acc>summary{list-style:none;cursor:pointer;padding:18px 22px;display:flex;align-items:center;gap:14px;font-family:'Fraunces';font-size:18px;font-weight:600;color:var(--ink)}
+  details.acc>summary::-webkit-details-marker{display:none}
+  .acc-ic{width:38px;height:38px;border-radius:10px;flex:none;display:grid;place-items:center;background:var(--sage);color:var(--forest)}
+  .acc-ic svg{width:20px;height:20px}
+  .acc-meta{margin-left:auto;display:flex;align-items:center;gap:12px}
+  .acc-count{font-family:'Manrope';font-size:12px;font-weight:700;color:var(--gold);background:var(--gold-soft);padding:3px 11px;border-radius:30px}
+  .chev{width:18px;height:18px;color:var(--muted);transition:.25s}
+  details.acc[open] .chev{transform:rotate(180deg)}
+  .acc-body{padding:0 22px 22px}
+  .acc-desc{font-size:14px;color:var(--muted);border-top:1px solid var(--line);padding:16px 0;margin-bottom:6px}
+
+  /* forms */
+  .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:13px}
+  label{font-size:11.5px;font-weight:700;color:var(--ink);display:block;margin-bottom:5px}
+  input,select,textarea{width:100%;font-family:inherit;font-size:13.5px;color:var(--ink);padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:#FCFBF6;transition:.15s}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--forest);box-shadow:0 0 0 3px rgba(28,90,74,.12);background:#fff}
+  textarea{resize:vertical;min-height:58px}
+  .person{display:flex;gap:7px;align-items:stretch}
+  .person input{flex:1}
+  .chip-btn{white-space:nowrap;border:1px solid var(--line);background:var(--sage);color:var(--forest);font-weight:700;font-size:11.5px;border-radius:9px;padding:0 11px;cursor:pointer;transition:.15s}
+  .chip-btn:hover{background:var(--forest);color:#fff;border-color:var(--forest)}
+  .mini-fb{font-size:11px;font-weight:700;color:var(--ok);align-self:center}
+  .btn{display:inline-flex;align-items:center;gap:8px;cursor:pointer;border:none;font-family:inherit;font-weight:700;font-size:13.5px;padding:10px 18px;border-radius:11px;transition:.18s}
+  .btn-primary{background:var(--forest);color:#fff}.btn-primary:hover{background:var(--ink);transform:translateY(-1px)}
+  .btn-ghost{background:transparent;color:var(--forest);border:1px solid var(--line)}.btn-ghost:hover{background:var(--sage)}
+  .form-actions{margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .feedback{font-size:12.5px;font-weight:700}.feedback.ok{color:var(--ok)}.feedback.err{color:var(--rose)}
+  .full{grid-column:1/-1}
+
+  /* tables / lists */
+  .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--paper);margin-top:16px}
+  table{width:100%;border-collapse:collapse;font-size:13px;min-width:560px}
+  thead th{background:var(--sage);text-align:left;padding:10px 13px;font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+  tbody td{padding:10px 13px;border-top:1px solid var(--line);vertical-align:top}
+  tbody tr:hover{background:#FBFAF4}
+  .empty{padding:18px;text-align:center;color:var(--muted);font-size:13px;font-style:italic}
+  .tag{display:inline-block;font-size:10.5px;font-weight:800;padding:2px 9px;border-radius:30px;white-space:nowrap}
+  .t-green{background:var(--sage);color:var(--forest)} .t-gold{background:var(--gold-soft);color:var(--bronze)}
+  .t-blue{background:var(--blue-soft);color:var(--blue)} .t-rose{background:var(--rose-soft);color:var(--rose)}
+  .lnk{font-size:12px;font-weight:700}
+
+  /* calendar */
+  .cal{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .cal-bar{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .cal-bar h3{font-size:19px;text-transform:capitalize}
+  .seg{display:flex;background:var(--sage);border-radius:10px;padding:3px}
+  .seg button{border:none;background:transparent;font-family:inherit;font-weight:700;font-size:12.5px;color:var(--muted);padding:6px 14px;border-radius:8px;cursor:pointer;transition:.15s}
+  .seg button.on{background:#fff;color:var(--forest);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+  .nav-btns{display:flex;gap:6px;margin-left:auto}
+  .nav-btns button{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:15px;color:var(--forest)}
+  .nav-btns button:hover{background:var(--sage)}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr)}
+  .cal-grid .dow{padding:8px;text-align:center;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:#FBFAF4;border-bottom:1px solid var(--line)}
+  .cal-cell{min-height:96px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:6px;position:relative}
+  .cal-cell:nth-child(7n){border-right:none}
+  .cal-cell.off{background:#FBFAF4;color:#B6BFB3}
+  .cal-cell.today{background:var(--gold-soft)}
+  .cal-cell .dn{font-size:12px;font-weight:800;margin-bottom:4px}
+  .ev{font-size:10.5px;font-weight:700;padding:2px 6px;border-radius:6px;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:default}
+  .ev.reunion{background:var(--gold-soft);color:var(--bronze)} .ev.capacitacion{background:var(--sage);color:var(--forest)}
+  .ev.viaje{background:#EFE3D4;color:var(--bronze)} .ev.cumple{background:var(--rose-soft);color:var(--rose)}
+  .ev.proyecto{background:var(--blue-soft);color:var(--blue)} .ev.pendiente{background:#E9E4F0;color:#5A4A86} .ev.onboarding{background:#DDEEE8;color:var(--forest2)} .ev.seleccion{background:#E7EEDA;color:#5C6E2E}
+  .cal-list{padding:10px}
+  .cal-day{padding:12px 14px;border:1px solid var(--line);border-radius:12px;margin-bottom:10px}
+  .cal-day h5{font-size:13px;font-weight:800;font-family:'Manrope';margin-bottom:8px;text-transform:capitalize}
+  .cal-day .ev{display:inline-flex;margin-right:6px}
+  .week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;padding:12px}
+  .week-col{border:1px solid var(--line);border-radius:10px;padding:8px;min-height:130px}
+  .week-col h6{font-size:10.5px;font-weight:800;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .week-col.today{background:var(--gold-soft)}
+
+  /* pendientes / kpi */
+  .pend{display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px dashed var(--line)}
+  .pend:last-child{border:none}
+  .pend .when{font-size:11px;font-weight:800;color:var(--forest);background:var(--sage);padding:3px 9px;border-radius:8px;white-space:nowrap;min-width:74px;text-align:center}
+  .pend .body{flex:1}.pend .body b{font-size:13.5px}.pend .body span{display:block;font-size:12px;color:var(--muted)}
+  .kpi{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);position:relative}
+  .kpi .big{font-family:'Fraunces';font-size:38px;color:var(--forest);font-weight:600;line-height:1}
+  .kpi .lab{font-size:13px;font-weight:800;margin-top:6px}.kpi .meta{font-size:11.5px;color:var(--muted);margin-top:6px}
+  .kpi .bar{height:7px;border-radius:6px;background:var(--sage);margin-top:12px;overflow:hidden}
+  .kpi .bar span{display:block;height:100%;background:linear-gradient(90deg,var(--forest),var(--gold))}
+
+  /* security / vault */
+  .vault{background:var(--ink);color:#EAF1E2;border-radius:var(--radius);padding:24px}
+  .vault h3{color:#fff} .vault .rule{display:flex;gap:11px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.12);font-size:13px;color:#C9D6C7}
+  .vault .rule:last-child{border:none}.vault .rule b{color:#fff}
+  .never{background:rgba(182,137,47,.16);border:1px solid rgba(182,137,47,.4);border-radius:10px;padding:11px 13px;font-size:12.5px;color:#F1E2C6;margin-top:12px}
+
+  .callout{background:var(--gold-soft);border:1px solid #E6D4A8;border-radius:14px;padding:18px 20px;margin-top:18px}
+  .callout h4{font-family:'Manrope';font-weight:800;font-size:13.5px;color:var(--bronze);margin-bottom:6px}
+  .callout p,.callout li{font-size:13px;color:#6E5320}.callout ul{margin:6px 0 0 18px}
+  .example{background:#FBFAF4;border:1px dashed var(--line);border-radius:12px;padding:16px;margin-top:14px;font-size:13px}
+  .example .label{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:800;margin-bottom:8px}
+  .example .msg{white-space:pre-line;color:var(--ink)}
+
+  .deck{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .slide{border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);min-height:230px}
+  .slide.exec{background:linear-gradient(150deg,var(--forest),var(--ink));color:#EAF1E2}.slide.exec h3{color:#fff}
+  .slide.detail{background:var(--paper);border:1px solid var(--line)}
+  .slide .kicker{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:800;margin-bottom:10px}
+  .slide.exec .kicker{color:var(--gold-soft)}.slide.detail .kicker{color:var(--gold)}
+  .slide ul{margin:10px 0 0 18px;font-size:13px;display:grid;gap:6px}.slide.exec ul{color:#C9D6C7}
+
+  footer{padding:42px 0 56px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+  .foot-grid{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center}
+
+  @media(max-width:900px){.hero{grid-template-columns:1fr;gap:26px}.g2,.g3,.g4,.deck{grid-template-columns:1fr}.nav{display:none}.cal-grid .dow{font-size:0}.cal-grid .dow::first-letter{font-size:10px}}
+  @media print{.topbar,.nav-btns,.seg,.btn,.chip-btn,.form-actions,.feedback,details.acc>summary .acc-meta{display:none!important}body{background:#fff}}
+
+  /* ===== LOGIN ===== */
+  body.locked{overflow:hidden}
+  #loginScreen{position:fixed;inset:0;z-index:9999;background:var(--ivory);display:flex;align-items:stretch}
+  .login-wrap{display:grid;grid-template-columns:1.05fr .95fr;width:100%;max-width:none}
+  .login-brand{position:relative;overflow:hidden;color:#EAF1E2;padding:54px 56px;display:flex;flex-direction:column;justify-content:space-between;
+    background:linear-gradient(155deg,#0A1428,#050D1A 50%,#030815);}
+  .login-brand::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 88% 6%,rgba(182,137,47,.4),transparent 46%),radial-gradient(circle at 8% 92%,rgba(46,143,98,.22),transparent 42%);pointer-events:none}
+  .anio-cell{text-align:left;border:1px solid var(--line);border-radius:12px;background:#FBFAF4;padding:14px;cursor:pointer;display:flex;flex-direction:column;gap:4px;font-family:inherit;transition:.15s}
+  .anio-cell:hover{background:var(--sage);border-color:var(--forest)}
+  .anio-cell b{font-family:'Fraunces';font-size:16px;text-transform:capitalize;color:var(--ink)}
+  .anio-cell span{font-size:11.5px;color:var(--muted);font-weight:700}
+  .lb-top{display:flex;align-items:center;gap:13px;position:relative;z-index:2;font-family:'Fraunces';font-weight:600;font-size:19px}
+  .lb-top .mark{width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);display:grid;place-items:center;color:#fff;font-size:19px}
+  .lb-mid{position:relative;z-index:2}
+  .lb-mid .eyebrow2{font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold-soft);font-weight:800;margin-bottom:18px}
+  .lb-mid h1{font-size:clamp(40px,5vw,62px);color:#fff;line-height:1.04}
+  .lb-mid p{font-size:16px;color:#CBD8C8;margin-top:20px;max-width:42ch}
+  .lb-foot{position:relative;z-index:2;font-size:12.5px;color:#B7C7B5;letter-spacing:.04em}
+  .lb-foot b{color:#fff}
+  .login-card{display:flex;align-items:center;justify-content:center;padding:40px 44px;background:var(--paper)}
+  .login-box{width:100%;max-width:380px}
+  .login-box h2{font-size:28px;margin-bottom:6px}
+  .login-box .sub{font-size:14px;color:var(--muted);margin-bottom:26px}
+  .login-box label{margin-top:14px}
+  .login-box input{padding:12px 14px;font-size:14.5px;margin-top:0}
+  .login-box .btn{width:100%;justify-content:center;margin-top:22px;padding:13px;font-size:15px}
+  .login-msg{margin-top:14px;font-size:13px;font-weight:700;min-height:18px}
+  .login-msg.err{color:var(--rose)} .login-msg.ok{color:var(--ok)} .login-msg.info{color:var(--muted)}
+  .login-foot{margin-top:24px;font-size:11.5px;color:var(--muted);line-height:1.5;border-top:1px solid var(--line);padding-top:16px}
+  .link-mini{background:none;border:none;color:var(--forest);font-weight:700;font-size:12.5px;cursor:pointer;text-decoration:underline;padding:0;font-family:inherit}
+  /* topbar usuario */
+  .user-chip{font-size:12.5px;font-weight:700;display:flex;align-items:center;gap:8px;color:var(--ink)}
+  .user-chip .uav{width:28px;height:28px;border-radius:50%;background:linear-gradient(145deg,var(--gold),var(--bronze));color:#fff;display:grid;place-items:center;font-size:11px;font-weight:800}
+  .btn-logout{border:1px solid var(--line);background:var(--paper);color:var(--forest);font-weight:700;font-size:12.5px;border-radius:9px;padding:7px 13px;cursor:pointer;transition:.15s;font-family:inherit}
+  .btn-logout:hover{background:var(--rose-soft);color:var(--rose);border-color:var(--rose-soft)}
+  @media(max-width:820px){.login-wrap{grid-template-columns:1fr}.login-brand{padding:38px 32px;min-height:260px}.lb-mid h1{font-size:36px}}
+</style>
+</head>
+<body class="locked">
+
+<!-- ===================== LOGIN (parte externa) ===================== -->
+<div id="loginScreen">
+  <div class="login-wrap">
+    <aside class="login-brand">
+      <div class="lb-top"><div class="mark">Ec</div><span>Escencial Consultora</span></div>
+      <div class="lb-mid">
+        <div class="eyebrow2">Acceso interno</div>
+        <h1>Agenda<br>Recursos&nbsp;Humanos</h1>
+        <p>El espacio donde el equipo coordina, acompaña y deja registro de cada proyecto hasta finalizarlo.</p>
+      </div>
+      <div class="lb-foot">Dirección · <b>Ayelén Lamas</b> · <b>Paola Siles</b></div>
+    </aside>
+    <main class="login-card">
+      <div class="login-box">
+        <!-- Iniciar sesión -->
+        <div id="formLogin">
+          <h2>Iniciar sesión</h2>
+          <p class="sub">Ingresá con tu usuario, correo o nombre.</p>
+          <label>Usuario, correo o nombre</label>
+          <input id="lg_id" autocomplete="username" placeholder="tu.usuario">
+          <label>Contraseña</label>
+          <input id="lg_pass" type="password" autocomplete="current-password" placeholder="••••••••">
+          <button class="btn btn-primary" onclick="doLogin()">Ingresar</button>
+          <div class="login-msg" id="lg_msg"></div>
+          <div class="login-foot">El acceso es interno. La contraseña se guarda cifrada (hasheada) en el sistema; nunca en texto plano.</div>
+        </div>
+        <!-- Crear primer administrador -->
+        <div id="formBootstrap" hidden>
+          <h2>Crear administrador</h2>
+          <p class="sub">No hay usuarios todavía. Creá la primera cuenta de Dirección.</p>
+          <label>Usuario</label><input id="bs_user" placeholder="ej. ayelen">
+          <label>Nombre y apellido</label><input id="bs_nombre" placeholder="Ayelén Lamas">
+          <label>Correo</label><input id="bs_correo" type="email" placeholder="ayelen@escencial.com">
+          <label>Contraseña</label><input id="bs_pass" type="password" placeholder="Elegí una contraseña segura">
+          <button class="btn btn-primary" onclick="doBootstrap()">Crear y continuar</button>
+          <div class="login-msg" id="bs_msg"></div>
+        </div>
+        <div id="loginDemoWrap" hidden style="margin-top:16px">
+          <button class="link-mini" onclick="enterApp({usuario:'demo',nombre:'Vista previa',rol:'Administrador'})">Entrar en modo vista previa (sin conexión)</button>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand"><div class="mark">Ec</div><div>Escencial Consultora<small>Portal de Gestión · Dirección</small></div></div>
+    <nav class="nav">
+      <a href="#calendario">Calendario</a><a href="#equipo">Equipo</a><a href="#proyectos">Proyectos</a>
+      <a href="#cumplimiento">Cumplimiento</a><a href="#informes">Informes</a><a href="#operacion">Operación</a><a href="#cultura">Cultura</a>
+    </nav>
+    <span class="status" id="connStatus"><span class="dot" id="connDot"></span><span id="connText">Verificando…</span></span>
+    <span class="user-chip" id="userChip" hidden></span>
+    <button class="btn-logout" id="btnLogout" hidden onclick="logout()">Salir</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="hero">
+    <div>
+      <div class="eyebrow">Sistema interno · Dirección de personas</div>
+      <h1>Un portal donde cada proyecto se <em>apropia</em>, se acompaña y se <em>termina</em>.</h1>
+      <p class="lead">Todo lo que cargás aparece al instante en el calendario y los tableros. Centralizá equipo, clientes, proyectos, onboarding, viajes, selección, capacitaciones y cumpleaños en un único lugar, con seguimiento hasta el cierre y KPIs de cumplimiento.</p>
+    </div>
+    <div class="dir-card">
+      <div class="k">Dirección responsable</div>
+      <h4>Conducción del sistema</h4>
+      <div class="dir-people">
+        <div class="p"><span class="av">AL</span> Ayelén Lamas</div>
+        <div class="p"><span class="av">PS</span> Paola Siles</div>
+      </div>
+      <p class="philo">No damos órdenes: acompañamos. Cada colaborador/a es dueño/a de su proyecto y le imprime su esencia profesional. El portal registra el camino, no controla a la persona.</p>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- ===================== CALENDARIO ===================== -->
+<section id="calendario">
+  <div class="sec-head">
+    <div class="sec-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg></div>
+    <h2>Calendario dinámico</h2>
+  </div>
+  <p class="sec-sub">Reúne automáticamente reuniones, capacitaciones, viajes, cierres de proyecto, onboarding, selección, pendientes y cumpleaños (que se repiten cada año al cargar la fecha). Cambiá entre día, semana y mes.</p>
+
+  <div class="cal">
+    <div class="cal-bar">
+      <h3 id="calTitle">—</h3>
+      <div class="seg" id="calSeg">
+        <button data-m="dia">Día</button><button data-m="semana">Semana</button><button data-m="mes" class="on">Mes</button><button data-m="anio">Año</button>
+      </div>
+      <div class="nav-btns"><button onclick="calMove(-1)">‹</button><button onclick="calToday()">•</button><button onclick="calMove(1)">›</button></div>
+    </div>
+    <div id="calView"></div>
+  </div>
+
+  <div class="grid g2" style="margin-top:18px">
+    <div class="acc" style="padding:20px;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper);box-shadow:var(--shadow)">
+      <h3 style="font-size:18px;margin-bottom:4px">Pendientes priorizados</h3>
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Lo que aún no se cerró, ordenado por fecha.</p>
+      <div id="pendientesList"></div>
+    </div>
+    <div class="acc" style="padding:20px;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper);box-shadow:var(--shadow)">
+      <h3 style="font-size:18px;margin-bottom:4px">Cargar pendiente / actividad</h3>
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:12px">Aparece en el calendario y en cumplimiento.</p>
+      <div class="form-grid">
+        <div class="full"><label>Título de la actividad</label><input id="pe_titulo" placeholder="Ej. Enviar diagnóstico a Cliente X"></div>
+        <div><label>Tipo</label><select id="pe_tipo"><option>Actividad</option><option>Entrega</option><option>Reunión</option><option>Lineamiento</option><option>Seguimiento</option></select></div>
+        <div><label>Fecha</label><input type="date" id="pe_fecha"></div>
+        <div class="full"><label>Responsable</label>
+          <div class="person"><input list="equipoList" id="pe_resp" placeholder="Nombre o 'Todo el equipo'"><button type="button" class="chip-btn" onclick="confirmarPersona('#pe_resp','#pe_resp_fb')">✓ En el sistema</button></div>
+          <span class="mini-fb" id="pe_resp_fb"></span></div>
+        <div><label>Estado</label><select id="pe_estado"><option>Pendiente</option><option>En curso</option><option>Finalizada</option></select></div>
+        <div><label>Link (opcional)</label><input id="pe_link" placeholder="https://…"></div>
+        <div class="full"><label>Observaciones</label><textarea id="pe_obs" placeholder="Notas, contexto, acuerdos…"></textarea></div>
+      </div>
+      <div class="form-actions"><button class="btn btn-primary" onclick="agregar('Pendientes',{Titulo:'#pe_titulo',Tipo:'#pe_tipo',Responsable:'#pe_resp',Fecha:'#pe_fecha',Estado:'#pe_estado',Observaciones:'#pe_obs',Link:'#pe_link'},this)">Guardar</button><span class="feedback" id="fb_Pendientes"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== EQUIPO ===================== -->
+<section id="equipo">
+  <div class="sec-head">
+    <div class="sec-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><path d="M16 6.2a3 3 0 010 5.6M21 19c0-2.4-1.4-4.2-3.5-4.8"/></svg></div>
+    <h2>Equipo y estructura</h2>
+  </div>
+  <p class="sec-sub">Registrá a las personas una vez y quedarán disponibles para asignarlas en cualquier módulo. Cuando escribís un nombre nuevo en un formulario, el botón “✓ En el sistema” lo da de alta al instante.</p>
+
+  <details class="acc" id="adminUsuarios" hidden>
+    <summary><span class="acc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/><circle cx="12" cy="15.5" r="1.3"/></svg></span>Usuarios del portal · alta de accesos<span class="acc-meta"><span class="acc-count" id="cnt_Usuarios">0</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span></summary>
+    <div class="acc-body">
+      <div class="acc-desc">Solo Administración. Cada acceso necesita usuario, nombre, correo, rol y contraseña. La contraseña se cifra (hashea) antes de salir del navegador y se guarda salada en Google Sheets.</div>
+      <div class="form-grid">
+        <div><label>Usuario</label><input id="us_user" placeholder="ej. paola"></div>
+        <div><label>Nombre y apellido</label><input id="us_nombre" placeholder="Nombre"></div>
+        <div><label>Correo</label><input id="us_correo" type="email" placeholder="correo@escencial.com"></div>
+        <div><label>Rol</label><select id="us_rol"><option>Colaborador</option><option>Administrador</option></select></div>
+        <div><label>Contraseña</label><input id="us_pass" type="password" placeholder="Contraseña inicial"></div>
+      </div>
+      <div class="form-actions"><button class="btn btn-primary" onclick="crearUsuario(this)">Crear acceso</button><span class="feedback" id="fb_Usuarios"></span></div>
+      <div class="table-wrap"><table><thead><tr><th>Usuario</th><th>Nombre</th><th>Correo</th><th>Rol</th><th>Estado</th></tr></thead><tbody id="tb_Usuarios"></tbody></table></div>
+    </div>
+  </details>
+
+  <details class="acc" open>
+    <summary><span class="acc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.4 3-6 7-6s7 2.6 7 6"/></svg></span>Registro del equipo<span class="acc-meta"><span class="acc-count" id="cnt_Equipo">0</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span></summary>
+    <div class="acc-body">
+      <div class="acc-desc">Cada persona con su rol y línea. Dirección: Ayelén Lamas y Paola Siles ya están cargadas.</div>
+      <div class="form-grid">
+        <div><label>Nombre y apellido</label><input id="eq_nombre" placeholder="Nombre"></div>
+        <div><label>Rol / función</label><input id="eq_rol" placeholder="Analista, Coordinador…"></div>
+        <div><label>Línea</label><select id="eq_linea"><option>Dirección</option><option>Consultoría externa</option><option>Servicios incompany</option><option>Selección y reclutamiento</option><option>Soluciones integrales</option><option>Transversal</option></select></div>
+        <div><label>Email (opcional)</label><input id="eq_email" placeholder="correo@escencial.com"></div>
+      </div>
+      <div class="form-actions"><button class="btn btn-primary" onclick="agregar('Equipo',{Nombre:'#eq_nombre',Rol:'#eq_rol',Linea:'#eq_linea',Email:'#eq_email',Estado:()=>'Activo'},this)">Registrar persona</button><span class="feedback" id="fb_Equipo"></span></div>
+      <div class="table-wrap"><table><thead><tr><th>Nombre</th><th>Rol</th><th>Línea</th><th>Email</th></tr></thead><tbody id="tb_Equipo"></tbody></table></div>
+    </div>
+  </details>
+
+  <details class="acc">
+    <summary><span class="acc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21V9l9-6 9 6v12"/><path d="M9 21v-6h6v6"/></svg></span>Mapa de responsabilidades por línea<span class="acc-meta"><span class="acc-count" id="cnt_Estructura">0</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span></summary>
+    <div class="acc-body">
+      <div class="acc-desc">Un único titular por función, con su suplente. Si un tema cruza líneas, Dirección define el owner y queda asentado aquí.</div>
+      <div class="form-grid">
+        <div><label>Línea</label><select id="es_linea"><option>Consultoría externa</option><option>Servicios incompany</option><option>Selección y reclutamiento</option><option>Soluciones integrales</option><option>Transversal</option></select></div>
+        <div><label>Rol / función</label><input id="es_rol" placeholder="Coordinación, Analista…"></div>
+        <div><label>Titular</label><input list="equipoList" id="es_titular" placeholder="Nombre"></div>
+        <div><label>Suplente</label><input list="equipoList" id="es_suplente" placeholder="Nombre"></div>
+        <div class="full"><label>Responsabilidades clave</label><textarea id="es_resp" placeholder="Qué decide y qué entrega"></textarea></div>
+      </div>
+      <div class="form-actions"><button class="btn btn-primary" onclick="agregar('Estructura',{Linea:'#es_linea',Rol:'#es_rol',Titular:'#es_titular',Suplente:'#es_suplente',Responsabilidades:'#es_resp'},this)">Guardar responsabilidad</button><span class="feedback" id="fb_Estructura"></span></div>
+      <div class="table-wrap"><table><thead><tr><th>Línea</th><th>Rol</th><th>Titular</th><th>Suplente</th></tr></thead><tbody id="tb_Estructura"></tbody></table></div>
+    </div>
+  </details>
+</section>
+
+<!-- ===================== PROYECTOS ===================== -->
+<section id="proyectos">
+  <div class="sec-head">
+    <div class="sec-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></div>
+    <h2>Proyectos y responsabilidades</h2>
+  </div>
+  <p class="sec-sub">Cada proyecto tiene una persona dueña que lo lleva hasta finalizarlo. Acá queda asentado el recorrido completo y, abajo, el detalle de lo que el equipo ya cumplió.</p>
+
+  <details class="acc" open>
+    <summary><span class="acc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h10"/></svg></span>Asignar / actualizar proyecto<span class="acc-meta"><span class="acc-count" id="cnt_Proyectos">0</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span></summary>
+    <div class="acc-body">
+      <div class="acc-desc">La persona “se apropia” del proyecto. El estado va de Sin asignar a Finalizado; al cerrarse, suma al cumplimiento del equipo.</div>
+      <div class="form-grid">
+        <div><label>Cliente</label><input list="clientesList" id="pr_cliente" placeholder="Empresa / cliente"></div>
+        <div class="full"><label>Proyecto</label><input id="pr_nombre" placeholder="Nombre del proyecto"></div>
+        <div><label>Línea</label><select id="pr_linea"><option>Consultoría externa</option><option>Servicios incompany</option><option>Selección y reclutamiento</option><option>Soluciones integrales</option></select></div>
+        <div class="full"><label>Responsable (dueño/a del proyecto)</label>
+          <div class="person"><input list="equipoList" id="pr_resp" placeholder="Nombre"><button type="button" class="chip-btn" onclick="confirmarPersona('#pr_resp','#pr_resp_fb')">✓ En el sistema</button></div>
+          <span class="mini-fb" id="pr_resp_fb"></span></div>
+        <div><label>Estado</label><select id="pr_estado"><option>Sin asignar</option><option>En curso</option><option>En revisión</option><option>Finalizado</option></select></div>
+        <div><label>Fecha de inicio</label><input type="date" id="pr_ini"></div>
+        <div><label>Fecha de cierre / objetivo</label><input type="date" id="pr_fin"></div>
+        <div><label>Link (carpeta, doc, tablero)</label><input id="pr_link" placeholder="https://…"></div>
+        <div class="full"><label>Observaciones</label><textarea id="pr_obs" placeholder="Avances, acuerdos, próximos pasos…"></textarea></div>
+      </div>
+      <div class="form-actions"><button class="btn btn-primary" onclick="agregar('Proyectos',{Cliente:'#pr_cliente',Proyecto:'#pr_nombre',Linea:'#pr_linea',Responsable:'#pr_resp',Estado:'#pr_estado',FechaInicio:'#pr_ini',FechaFin:'#pr_fin',Observaciones:'#pr_obs',Link:'#pr_link'},this)">Guardar proyecto</button><span class="feedback" id="fb_Proyectos"></span></div>
+      <div class="table-wrap"><table><thead><tr><th>Proyecto</th><th>Cliente</th><th>Responsable</th><th>Estado</th><th>Cierre</th><th>Link</th><th>Acción</th></tr></thead><tbody id="tb_Proyectos"></tbody></table></div>
+    </div>
+  </details>
+
+  <details class="acc">
+    <summary><span class="acc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12l5 5L20 6"/></svg></span>Lo que el equipo ya cumplió<span class="acc-meta"><span class="acc-count" id="cnt_Cumplidos">0</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span></summary>
+    <div class="acc-body">
+      <div class="acc-desc">Proyectos finalizados y responsabilidades delegadas, agrupados por persona. La huella del trabajo terminado.</div>
+      <div id="cumplidosView"></div>
+    </div>
+  </details>
+</section>
+
+<!-- ===================== CUMPLIMIENTO / KPI ===================== -->
+<section id="cumplimiento">
+  <div class="sec-head">
+    <div class="sec-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V4M4 20h16M8 16v-5M12 16V8M16 16v-8"/></svg></div>
+    <h2>Cumplimiento y KPIs</h2>
+  </div>
+  <p class="sec-sub">El cumplimiento se calcula sobre proyectos y pendientes con fecha, según se vayan completando. Mirá el panorama del día, la semana y el mes, y el detalle por persona.</p>
+  <div class="grid g3" id="kpiCards"></div>
+  <div class="table-wrap" style="margin-top:18px"><table><thead><tr><th>Responsable</th><th>Asignadas</th><th>Cumplidas</th><th>% cumplimiento</th></tr></thead><tbody id="tb_KpiPersona"></tbody></table></div>
+  <div class="callout"><h4>Cómo leerlo (en clave de cultura)</h4><p>Estos números no son para señalar, sino para acompañar: muestran dónde alguien necesita apoyo o dónde celebrar un cierre. El foco es que cada proyecto llegue a destino, no vigilar a la persona.</p></div>
+</section>
+
+<!-- ===================== INFORMES Y PERÍODOS ===================== -->
+<section id="informes">
+  <div class="sec-head">
+    <div class="sec-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h6"/></svg></div>
+    <h2>Informes y períodos</h2>
+  </div>
+  <p class="sec-sub">La agenda se va direccionando por día, semana, mes y año. Activá el foco en la semana vigente para ocultar lo ya transcurrido, y descargá el informe listo para presentar.</p>
+
+  <div class="grid g2" style="align-items:start">
+    <div class="kpi" style="padding:22px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <h3 style="font-size:18px">Semana vigente</h3>
+        <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;cursor:pointer"><input type="checkbox" id="focoChk" onchange="toggleFoco(this.checked)" style="width:auto;margin:0"> Ocultar lo ya transcurrido</label>
+      </div>
+      <p style="font-size:12.5px;color:var(--muted);margin:4px 0 14px" id="infoSemanaRango">—</p>
+      <div class="grid g3" id="infoKpiSemana"></div>
+      <h4 style="font-family:'Manrope';font-weight:800;font-size:13px;margin:18px 0 8px">Realizado esta semana</h4>
+      <div id="infoHechas"></div>
+    </div>
+    <div class="kpi" style="padding:22px">
+      <h3 style="font-size:18px;margin-bottom:4px">Descargar informe</h3>
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px">Genera un documento con el resumen, el cumplimiento por persona y el detalle. Se descarga listo para abrir, imprimir o pasar a PDF.</p>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <button class="btn btn-primary" onclick="generarInforme('semana')">⤓ Informe semanal</button>
+        <button class="btn btn-ghost" onclick="generarInforme('mes')">⤓ Informe mensual</button>
+        <button class="btn btn-ghost" onclick="generarInforme('anio')">⤓ Informe anual</button>
+      </div>
+      <h4 style="font-family:'Manrope';font-weight:800;font-size:13px;margin:18px 0 8px">Agenda de la semana</h4>
+      <div id="infoAgendaSemana"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== OPERACIÓN (acordeones) ===================== -->
+<section id="operacion">
+  <div class="sec-head">
+    <div class="sec-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 00-.1-1l2-1.6-2-3.4-2.4 1a7 7 0 00-1.7-1l-.3-2.5H9.5L9.2 5a7 7 0 00-1.7 1l-2.4-1-2 3.4L5.1 11a7 7 0 000 2l-2 1.6 2 3.4 2.4-1a7 7 0 001.7 1l.3 2.5h5l.3-2.5a7 7 0 001.7-1l2.4 1 2-3.4-2-1.6c.1-.3.1-.7.1-1z"/></svg></div>
+    <h2>Operación centralizada</h2>
+  </div>
+  <p class="sec-sub">Clientes, onboarding, viajes, selección, lineamientos, capacitaciones, cumpleaños y accesos. Todo en un mismo lugar, todo trazable.</p>
+
+  <!-- CLIENTES -->
+  <details class="acc">
+    <summary><span class="acc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 21v-5h6v5M9 10h.01M15 10h.01M9 13h.01M15 13h.01"/></svg></span>Clientes<span class="acc-meta"><span class="acc-count" id="cnt_Clientes">0</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span></summary>
+    <div class="acc-body">
+      <div class="acc-desc">Centralizá los clientes con los que vamos trabajando. Quedan disponibles para asociarlos a proyectos, viajes y selección.</div>
+      <div class="form-grid">
+        <div><label>Cliente / empresa</label><input id="cl_nombre" placeholder="Nombre"></div>
+        <div><label>Línea</label><select id="cl_linea"><option>Consultoría externa</option><option>Servicios incompany</option><option>Selección y reclutamiento</option><option>Soluciones integrales</option></select></div>
+        <div><label>Contacto</label><input id="cl_contacto" placeholder="Referente"></div>
+        <div><label>Email</label><input id="cl_email" placeholder="correo@cliente.com"></div>
+        <div><label>Estado</label><select id="cl_estado"><option>Prospecto</option><option>Activo</option><option>En pausa</option><option>Cerrado</option></select></div>
+        <div><label>Link (carpeta/CRM)</label><input id="cl_link" placeholder="https://…"></div>
+        <div class="full"><label>Observaciones</label><textarea id="cl_obs" placeholder="Acuerdos, alcance, historia…"></textarea></div>
+      </div>
+      <div class="form-actions"><button class="btn btn-primary" onclick="agregar('Clientes',{Cliente:'#cl_nombre',Linea:'#cl_linea',Contacto:'#cl_contacto',Email:'#cl_email',Estado:'#cl_estado',Observaciones:'#cl_obs',Link:'#cl_link'},this)">Guardar cliente</button><span class="feedback" id="fb_Clientes"></span></div>
+      <div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Línea</th><th>Contacto</th><th>Estado</th><th>Link</th></tr></thead><tbody id="tb_Clientes"></tbody></table></div>
+    </div>
+  </details>
+
+  <!-- ONBOARDING -->
+  <details class="acc">
+    <summary><span class="acc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c0-3 2.5-5 5.5-5 1.4 0 2.7.4 3.7 1.1"/><path d="M17 14v6M14 17h6"/></svg></span>Onboarding interno / externo<span class="acc-meta"><span class="acc-count" id="cnt_Onboarding">0</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span></summary>
+    <div class="acc-body">
+      <div class="acc-desc">Interno: ingreso de un colaborador a Escencial. Externo: alta de un cliente o de su equipo a un servicio. Cada etapa con responsable y fecha (aparece en el calendario).</div>
+      <div class="form-grid">
+        <div><label>Tipo</label><select id="on_tipo"><option>Interno</option><option>Externo</option></select></div>
+        <div><label>Persona</label><input list="equipoList" id="on_persona" placeholder="Quién ingresa"></div>
+        <div><label>Empresa / área</label><input list="clientesList" id="on_empresa" placeholder="Cliente o área interna"></div>
+        <div><label>Etapa</label><select id="on_etapa"><option>Bienvenida</option><option>Documentación</option><option>Accesos y herramientas</option><option>Capacitación inicial</option><option>Acompañamiento</option><option>Cierre de onboarding</option></select></div>
+        <div class="full"><label>Responsable</label>
+          <div class="person"><input list="equipoList" id="on_resp" placeholder="Nombre"><button type="button" class="chip-btn" onclick="confirmarPersona('#on_resp','#on_resp_fb')">✓ En el sistema</button></div>
+          <span class="mini-fb" id="on_resp_fb"></span></div>
+        <div><label>Fecha</label><input type="date" id="on_fecha"></div>
+        <div><label>Estado</label><select id="on_estado"><option>Pendiente</option><option>En curso</option><option>Completado</option></select></div>
+        <div><label>Link (checklist/doc)</label><input id="on_link" placeholder="https://…"></div>
+        <div class="full"><label>Observaciones</label><textarea id="on_obs" placeholder="Notas del proceso…"></textarea></div>
+      </div>
+      <div class="form-actions"><button class="btn btn-primary" onclick="agregar('Onboarding',{Tipo:'#on_tipo',Persona:'#on_persona',Empresa:'#on_empresa',Etapa:'#on_etapa',Responsable:'#on_resp',Fecha:'#on_fecha',Estado:'#on_estado',Observaciones:'#on_obs',Link:'#on_link'},this)">Guardar etapa</button><span class="feedback" id="fb_Onboarding"></span></div>
+      <div class="table-wrap"><table><thead><tr><th>Tipo</th><th>Persona</th><th>Etapa</th><th>Responsable</th><th>Fecha</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="tb_Onboarding"></tbody></table></div>
+    </div>
+  </details>
+
+  <!-- VIAJES -->
+  <details class="acc">
+    <summary><span class="acc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 16l9-2 4-9 2 1-2 8 5 1 1 2-19 3z"/></svg></span>Agenda de viajes<span class="acc-meta"><span class="acc-count" id="cnt_Viajes">0</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span></summary>
+    <div class="acc-body">
+      <div class="acc-desc">Salidas a cliente, capacitaciones presenciales, reuniones fuera de sede. Salida y regreso quedan marcados en el calendario.</div>
+      <div class="form-grid">
+        <div class="full"><label>Viajero/a</label>
+          <div class="person"><input list="equipoList" id="vi_quien" placeholder="Nombre"><button type="button" class="chip-btn" onclick="confirmarPersona('#vi_quien','#vi_quien_fb')">✓ En el sistema</button></div>
+          <span class="mini-fb" id="vi_quien_fb"></span></div>
+        <div><label>Destino</label><input id="vi_destino" placeholder="Ciudad / lugar"></div>
+        <div><label>Motivo</label><input id="vi_motivo" placeholder="Visita, capacitación…"></div>
+        <div><label>Cliente</label><input list="clientesList" id="vi_cliente" placeholder="Cliente asociado"></div>
+        <div><label>Salida</label><input type="date" id="vi_salida"></div>
+        <div><label>Regreso</label><input type="date" id="vi_regreso"></div>
+        <div><label>Estado</label><select id="vi_estado"><option>Planificado</option><option>Confirmado</option><option>Realizado</option></select></div>
+        <div><label>Link (itinerario)</label><input id="vi_link" placeholder="https://…"></div>
+        <div class="full"><label>Observaciones</label><textarea id="vi_obs" placeholder="Logística, viáticos, agenda…"></textarea></div>
+      </div>
+      <div class="form-actions"><button class="btn btn-primary" onclick="agregar('Viajes',{Viajero:'#vi_quien',Destino:'#vi_destino',Motivo:'#vi_motivo',Cliente:'#vi_cliente',FechaSalida:'#vi_salida',FechaRegreso:'#vi_regreso',Estado:'#vi_estado',Observaciones:'#vi_obs',Link:'#vi_link'},this)">Guardar viaje</button><span class="feedback" id="fb_Viajes"></span></div>
+      <div class="table-wrap"><table><thead><tr><th>Viajero/a</th><th>Destino</th><th>Cliente</th><th>Salida</th><th>Regreso</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="tb_Viajes"></tbody></table></div>
+    </div>
+  </details>
+
+  <!-- SELECCIÓN -->
+  <details class="acc">
+    <summary><span class="acc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></svg></span>Selección y reclutamiento<span class="acc-meta"><span class="acc-count" id="cnt_Seleccion">0</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span></summary>
+    <div class="acc-body">
+      <div class="acc-desc">Cada búsqueda con su etapa, candidatos y responsable. El proceso queda asentado de punta a punta.</div>
+      <div class="form-grid">
+        <div><label>Vacante</label><input id="se_vacante" placeholder="Puesto"></div>
+        <div><label>Cliente</label><input list="clientesList" id="se_cliente" placeholder="Empresa"></div>
+        <div><label>Etapa</label><select id="se_etapa"><option>Relevamiento del perfil</option><option>Búsqueda activa</option><option>Filtro de CVs</option><option>Entrevistas</option><option>Evaluaciones</option><option>Terna final</option><option>Contratación</option><option>Cerrada</option></select></div>
+        <div><label>Candidatos en proceso</label><input id="se_cand" placeholder="N.º o nombres"></div>
+        <div class="full"><label>Responsable</label>
+          <div class="person"><input list="equipoList" id="se_resp" placeholder="Nombre"><button type="button" class="chip-btn" onclick="confirmarPersona('#se_resp','#se_resp_fb')">✓ En el sistema</button></div>
+          <span class="mini-fb" id="se_resp_fb"></span></div>
+        <div><label>Estado</label><select id="se_estado"><option>Abierta</option><option>En curso</option><option>Pausada</option><option>Cerrada</option></select></div>
+        <div><label>Fecha objetivo</label><input type="date" id="se_fecha"></div>
+        <div><label>Link (ATS/carpeta)</label><input id="se_link" placeholder="https://…"></div>
+        <div class="full"><label>Observaciones</label><textarea id="se_obs" placeholder="Notas del proceso…"></textarea></div>
+      </div>
+      <div class="form-actions"><button class="btn btn-primary" onclick="agregar('Seleccion',{Vacante:'#se_vacante',Cliente:'#se_cliente',Etapa:'#se_etapa',Candidatos:'#se_cand',Responsable:'#se_resp',Estado:'#se_estado',Fecha:'#se_fecha',Observaciones:'#se_obs',Link:'#se_link'},this)">Guardar proceso</button><span class="feedback" id="fb_Seleccion"></span></div>
+      <div class="table-wrap"><table><thead><tr><th>Vacante</th><th>Cliente</th><th>Etapa</th><th>Responsable</th><th>Estado</th><th>Link</th><th>Acción</th></tr></thead><tbody id="tb_Seleccion"></tbody></table></div>
+    </div>
+  </details>
+
+  <!-- LINEAMIENTOS -->
+  <details class="acc">
+    <summary><span class="acc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l14-6v14L3 13z"/><path d="M3 11v2M17 9l3 3-3 3"/></svg></span>Comunicación de lineamientos<span class="acc-meta"><span class="acc-count" id="cnt_Comunicaciones">0</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span></summary>
+    <div class="acc-body">
+      <div class="acc-desc">La “bajada de lineamiento” se asigna a un responsable y se registra para todo el equipo. Tres niveles: informativo, procedimiento, política crítica.</div>
+      <div class="form-grid">
+        <div><label>Código</label><input id="co_cod" placeholder="COM-2026-001"></div>
+        <div><label>Fecha</label><input type="date" id="co_fecha"></div>
+        <div><label>Nivel</label><select id="co_nivel"><option>Nivel 1 · Informativo</option><option>Nivel 2 · Procedimiento</option><option>Nivel 3 · Política crítica</option></select></div>
+        <div><label>Líneas afectadas</label><input id="co_lineas" placeholder="Todas / Selección…"></div>
+        <div><label>Canal</label><select id="co_canal"><option>Canal Lineamientos</option><option>Town Hall</option><option>Correo</option><option>Comité</option></select></div>
+        <div><label>¿Requiere confirmación?</label><select id="co_conf"><option>Sí</option><option>No</option></select></div>
+        <div class="full"><label>Responsable de la bajada</label>
+          <div class="person"><input list="equipoList" id="co_resp" placeholder="Nombre o 'Todo el equipo'"><button type="button" class="chip-btn" onclick="confirmarPersona('#co_resp','#co_resp_fb')">✓ En el sistema</button></div>
+          <span class="mini-fb" id="co_resp_fb"></span></div>
+        <div><label>Link (documento)</label><input id="co_link" placeholder="https://…"></div>
+        <div class="full"><label>Resumen y acción requerida</label><textarea id="co_res" placeholder="Qué cambia y qué debe hacer el equipo"></textarea></div>
+      </div>
+      <div class="form-actions"><button class="btn btn-primary" onclick="agregar('Comunicaciones',{Codigo:'#co_cod',Fecha:'#co_fecha',Nivel:'#co_nivel',Lineas:'#co_lineas',Canal:'#co_canal',Confirmacion:'#co_conf',Responsable:'#co_resp',Resumen:'#co_res',Link:'#co_link'},this)">Registrar comunicado</button><span class="feedback" id="fb_Comunicaciones"></span></div>
+      <div class="example"><div class="label">Ejemplo · Comunicado Nivel 2</div><div class="msg">COM-2026-014 · 18/06/2026 · Emisor: Dirección
+Tipo: Nuevo procedimiento (Nivel 2) · Líneas: Selección
+Resumen: Desde el 01/07 toda vacante se carga en el portal antes de iniciar la búsqueda.
+Acción: completar el micro-training y confirmar antes del 30/06.
+Responsable de la bajada: Coord. Selección · Confirmación: SÍ</div></div>
+      <div class="table-wrap"><table><thead><tr><th>Código</th><th>Nivel</th><th>Líneas</th><th>Responsable</th><th>Confirm.</th><th>Link</th></tr></thead><tbody id="tb_Comunicaciones"></tbody></table></div>
+    </div>
+  </details>
+
+  <!-- CAPACITACIONES -->
+  <details class="acc">
+    <summary><span class="acc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 4L2 9l10 5 10-5z"/><path d="M6 11v5c0 1 3 2.5 6 2.5s6-1.5 6-2.5v-5"/></svg></span>Capacitaciones<span class="acc-meta"><span class="acc-count" id="cnt_Capacitaciones">0</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span></summary>
+    <div class="acc-body">
+      <div class="acc-desc">Trainings por línea/empresa. Pensados también para iniciativas propias y desarrollo personal, no solo procesos. Aparecen en el calendario.</div>
+      <div class="form-grid">
+        <div><label>Fecha</label><input type="date" id="ca_fecha"></div>
+        <div><label>Tema</label><input id="ca_tema" placeholder="Ej. Uso del portal"></div>
+        <div><label>Línea / empresa</label><select id="ca_linea"><option>Transversal</option><option>Consultoría externa</option><option>Servicios incompany</option><option>Selección y reclutamiento</option><option>Soluciones integrales</option></select></div>
+        <div class="full"><label>Facilitador/a</label>
+          <div class="person"><input list="equipoList" id="ca_fac" placeholder="Nombre"><button type="button" class="chip-btn" onclick="confirmarPersona('#ca_fac','#ca_fac_fb')">✓ En el sistema</button></div>
+          <span class="mini-fb" id="ca_fac_fb"></span></div>
+        <div><label>Participantes</label><input id="ca_part" placeholder="A quién va dirigido"></div>
+        <div><label>Formato</label><select id="ca_fmt"><option>Presencial</option><option>Virtual</option><option>Híbrido</option><option>Autogestionado</option></select></div>
+        <div><label>Link (material)</label><input id="ca_link" placeholder="https://…"></div>
+        <div class="full"><label>Observaciones</label><textarea id="ca_obs" placeholder="Objetivos, recursos…"></textarea></div>
+      </div>
+      <div class="form-actions"><button class="btn btn-primary" onclick="agregar('Capacitaciones',{Fecha:'#ca_fecha',Tema:'#ca_tema',Linea:'#ca_linea',Facilitador:'#ca_fac',Participantes:'#ca_part',Formato:'#ca_fmt',Observaciones:'#ca_obs',Link:'#ca_link'},this)">Programar</button><span class="feedback" id="fb_Capacitaciones"></span></div>
+      <div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Tema</th><th>Línea</th><th>Facilitador/a</th><th>Formato</th><th>Link</th></tr></thead><tbody id="tb_Capacitaciones"></tbody></table></div>
+    </div>
+  </details>
+
+  <!-- CUMPLEAÑOS -->
+  <details class="acc">
+    <summary><span class="acc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 21h16v-7H4z"/><path d="M5 14v-3a2 2 0 012-2h10a2 2 0 012 2v3"/><path d="M12 6V3M9 6V4.5M15 6V4.5"/></svg></span>Cumpleaños (vida y laboral)<span class="acc-meta"><span class="acc-count" id="cnt_Cumpleanos">0</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span></summary>
+    <div class="acc-body">
+      <div class="acc-desc">Cargá la fecha una vez y aparece sola cada año en el calendario. Cumpleaños de vida y aniversario laboral en Escencial.</div>
+      <div class="form-grid">
+        <div><label>Tipo</label><select id="cu_tipo"><option>Cumpleaños de vida</option><option>Aniversario laboral</option></select></div>
+        <div><label>Persona</label><input list="equipoList" id="cu_persona" placeholder="Nombre"></div>
+        <div><label>Fecha</label><input type="date" id="cu_fecha"></div>
+        <div><label>Área / línea</label><input id="cu_area" placeholder="Línea o área"></div>
+      </div>
+      <div class="form-actions"><button class="btn btn-primary" onclick="agregar('Cumpleanos',{Tipo:'#cu_tipo',Persona:'#cu_persona',Fecha:'#cu_fecha',Area:'#cu_area'},this)">Agregar al calendario</button><span class="feedback" id="fb_Cumpleanos"></span></div>
+      <div class="table-wrap"><table><thead><tr><th>Tipo</th><th>Persona</th><th>Fecha</th><th>Área</th></tr></thead><tbody id="tb_Cumpleanos"></tbody></table></div>
+    </div>
+  </details>
+
+  <!-- ACCESOS -->
+  <details class="acc">
+    <summary><span class="acc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg></span>Accesos seguros (sin contraseñas)<span class="acc-meta"><span class="acc-count" id="cnt_Accesos">0</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span></summary>
+    <div class="acc-body">
+      <div class="acc-desc">Las contraseñas viven en el gestor corporativo (Bitwarden/1Password). Acá solo el mapa: qué existe, quién es dueño y dónde encontrarlo. No hay campo de contraseña.</div>
+      <div class="vault" style="margin-bottom:16px">
+        <h3>🔒 Reglas de la bóveda</h3>
+        <div class="rule"><b>①</b><span>Bóvedas por línea/cliente; acceso por rol, no por persona.</span></div>
+        <div class="rule"><b>②</b><span>2FA obligatorio y rotación cada 90 días.</span></div>
+        <div class="rule"><b>③</b><span>Offboarding: revocar accesos el mismo día de la baja.</span></div>
+        <div class="never">⚠️ Prohibido enviar usuarios/contraseñas por correo, chat o en la planilla.</div>
+      </div>
+      <div class="form-grid">
+        <div><label>Sistema / cliente</label><input id="ac_sistema" placeholder="ATS, Cliente X…"></div>
+        <div><label>Tipo</label><select id="ac_tipo"><option>Plataforma cliente</option><option>Sistema interno</option><option>Correo</option><option>Red social</option><option>Otro</option></select></div>
+        <div><label>URL</label><input id="ac_url" placeholder="https://…"></div>
+        <div><label>Owner</label><input list="equipoList" id="ac_owner" placeholder="Responsable"></div>
+        <div><label>Ubicación en la bóveda</label><input id="ac_bov" placeholder="Colección / entrada"></div>
+        <div><label>Roles con acceso</label><input id="ac_roles" placeholder="Selección, Dirección…"></div>
+        <div><label>Última rotación</label><input type="date" id="ac_rot"></div>
+        <div><label>Próxima rotación</label><input type="date" id="ac_next"></div>
+      </div>
+      <div class="form-actions"><button class="btn btn-primary" onclick="agregar('Accesos',{Sistema:'#ac_sistema',Tipo:'#ac_tipo',URL:'#ac_url',Owner:'#ac_owner',Boveda:'#ac_bov',Roles:'#ac_roles',UltimaRotacion:'#ac_rot',ProximaRotacion:'#ac_next'},this)">Registrar acceso</button><span class="feedback" id="fb_Accesos"></span></div>
+      <div class="table-wrap"><table><thead><tr><th>Sistema</th><th>Tipo</th><th>Owner</th><th>Bóveda</th><th>Próx. rotación</th></tr></thead><tbody id="tb_Accesos"></tbody></table></div>
+    </div>
+  </details>
+</section>
+
+<!-- ===================== CULTURA / PRESENTACIÓN ===================== -->
+<section id="cultura">
+  <div class="sec-head">
+    <div class="sec-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l2.5 5 5.5.8-4 3.9 1 5.5L12 16l-5 2.7 1-5.5-4-3.9 5.5-.8z"/></svg></div>
+    <h2>Cultura y materiales</h2>
+  </div>
+  <p class="sec-sub">Nuestra forma de trabajar y la versión presentable de este portal, lista para compartir o exportar a PDF.</p>
+
+  <div class="callout"><h4>Filosofía de trabajo de Escencial</h4>
+    <ul>
+      <li>Cada colaborador/a se apropia de su proyecto y lo lleva hasta finalizarlo.</li>
+      <li>No damos órdenes: definimos el destino y acompañamos el camino.</li>
+      <li>Las iniciativas propias no se limitan: la esencia personal es parte del resultado profesional.</li>
+      <li>El registro queda asentado para aprender y reconocer, no para vigilar.</li>
+    </ul>
+  </div>
+
+  <div class="deck" style="margin-top:20px">
+    <div class="slide exec"><div class="kicker">Versión ejecutiva</div><h3 style="color:#fff">Portal de Gestión Escencial</h3>
+      <ul><li>Calendario vivo: día, semana y mes con todo lo cargado.</li><li>Proyectos con dueño, seguidos hasta el cierre.</li><li>KPIs de cumplimiento por día, semana y mes.</li><li>Equipo, clientes, viajes, onboarding y selección centralizados.</li><li>Cumpleaños automáticos y accesos seguros.</li></ul></div>
+    <div class="slide detail"><div class="kicker">Versión detallada · índice</div><h3 style="color:var(--forest)">Contenido</h3>
+      <ul style="color:var(--muted)"><li>Calendario dinámico y pendientes priorizados.</li><li>Equipo, estructura y responsabilidades.</li><li>Proyectos y “lo que el equipo ya cumplió”.</li><li>Cumplimiento y KPIs por persona.</li><li>Operación: clientes, onboarding, viajes, selección, lineamientos, capacitaciones, cumpleaños, accesos.</li><li>Cultura y filosofía de trabajo.</li></ul></div>
+  </div>
+  <div class="form-actions" style="margin-top:20px"><button class="btn btn-primary" onclick="window.print()">⤓ Exportar a PDF</button><button class="btn btn-ghost" onclick="hidratar()">↻ Recargar desde Google Sheets</button></div>
+</section>
+
+</div>
+
+<datalist id="equipoList"></datalist>
+<datalist id="clientesList"></datalist>
+
+<footer class="wrap">
+  <div class="foot-grid">
+    <div><b style="font-family:'Fraunces';color:var(--ink);font-size:15px">Escencial Consultora</b> · Portal de Gestión v2.0<br>Dirección: Ayelén Lamas · Paola Siles</div>
+    <div style="text-align:right">Datos en Google Sheets vía Apps Script · Documento vivo</div>
+  </div>
+</footer>
+
+<script>
+/* ===================== CONFIG ===================== */
+var ENDPOINT = 'https://script.google.com/macros/s/AKfycbwclmnTCidM9-Dbh43uzuW_o5AOE3vQe6FfHfJps_Pql1DADiQOnWgxQNHdA-PoJ2Jc7g/exec';
+var EN_APPS_SCRIPT = (typeof google !== 'undefined' && google.script && google.script.run);
+var HAY_ENDPOINT   = /^https:\/\/script\.google\.com\/macros\/s\//.test(ENDPOINT);
+
+/* ===================== ESTADO (DB en memoria) ===================== */
+var DB = {Equipo:[],Estructura:[],Proyectos:[],Pendientes:[],Onboarding:[],Viajes:[],Clientes:[],Seleccion:[],Cumpleanos:[],Reuniones:[],Capacitaciones:[],Comunicaciones:[],Accesos:[],Metricas:[]};
+/* semilla de Dirección (solo local, no se vuelve a guardar) */
+DB.Equipo.push({Nombre:'Ayelén Lamas',Rol:'Dirección',Linea:'Dirección',Email:'',Estado:'Activo'});
+DB.Equipo.push({Nombre:'Paola Siles',Rol:'Dirección',Linea:'Dirección',Email:'',Estado:'Activo'});
+
+/* ===================== UTILIDADES ===================== */
+function $(s){return document.querySelector(s);}
+function esc(t){return String(t==null?'':t).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function leer(map){var d={};for(var k in map){var v=map[k];if(typeof v==='function'){d[k]=v();}else{var el=$(v);d[k]=el?String(el.value).trim():'';}}return d;}
+function limpiar(map){for(var k in map){if(typeof map[k]==='string'){var el=$(map[k]);if(el)el.value='';}}}
+function parseFecha(s){if(!s)return null;var p=String(s).slice(0,10).split('-');if(p.length===3){var d=new Date(+p[0],+p[1]-1,+p[2]);return isNaN(d)?null:d;}var d2=new Date(s);return isNaN(d2)?null:d2;}
+function ymd(d){return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
+function mismaFecha(a,b){return a&&b&&a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();}
+function mismoDiaMes(a,b){return a&&b&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();}
+var MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+var DOW=['lun','mar','mié','jue','vie','sáb','dom'];
+function tagEstado(e){var x=(e||'').toLowerCase();var c='t-gold';if(/finaliz|complet|cerrad|realiz|cumplid/.test(x))c='t-green';else if(/curso|confirm|activo|revis/.test(x))c='t-blue';else if(/pausa|sin asignar|prospecto/.test(x))c='t-rose';return '<span class="tag '+c+'">'+esc(e||'—')+'</span>';}
+function linkCell(u){return u?'<a class="lnk" href="'+esc(u)+'" target="_blank" rel="noopener">abrir ↗</a>':'—';}
+function esDone(e){return /finaliz|complet|cerrad|realiz|cumplid/i.test(e||'');}
+function genID(){return 'id-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7);}
+function buscarRec(hoja,id,ts){var a=DB[hoja]||[];var i;for(i=0;i<a.length;i++){if(id&&String(a[i].ID)===String(id))return a[i];}for(i=0;i<a.length;i++){if(ts&&String(a[i].MarcaTiempo)===String(ts))return a[i];}return null;}
+function btnFin(hoja,r){if(esDone(r.Estado))return '<span class="tag t-green">✓ finalizada</span>';return '<button class="chip-btn" onclick="finalizar(\''+hoja+'\',\''+esc(r.ID||'')+'\',\''+esc(r.MarcaTiempo||'')+'\')">✓ Finalizar</button>';}
+
+/* ===================== CONEXIÓN ===================== */
+(function(){var dot=$('#connDot'),txt=$('#connText');if(EN_APPS_SCRIPT){dot.classList.add('live');txt.textContent='Conectado a Google Sheets';}else if(HAY_ENDPOINT){dot.classList.add('live');txt.textContent='Conectado a Google Sheets (web app)';}else{txt.textContent='Modo vista previa';}})();
+
+/* ===================== LOGIN / USUARIOS ===================== */
+var SESSION=null;
+function sha256(ascii){
+  function rr(v,a){return (v>>>a)|(v<<(32-a));}
+  var maxWord=Math.pow(2,32),result='',words=[],asciiBitLength=ascii.length*8;
+  var hash=sha256.h=sha256.h||[],k=sha256.k=sha256.k||[],primeCounter=k.length,isComposite={};
+  for(var candidate=2;primeCounter<64;candidate++){
+    if(!isComposite[candidate]){
+      for(var i=0;i<313;i+=candidate){isComposite[i]=candidate;}
+      hash[primeCounter]=(Math.pow(candidate,.5)*maxWord)|0;
+      k[primeCounter++]=(Math.pow(candidate,1/3)*maxWord)|0;
+    }
+  }
+  ascii+='\x80';
+  while(ascii.length%64-56)ascii+='\x00';
+  for(var i=0;i<ascii.length;i++){var j=ascii.charCodeAt(i);if(j>>8)return;words[i>>2]|=j<<((3-i)%4)*8;}
+  words[words.length]=((asciiBitLength/maxWord)|0);words[words.length]=(asciiBitLength);
+  for(var j=0;j<words.length;){
+    var w=words.slice(j,j+=16),oldHash=hash;hash=hash.slice(0,8);
+    for(var i=0;i<64;i++){
+      var w15=w[i-15],w2=w[i-2],a=hash[0],e=hash[4];
+      var temp1=hash[7]+(rr(e,6)^rr(e,11)^rr(e,25))+((e&hash[5])^((~e)&hash[6]))+k[i]+(w[i]=(i<16)?w[i]:(w[i-16]+(rr(w15,7)^rr(w15,18)^(w15>>>3))+w[i-7]+(rr(w2,17)^rr(w2,19)^(w2>>>10)))|0);
+      var temp2=(rr(a,2)^rr(a,13)^rr(a,22))+((a&hash[1])^(a&hash[2])^(hash[1]&hash[2]));
+      hash=[(temp1+temp2)|0].concat(hash);hash[4]=(hash[4]+temp1)|0;
+    }
+    for(var i=0;i<8;i++){hash[i]=(hash[i]+oldHash[i])|0;}
+  }
+  for(var i=0;i<8;i++){for(var j=3;j+1;j--){var b=(hash[i]>>(j*8))&255;result+=((b<16)?0:'')+b.toString(16);}}
+  return result;
+}
+function utf8(s){return unescape(encodeURIComponent(s));}
+function hashPass(p){return sha256(utf8(p||''));}
+
+function jsonp(params,cb){
+  if(!HAY_ENDPOINT){cb({ok:false,error:'sin-endpoint'});return;}
+  var name='__cb'+Date.now()+Math.floor(Math.random()*1e5),done=false;
+  window[name]=function(d){done=true;try{cb(d);}finally{delete window[name];var s=document.getElementById(name);if(s&&s.parentNode)s.parentNode.removeChild(s);}};
+  var qs=Object.keys(params).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(params[k]);}).join('&');
+  var s=document.createElement('script');s.id=name;s.src=ENDPOINT+'?'+qs+'&callback='+name+'&t='+Date.now();
+  s.onerror=function(){if(!done&&window[name])window[name]({ok:false,error:'red'});};
+  document.body.appendChild(s);
+  setTimeout(function(){if(!done&&window[name])window[name]({ok:false,error:'timeout'});},12000);
+}
+
+function guardarSesion(u){try{sessionStorage.setItem('escencial_session',JSON.stringify(u));}catch(e){}}
+function leerSesion(){try{return JSON.parse(sessionStorage.getItem('escencial_session'));}catch(e){return null;}}
+function borrarSesion(){try{sessionStorage.removeItem('escencial_session');}catch(e){}}
+
+function doLogin(){
+  var id=$('#lg_id').value.trim(),pass=$('#lg_pass').value,msg=$('#lg_msg');
+  if(!id||!pass){msg.className='login-msg err';msg.textContent='Completá usuario y contraseña.';return;}
+  msg.className='login-msg info';msg.textContent='Verificando…';
+  var ph=hashPass(pass);
+  function ok(res){if(res&&res.ok){enterApp({usuario:res.usuario,nombre:res.nombre,rol:res.rol});}else{msg.className='login-msg err';msg.textContent=(res&&res.error)||'No se pudo iniciar sesión.';}}
+  if(EN_APPS_SCRIPT){google.script.run.withSuccessHandler(ok).withFailureHandler(function(){ok({ok:false,error:'Error del servidor'});}).login(id,ph);}
+  else{jsonp({action:'login',id:id,h:ph},ok);}
+}
+function doBootstrap(){
+  var u=$('#bs_user').value.trim(),n=$('#bs_nombre').value.trim(),c=$('#bs_correo').value.trim(),p=$('#bs_pass').value,msg=$('#bs_msg');
+  if(!(u||c||n)||!p){msg.className='login-msg err';msg.textContent='Completá usuario y contraseña.';return;}
+  var ph=hashPass(p),datos={Usuario:u,Nombre:n,Correo:c,Rol:'Administrador'};
+  msg.className='login-msg info';msg.textContent='Creando…';
+  function luegoLogin(){msg.className='login-msg ok';msg.textContent='Listo. Iniciá sesión con tu usuario.';$('#lg_id').value=u||c||n;setTimeout(function(){$('#formBootstrap').hidden=true;$('#formLogin').hidden=false;},1000);}
+  if(EN_APPS_SCRIPT){google.script.run.withSuccessHandler(function(r){if(r&&r.ok===false){msg.className='login-msg err';msg.textContent=r.error;}else luegoLogin();}).withFailureHandler(function(){msg.className='login-msg err';msg.textContent='Error al crear.';}).signup(datos,ph);}
+  else{fetch(ENDPOINT,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({accion:'signup',datos:datos,phash:ph})}).catch(function(){});setTimeout(luegoLogin,1400);}
+}
+function crearUsuario(btn){
+  var u=$('#us_user').value.trim(),n=$('#us_nombre').value.trim(),c=$('#us_correo').value.trim(),rol=$('#us_rol').value,p=$('#us_pass').value,fb=$('#fb_Usuarios');
+  if(!(u||c||n)||!p){fb.className='feedback err';fb.textContent='Completá identificador y contraseña.';return;}
+  var ph=hashPass(p),datos={Usuario:u,Nombre:n,Correo:c,Rol:rol},t=btn.textContent;btn.disabled=true;btn.textContent='Creando…';
+  function fin(r){btn.disabled=false;btn.textContent=t;if(r&&r.ok===false){fb.className='feedback err';fb.textContent=r.error;return;}fb.className='feedback ok';fb.textContent='✓ Acceso creado.';$('#us_user').value='';$('#us_nombre').value='';$('#us_correo').value='';$('#us_pass').value='';setTimeout(function(){fb.textContent='';},3500);setTimeout(renderUsuarios,900);}
+  if(EN_APPS_SCRIPT){google.script.run.withSuccessHandler(fin).withFailureHandler(function(){fin({ok:false,error:'Error del servidor'});}).signup(datos,ph);}
+  else{fetch(ENDPOINT,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({accion:'signup',datos:datos,phash:ph})}).catch(function(){});setTimeout(function(){fin({ok:true});},1200);}
+}
+function renderUsuarios(){
+  function pintar(arr){var t=$('#tb_Usuarios');if(!t)return;if(!arr||!arr.length){t.innerHTML='<tr><td class="empty" colspan="5">Sin usuarios aún.</td></tr>';$('#cnt_Usuarios').textContent='0';return;}$('#cnt_Usuarios').textContent=arr.length;t.innerHTML=arr.map(function(r){return '<tr><td><b>'+esc(r.Usuario||'—')+'</b></td><td>'+esc(r.Nombre||'—')+'</td><td>'+esc(r.Correo||'—')+'</td><td>'+esc(r.Rol||'—')+'</td><td>'+tagEstado(r.Estado||'Activo')+'</td></tr>';}).join('');}
+  if(EN_APPS_SCRIPT){google.script.run.withSuccessHandler(pintar).withFailureHandler(function(){pintar([]);}).listarUsuarios();}
+  else{jsonp({action:'userlist'},function(d){pintar(Array.isArray(d)?d:[]);});}
+}
+function enterApp(user){
+  SESSION=user;guardarSesion(user);
+  document.body.classList.remove('locked');
+  var ls=$('#loginScreen');if(ls)ls.style.display='none';
+  var chip=$('#userChip');chip.hidden=false;chip.innerHTML='<span class="uav">'+esc((user.nombre||user.usuario||'?').slice(0,2).toUpperCase())+'</span>'+esc(user.nombre||user.usuario||'');
+  $('#btnLogout').hidden=false;
+  var esAdmin=/admin/i.test(user.rol||'');
+  var au=$('#adminUsuarios');if(au)au.hidden=!esAdmin;
+  render();
+  if(esAdmin)renderUsuarios();
+  hidratar();
+}
+function logout(){borrarSesion();SESSION=null;location.reload();}
+function initAuth(){
+  var s=leerSesion();
+  if(s&&(s.usuario||s.nombre)){enterApp(s);return;}
+  function decidir(res){var n=(res&&typeof res.count==='number')?res.count:0;if(n===0){$('#formLogin').hidden=true;$('#formBootstrap').hidden=false;}else{$('#formLogin').hidden=false;$('#formBootstrap').hidden=true;}}
+  if(EN_APPS_SCRIPT){google.script.run.withSuccessHandler(decidir).withFailureHandler(function(){decidir({count:1});}).contarUsuarios();}
+  else if(HAY_ENDPOINT){jsonp({action:'usercount'},function(d){if(d&&d.error){$('#loginDemoWrap').hidden=false;decidir({count:1});}else decidir(d);});}
+  else{$('#loginDemoWrap').hidden=false;decidir({count:1});}
+}
+
+/* ===================== GUARDAR (memoria + Sheets) ===================== */
+function persistir(hoja,datos){
+  if(EN_APPS_SCRIPT){google.script.run.guardarRegistro(hoja,datos);}
+  else if(HAY_ENDPOINT){fetch(ENDPOINT,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({hoja:hoja,datos:datos})}).catch(function(e){console.error(e);});}
+  else{console.log('[VISTA PREVIA]',hoja,datos);}
+}
+function persistUpdate(hoja,key,val,cambios){
+  if(EN_APPS_SCRIPT){google.script.run.actualizarRegistro(hoja,key,val,cambios);}
+  else if(HAY_ENDPOINT){fetch(ENDPOINT,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({accion:'update',hoja:hoja,key:key,val:val,cambios:cambios})}).catch(function(e){console.error(e);});}
+  else{console.log('[VISTA PREVIA UPDATE]',hoja,key,val,cambios);}
+}
+function finalizar(hoja,id,ts){
+  var rec=buscarRec(hoja,id,ts);if(!rec)return;
+  rec.Estado='Finalizada';
+  var key=id?'ID':'MarcaTiempo';var val=id||ts;
+  persistUpdate(hoja,key,val,{Estado:'Finalizada'});
+  render();
+}
+function agregar(hoja,map,btn){
+  var datos=leer(map);
+  var fb=$('#fb_'+hoja);
+  var vacio=Object.keys(datos).every(function(k){return !datos[k];});
+  if(vacio){if(fb){fb.textContent='Completá al menos un campo.';fb.className='feedback err';}return;}
+  if(!DB[hoja])DB[hoja]=[];
+  if(!datos.ID)datos.ID=genID();
+  DB[hoja].push(datos);
+  persistir(hoja,datos);
+  if(fb){fb.textContent='✓ Guardado.';fb.className='feedback ok';setTimeout(function(){fb.textContent='';},3500);}
+  limpiar(map);
+  render();
+}
+
+/* ===================== PERSONA EN EL SISTEMA ===================== */
+function confirmarPersona(inputSel,fbSel){
+  var el=$(inputSel);var fb=$(fbSel);var nombre=el?el.value.trim():'';
+  if(!nombre){if(fb){fb.textContent='Escribí un nombre.';fb.style.color='var(--rose)';}return;}
+  if(nombre.toLowerCase()==='todo el equipo'){if(fb){fb.textContent='Asignado a todo el equipo.';fb.style.color='var(--ok)';}return;}
+  var existe=DB.Equipo.some(function(p){return (p.Nombre||'').toLowerCase()===nombre.toLowerCase();});
+  if(existe){if(fb){fb.textContent='Ya está en el sistema ✓';fb.style.color='var(--ok)';}return;}
+  var nuevo={Nombre:nombre,Rol:'',Linea:'',Email:'',Estado:'Activo'};
+  DB.Equipo.push(nuevo);persistir('Equipo',nuevo);
+  if(fb){fb.textContent='Agregado al sistema ✓';fb.style.color='var(--ok)';}
+  render();
+}
+
+/* ===================== CALENDARIO ===================== */
+var calRef=new Date();var calMode='mes';
+$('#calSeg').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;calMode=b.getAttribute('data-m');[].forEach.call(this.children,function(x){x.classList.toggle('on',x===b);});renderCal();});
+function calMove(dir){if(calMode==='dia')calRef.setDate(calRef.getDate()+dir);else if(calMode==='semana')calRef.setDate(calRef.getDate()+7*dir);else if(calMode==='anio')calRef.setFullYear(calRef.getFullYear()+dir);else calRef.setMonth(calRef.getMonth()+dir);renderCal();}
+function calToday(){calRef=new Date();renderCal();}
+
+function eventos(){
+  var ev=[];
+  function add(d,titulo,tipo,extra){if(d)ev.push({d:d,titulo:titulo,tipo:tipo,recur:!!(extra&&extra.recur),resp:(extra&&extra.resp)||''});}
+  DB.Reuniones.forEach(function(r){add(parseFecha(r.Fecha),(r.Hora?r.Hora+' ':'')+(r.Instancia||'Reunión'),'reunion',{resp:r.Owner});});
+  DB.Capacitaciones.forEach(function(r){add(parseFecha(r.Fecha),'📚 '+(r.Tema||'Capacitación'),'capacitacion',{resp:r.Facilitador});});
+  DB.Viajes.forEach(function(r){add(parseFecha(r.FechaSalida),'✈ '+(r.Destino||'Viaje')+' (salida)','viaje',{resp:r.Viajero});add(parseFecha(r.FechaRegreso),'✈ '+(r.Destino||'Viaje')+' (regreso)','viaje',{resp:r.Viajero});});
+  DB.Cumpleanos.forEach(function(r){var t=(r.Tipo||'').toLowerCase().indexOf('laboral')>=0?'🎓 Aniversario: ':'🎂 Cumple: ';add(parseFecha(r.Fecha),t+(r.Persona||''),'cumple',{recur:true});});
+  DB.Proyectos.forEach(function(r){if(r.FechaFin)add(parseFecha(r.FechaFin),'◆ Cierre: '+(r.Proyecto||'Proyecto'),'proyecto',{resp:r.Responsable});});
+  DB.Pendientes.forEach(function(r){add(parseFecha(r.Fecha),(r.Titulo||'Pendiente'),'pendiente',{resp:r.Responsable});});
+  DB.Onboarding.forEach(function(r){add(parseFecha(r.Fecha),'Onboarding '+(r.Persona||r.Tipo||''),'onboarding',{resp:r.Responsable});});
+  DB.Seleccion.forEach(function(r){add(parseFecha(r.Fecha),'🔎 '+(r.Vacante||'Selección'),'seleccion',{resp:r.Responsable});});
+  return ev;
+}
+function eventosDe(date){return eventos().filter(function(e){return e.recur?mismoDiaMes(e.d,date):mismaFecha(e.d,date);});}
+function evChip(e){return '<div class="ev '+e.tipo+'" title="'+esc(e.titulo)+(e.resp?(' · '+esc(e.resp)):'')+'">'+esc(e.titulo)+'</div>';}
+
+function renderCal(){
+  var v=$('#calView'),t=$('#calTitle');
+  if(calMode==='mes'){
+    t.textContent=MESES[calRef.getMonth()]+' '+calRef.getFullYear();
+    var first=new Date(calRef.getFullYear(),calRef.getMonth(),1);
+    var start=new Date(first);var wd=(first.getDay()+6)%7;start.setDate(first.getDate()-wd);
+    var html='<div class="cal-grid">';DOW.forEach(function(d){html+='<div class="dow">'+d+'</div>';});
+    var today=new Date();
+    for(var i=0;i<42;i++){var cur=new Date(start);cur.setDate(start.getDate()+i);
+      var off=cur.getMonth()!==calRef.getMonth();var evs=eventosDe(cur);
+      html+='<div class="cal-cell'+(off?' off':'')+(mismaFecha(cur,today)?' today':'')+'"><div class="dn">'+cur.getDate()+'</div>';
+      evs.slice(0,3).forEach(function(e){html+=evChip(e);});
+      if(evs.length>3)html+='<div class="ev" style="background:transparent;color:var(--muted)">+'+(evs.length-3)+' más</div>';
+      html+='</div>';
+    }
+    html+='</div>';v.innerHTML=html;
+  } else if(calMode==='semana'){
+    var s=new Date(calRef);var wd=(s.getDay()+6)%7;s.setDate(s.getDate()-wd);
+    var end=new Date(s);end.setDate(s.getDate()+6);
+    t.textContent='Semana del '+s.getDate()+' '+MESES[s.getMonth()].slice(0,3)+' al '+end.getDate()+' '+MESES[end.getMonth()].slice(0,3);
+    var html='<div class="week-grid">';var today=new Date();
+    for(var i=0;i<7;i++){var cur=new Date(s);cur.setDate(s.getDate()+i);var evs=eventosDe(cur);
+      html+='<div class="week-col'+(mismaFecha(cur,today)?' today':'')+'"><h6>'+DOW[i]+' '+cur.getDate()+'</h6>';
+      if(!evs.length)html+='<div style="font-size:11px;color:var(--muted)">—</div>';
+      evs.forEach(function(e){html+=evChip(e);});html+='</div>';}
+    html+='</div>';v.innerHTML=html;
+  } else if(calMode==='anio'){
+    t.textContent='Año '+calRef.getFullYear();
+    var evA=eventos();var yr=calRef.getFullYear();
+    var html='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:14px">';
+    for(var mo=0;mo<12;mo++){var cnt=evA.filter(function(e){if(!e.d)return false;return e.recur?(e.d.getMonth()===mo):(e.d.getMonth()===mo&&e.d.getFullYear()===yr);}).length;html+='<button class="anio-cell" onclick="verMes('+mo+')"><b>'+MESES[mo]+'</b><span>'+cnt+' evento'+(cnt===1?'':'s')+'</span></button>';}
+    html+='</div>';v.innerHTML=html;
+  } else {
+    t.textContent=calRef.getDate()+' de '+MESES[calRef.getMonth()]+' '+calRef.getFullYear();
+    var evs=eventosDe(calRef);
+    var html='<div class="cal-list"><div class="cal-day"><h5>'+DOW[(calRef.getDay()+6)%7]+' '+calRef.getDate()+'</h5>';
+    if(!evs.length)html+='<div class="empty" style="padding:8px">Sin eventos para este día.</div>';
+    evs.forEach(function(e){html+='<div style="margin-bottom:6px">'+evChip(e)+(e.resp?' <span style="font-size:11.5px;color:var(--muted)">· '+esc(e.resp)+'</span>':'')+'</div>';});
+    html+='</div></div>';v.innerHTML=html;
+  }
+}
+
+/* ===================== PENDIENTES ===================== */
+function renderPendientes(){
+  var items=[];
+  DB.Proyectos.forEach(function(r){if(!esDone(r.Estado))items.push({d:parseFecha(r.FechaFin),t:r.Proyecto,s:'Proyecto · '+(r.Responsable||'sin dueño'),e:r.Estado,hoja:'Proyectos',r:r});});
+  DB.Pendientes.forEach(function(r){if(!esDone(r.Estado))items.push({d:parseFecha(r.Fecha),t:r.Titulo,s:(r.Tipo||'Actividad')+' · '+(r.Responsable||''),e:r.Estado,hoja:'Pendientes',r:r});});
+  DB.Seleccion.forEach(function(r){if(!esDone(r.Estado))items.push({d:parseFecha(r.Fecha),t:'Selección: '+(r.Vacante||''),s:(r.Etapa||'')+' · '+(r.Responsable||''),e:r.Estado,hoja:'Seleccion',r:r});});
+  DB.Onboarding.forEach(function(r){if(!esDone(r.Estado))items.push({d:parseFecha(r.Fecha),t:'Onboarding: '+(r.Persona||r.Tipo||''),s:(r.Etapa||'')+' · '+(r.Responsable||''),e:r.Estado,hoja:'Onboarding',r:r});});
+  if(FOCO){var _ini=inicioSemanaHoy();items=items.filter(function(i){return !i.d||i.d>=_ini;});}
+  items.sort(function(a,b){return (a.d?a.d.getTime():9e15)-(b.d?b.d.getTime():9e15);});
+  var c=$('#pendientesList');
+  if(!items.length){c.innerHTML='<div class="empty">Nada pendiente. Cuando finalices una actividad, desaparece de acá.</div>';return;}
+  c.innerHTML=items.slice(0,15).map(function(i){return '<div class="pend"><span class="when">'+(i.d?ymd(i.d).slice(5):'s/f')+'</span><div class="body"><b>'+esc(i.t||'—')+'</b><span>'+esc(i.s)+'</span></div><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">'+tagEstado(i.e)+btnFin(i.hoja,i.r)+'</div></div>';}).join('');
+}
+
+/* ===================== TABLAS ===================== */
+function fillTabla(id,arr,cols){var tb=$('#'+id);if(!tb)return;if(!arr.length){tb.innerHTML='<tr><td class="empty" colspan="'+cols.length+'">Sin registros aún.</td></tr>';return;}
+  tb.innerHTML=arr.slice().reverse().map(function(r){return '<tr>'+cols.map(function(c){return '<td>'+c(r)+'</td>';}).join('')+'</tr>';}).join('');}
+
+function renderTablas(){
+  fillTabla('tb_Equipo',DB.Equipo,[function(r){return esc(r.Nombre);},function(r){return esc(r.Rol||'—');},function(r){return esc(r.Linea||'—');},function(r){return esc(r.Email||'—');}]);
+  fillTabla('tb_Estructura',DB.Estructura,[function(r){return esc(r.Linea);},function(r){return esc(r.Rol);},function(r){return esc(r.Titular||'—');},function(r){return esc(r.Suplente||'—');}]);
+  fillTabla('tb_Proyectos',DB.Proyectos,[function(r){return '<b>'+esc(r.Proyecto||'—')+'</b>';},function(r){return esc(r.Cliente||'—');},function(r){return esc(r.Responsable||'—');},function(r){return tagEstado(r.Estado);},function(r){return esc(r.FechaFin||'—');},function(r){return linkCell(r.Link);},function(r){return btnFin('Proyectos',r);}]);
+  fillTabla('tb_Clientes',DB.Clientes,[function(r){return '<b>'+esc(r.Cliente||'—')+'</b>';},function(r){return esc(r.Linea||'—');},function(r){return esc(r.Contacto||'—');},function(r){return tagEstado(r.Estado);},function(r){return linkCell(r.Link);}]);
+  fillTabla('tb_Onboarding',DB.Onboarding,[function(r){return esc(r.Tipo);},function(r){return esc(r.Persona||'—');},function(r){return esc(r.Etapa||'—');},function(r){return esc(r.Responsable||'—');},function(r){return esc(r.Fecha||'—');},function(r){return tagEstado(r.Estado);},function(r){return btnFin('Onboarding',r);}]);
+  fillTabla('tb_Viajes',DB.Viajes,[function(r){return esc(r.Viajero||'—');},function(r){return esc(r.Destino||'—');},function(r){return esc(r.Cliente||'—');},function(r){return esc(r.FechaSalida||'—');},function(r){return esc(r.FechaRegreso||'—');},function(r){return tagEstado(r.Estado);},function(r){return btnFin('Viajes',r);}]);
+  fillTabla('tb_Seleccion',DB.Seleccion,[function(r){return '<b>'+esc(r.Vacante||'—')+'</b>';},function(r){return esc(r.Cliente||'—');},function(r){return esc(r.Etapa||'—');},function(r){return esc(r.Responsable||'—');},function(r){return tagEstado(r.Estado);},function(r){return linkCell(r.Link);},function(r){return btnFin('Seleccion',r);}]);
+  fillTabla('tb_Comunicaciones',DB.Comunicaciones,[function(r){return esc(r.Codigo||'—');},function(r){return esc(r.Nivel||'—');},function(r){return esc(r.Lineas||'—');},function(r){return esc(r.Responsable||'—');},function(r){return esc(r.Confirmacion||'—');},function(r){return linkCell(r.Link);}]);
+  fillTabla('tb_Capacitaciones',DB.Capacitaciones,[function(r){return esc(r.Fecha||'—');},function(r){return esc(r.Tema||'—');},function(r){return esc(r.Linea||'—');},function(r){return esc(r.Facilitador||'—');},function(r){return esc(r.Formato||'—');},function(r){return linkCell(r.Link);}]);
+  fillTabla('tb_Cumpleanos',DB.Cumpleanos,[function(r){return esc(r.Tipo||'—');},function(r){return esc(r.Persona||'—');},function(r){return esc(r.Fecha||'—');},function(r){return esc(r.Area||'—');}]);
+  fillTabla('tb_Accesos',DB.Accesos,[function(r){return esc(r.Sistema||'—');},function(r){return esc(r.Tipo||'—');},function(r){return esc(r.Owner||'—');},function(r){return esc(r.Boveda||'—');},function(r){return esc(r.ProximaRotacion||'—');}]);
+}
+
+/* ===================== CUMPLIDOS / DELEGADAS ===================== */
+function renderCumplidos(){
+  var fin=DB.Proyectos.filter(function(r){return /finaliz/i.test(r.Estado||'');});
+  var c=$('#cumplidosView');
+  var porPersona={};
+  DB.Proyectos.forEach(function(r){var p=r.Responsable||'Sin asignar';if(!porPersona[p])porPersona[p]={total:0,fin:0,proyectos:[]};porPersona[p].total++;if(/finaliz/i.test(r.Estado||''))porPersona[p].fin++;porPersona[p].proyectos.push(r);});
+  var html='';
+  if(!Object.keys(porPersona).length){c.innerHTML='<div class="empty">Todavía no hay proyectos asignados.</div>';}
+  else{
+    html+='<div class="grid g2">';
+    Object.keys(porPersona).forEach(function(p){var o=porPersona[p];
+      html+='<div style="border:1px solid var(--line);border-radius:14px;padding:16px;background:#FBFAF4">';
+      html+='<div style="display:flex;justify-content:space-between;align-items:center"><b style="font-family:Fraunces;font-size:16px">'+esc(p)+'</b><span class="tag t-green">'+o.fin+'/'+o.total+' cerrados</span></div>';
+      html+='<ul style="margin-top:8px;list-style:none;font-size:12.5px;color:var(--muted)">';
+      o.proyectos.forEach(function(r){html+='<li style="padding:4px 0;display:flex;gap:8px;align-items:center">'+(/finaliz/i.test(r.Estado||'')?'✓':'•')+' '+esc(r.Proyecto||'—')+' '+tagEstado(r.Estado)+'</li>';});
+      html+='</ul></div>';
+    });
+    html+='</div>';
+  }
+  c.innerHTML=html;
+  $('#cnt_Cumplidos').textContent=fin.length;
+}
+
+/* ===================== KPI ===================== */
+function dentroDe(d,modo,ref){if(!d)return false;
+  if(modo==='dia')return mismaFecha(d,ref);
+  if(modo==='semana'){var s=new Date(ref);var wd=(s.getDay()+6)%7;s.setHours(0,0,0,0);s.setDate(s.getDate()-wd);var e=new Date(s);e.setDate(s.getDate()+7);return d>=s&&d<e;}
+  return d.getMonth()===ref.getMonth()&&d.getFullYear()===ref.getFullYear();
+}
+function calcCumpl(modo){var ref=new Date();var total=0,ok=0;
+  DB.Proyectos.forEach(function(r){var d=parseFecha(r.FechaFin);if(dentroDe(d,modo,ref)){total++;if(/finaliz/i.test(r.Estado||''))ok++;}});
+  DB.Pendientes.forEach(function(r){var d=parseFecha(r.Fecha);if(dentroDe(d,modo,ref)){total++;if(/complet|finaliz/i.test(r.Estado||''))ok++;}});
+  return {total:total,ok:ok,pct:total?Math.round(ok/total*100):0};
+}
+function renderKPI(){
+  var defs=[{m:'dia',l:'Hoy',meta:'Responsabilidades con fecha de hoy'},{m:'semana',l:'Esta semana',meta:'Lun a dom de la semana actual'},{m:'mes',l:'Este mes',meta:'Mes calendario en curso'}];
+  $('#kpiCards').innerHTML=defs.map(function(x){var k=calcCumpl(x.m);return '<div class="kpi"><div class="big">'+k.pct+'%</div><div class="lab">Cumplimiento · '+x.l+'</div><div class="meta">'+k.ok+' de '+k.total+' cerradas · '+x.meta+'</div><div class="bar"><span style="width:'+k.pct+'%"></span></div></div>';}).join('');
+  var porP={};
+  DB.Proyectos.forEach(function(r){var p=r.Responsable||'Sin asignar';if(!porP[p])porP[p]={t:0,o:0};porP[p].t++;if(/finaliz/i.test(r.Estado||''))porP[p].o++;});
+  DB.Pendientes.forEach(function(r){var p=r.Responsable||'Sin asignar';if(!porP[p])porP[p]={t:0,o:0};porP[p].t++;if(/complet|finaliz/i.test(r.Estado||''))porP[p].o++;});
+  var tb=$('#tb_KpiPersona');var keys=Object.keys(porP);
+  if(!keys.length){tb.innerHTML='<tr><td class="empty" colspan="4">Sin asignaciones aún.</td></tr>';return;}
+  tb.innerHTML=keys.map(function(p){var o=porP[p];var pct=o.t?Math.round(o.o/o.t*100):0;return '<tr><td><b>'+esc(p)+'</b></td><td>'+o.t+'</td><td>'+o.o+'</td><td><b style="color:var(--forest)">'+pct+'%</b></td></tr>';}).join('');
+}
+
+/* ===================== DATALISTS ===================== */
+function renderDatalists(){
+  var nombres={};DB.Equipo.forEach(function(p){if(p.Nombre)nombres[p.Nombre]=1;});
+  $('#equipoList').innerHTML=Object.keys(nombres).map(function(n){return '<option value="'+esc(n)+'">';}).join('')+'<option value="Todo el equipo">';
+  var cl={};DB.Clientes.forEach(function(c){if(c.Cliente)cl[c.Cliente]=1;});
+  $('#clientesList').innerHTML=Object.keys(cl).map(function(n){return '<option value="'+esc(n)+'">';}).join('');
+}
+
+/* ===================== CONTADORES ===================== */
+function renderContadores(){['Equipo','Estructura','Proyectos','Clientes','Onboarding','Viajes','Seleccion','Comunicaciones','Capacitaciones','Cumpleanos','Accesos'].forEach(function(h){var el=$('#cnt_'+h);if(el)el.textContent=(DB[h]||[]).length;});}
+
+/* ===================== INFORMES / PERÍODOS ===================== */
+var FOCO=false;
+function inicioSemanaHoy(){var s=new Date();s.setHours(0,0,0,0);var wd=(s.getDay()+6)%7;s.setDate(s.getDate()-wd);return s;}
+function toggleFoco(v){FOCO=v;render();}
+function segActivar(m){var seg=$('#calSeg');if(!seg)return;[].forEach.call(seg.children,function(x){x.classList.toggle('on',x.getAttribute('data-m')===m);});}
+function verMes(mo){calRef=new Date(calRef.getFullYear(),mo,1);calMode='mes';segActivar('mes');renderCal();}
+
+function rangoPeriodo(periodo){
+  var hoy=new Date();hoy.setHours(0,0,0,0);
+  if(periodo==='semana'){var s=new Date(hoy);var wd=(s.getDay()+6)%7;s.setDate(s.getDate()-wd);var e=new Date(s);e.setDate(s.getDate()+7);return{ini:s,fin:e};}
+  if(periodo==='mes'){return{ini:new Date(hoy.getFullYear(),hoy.getMonth(),1),fin:new Date(hoy.getFullYear(),hoy.getMonth()+1,1)};}
+  return{ini:new Date(hoy.getFullYear(),0,1),fin:new Date(hoy.getFullYear()+1,0,1)};
+}
+function fechaDe(hoja,r){if(hoja==='Proyectos')return parseFecha(r.FechaFin)||parseFecha(r.FechaInicio);if(hoja==='Viajes')return parseFecha(r.FechaRegreso)||parseFecha(r.FechaSalida);return parseFecha(r.Fecha);}
+function recolectar(periodo){
+  var R=rangoPeriodo(periodo),ini=R.ini,fin=R.fin;
+  function inR(d){return d&&d>=ini&&d<fin;}
+  var finalizadas=[],pend=[],porP={};
+  [['Proyectos','Proyecto'],['Pendientes','Titulo'],['Seleccion','Vacante'],['Onboarding','Persona'],['Viajes','Destino']].forEach(function(f){
+    var hoja=f[0],campo=f[1];(DB[hoja]||[]).forEach(function(r){var d=fechaDe(hoja,r);if(!inR(d))return;var resp=r.Responsable||r.Viajero||'Sin asignar';var item={d:d,t:r[campo]||hoja,mod:hoja,resp:resp,e:r.Estado};if(esDone(r.Estado))finalizadas.push(item);else pend.push(item);if(!porP[resp])porP[resp]={t:0,h:0};porP[resp].t++;if(esDone(r.Estado))porP[resp].h++;});
+  });
+  var ev=[];eventos().forEach(function(e){if(!e.d)return;var d=e.recur?new Date(ini.getFullYear(),e.d.getMonth(),e.d.getDate()):e.d;if(d>=ini&&d<fin)ev.push({d:d,titulo:e.titulo,tipo:e.tipo,resp:e.resp});});
+  ev.sort(function(a,b){return a.d-b.d;});finalizadas.sort(function(a,b){return a.d-b.d;});pend.sort(function(a,b){return a.d-b.d;});
+  var total=finalizadas.length+pend.length;
+  return{periodo:periodo,ini:ini,fin:fin,total:total,hechas:finalizadas.length,pend:pend,finalizadas:finalizadas,pct:total?Math.round(finalizadas.length/total*100):0,porP:porP,eventos:ev};
+}
+function rangoTxt(R){var f=R.fin?new Date(R.fin.getTime()-86400000):R.fin;return ymd(R.ini)+' al '+ymd(f);}
+function nomPeriodo(p){return p==='semana'?'Semanal':(p==='mes'?'Mensual':'Anual');}
+
+function renderInformePanel(){
+  var d=recolectar('semana');
+  var rg=$('#infoSemanaRango');if(rg)rg.textContent='Del '+rangoTxt(d);
+  var k=$('#infoKpiSemana');if(k)k.innerHTML=
+    '<div class="kpi" style="padding:14px"><div class="big" style="font-size:30px">'+d.pct+'%</div><div class="lab">Cumplimiento</div></div>'+
+    '<div class="kpi" style="padding:14px"><div class="big" style="font-size:30px">'+d.hechas+'</div><div class="lab">Realizadas</div></div>'+
+    '<div class="kpi" style="padding:14px"><div class="big" style="font-size:30px">'+d.pend.length+'</div><div class="lab">Pendientes</div></div>';
+  var h=$('#infoHechas');if(h)h.innerHTML=d.finalizadas.length?d.finalizadas.map(function(i){return '<div class="pend"><span class="when">'+ymd(i.d).slice(5)+'</span><div class="body"><b>'+esc(i.t)+'</b><span>'+esc(i.mod)+' · '+esc(i.resp)+'</span></div><span class="tag t-green">✓</span></div>';}).join(''):'<div class="empty">Sin cierres registrados esta semana.</div>';
+  var a=$('#infoAgendaSemana');if(a)a.innerHTML=d.eventos.length?d.eventos.map(function(e){return '<div class="pend"><span class="when">'+ymd(e.d).slice(5)+'</span><div class="body"><b>'+esc(e.titulo)+'</b><span>'+esc(e.resp||'')+'</span></div></div>';}).join(''):'<div class="empty">Sin eventos esta semana.</div>';
+}
+
+function descargar(nombre,contenido,tipo){var blob=new Blob([contenido],{type:tipo||'text/html;charset=utf-8'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download=nombre;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(url);a.parentNode&&a.parentNode.removeChild(a);},1500);}
+function generarInforme(periodo){var d=recolectar(periodo);descargar('Informe_'+nomPeriodo(periodo)+'_'+ymd(new Date())+'.html',buildReportHTML(d));}
+function buildReportHTML(d){
+  function fila(arr,cols){return arr.length?arr.map(function(r){return '<tr>'+cols.map(function(c){return '<td>'+c(r)+'</td>';}).join('')+'</tr>';}).join(''):'<tr><td colspan="'+cols.length+'" class="em">Sin registros.</td></tr>';}
+  var personas=Object.keys(d.porP).map(function(p){var o=d.porP[p];return {p:p,t:o.t,h:o.h,pct:o.t?Math.round(o.h/o.t*100):0};});
+  var css="*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Manrope',sans-serif;background:#0A1428;color:#1a2433;padding:24px}.rep{max-width:900px;margin:0 auto;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4)}.rh{background:linear-gradient(135deg,#0A1428,#050D1A);color:#EAF1F6;padding:28px 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}.rh-l{display:flex;gap:14px;align-items:center}.mk{width:46px;height:46px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);display:grid;place-items:center;font-family:'Fraunces',serif;font-weight:600;font-size:20px}.rt{font-family:'Fraunces',serif;font-size:22px;font-weight:600}.rs{font-size:12px;color:#9FB0C4;letter-spacing:.04em}.rh-r{text-align:right}.badge{display:inline-block;background:#C9A24A;color:#0A1428;font-weight:800;font-size:12px;padding:4px 12px;border-radius:30px;letter-spacing:.04em}.rng{font-size:12.5px;color:#9FB0C4;margin-top:6px}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:24px 32px;background:#F4F6FA}.c{background:#fff;border:1px solid #E1E6EF;border-radius:12px;padding:16px;text-align:center}.c .n{font-family:'Fraunces',serif;font-size:30px;color:#0A1428;font-weight:600}.c .l{font-size:11.5px;color:#5C6B82;font-weight:700;margin-top:4px}h2{font-family:'Fraunces',serif;font-size:18px;color:#0A1428;padding:22px 32px 8px}table{width:100%;border-collapse:collapse;font-size:13px}thead th{background:#0A1428;color:#EAF1F6;text-align:left;padding:9px 32px;font-size:11px;text-transform:uppercase;letter-spacing:.04em}tbody td{padding:9px 32px;border-bottom:1px solid #EDF0F5;color:#26334a}.em{color:#8A97AB;font-style:italic;text-align:center}.rf{display:flex;justify-content:space-between;align-items:center;padding:20px 32px;background:#F4F6FA;font-size:12px;color:#5C6B82;flex-wrap:wrap;gap:12px}.pb{background:#0A1428;color:#fff;border:none;padding:10px 18px;border-radius:9px;font-weight:700;cursor:pointer;font-family:inherit}@media print{body{background:#fff;padding:0}.rep{box-shadow:none}.pb{display:none}thead th,tbody td{padding-left:18px;padding-right:18px}}";
+  return '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Informe '+nomPeriodo(d.periodo)+' · Escencial</title><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"><style>'+css+'</style></head><body><div class="rep">'+
+    '<header class="rh"><div class="rh-l"><div class="mk">Ec</div><div><div class="rt">Agenda Recursos Humanos</div><div class="rs">Escencial Consultora · Dirección</div></div></div><div class="rh-r"><div class="badge">Informe '+nomPeriodo(d.periodo)+'</div><div class="rng">'+rangoTxt(d)+'</div></div></header>'+
+    '<section class="cards"><div class="c"><div class="n">'+d.pct+'%</div><div class="l">Cumplimiento</div></div><div class="c"><div class="n">'+d.hechas+'</div><div class="l">Realizadas</div></div><div class="c"><div class="n">'+d.pend.length+'</div><div class="l">Pendientes</div></div><div class="c"><div class="n">'+d.total+'</div><div class="l">Total con fecha</div></div></section>'+
+    '<h2>Cumplimiento por persona</h2><table><thead><tr><th>Responsable</th><th>Asignadas</th><th>Cumplidas</th><th>%</th></tr></thead><tbody>'+fila(personas,[function(r){return esc(r.p);},function(r){return r.t;},function(r){return r.h;},function(r){return '<b>'+r.pct+'%</b>';}])+'</tbody></table>'+
+    '<h2>Realizado en el período</h2><table><thead><tr><th>Fecha</th><th>Detalle</th><th>Módulo</th><th>Responsable</th></tr></thead><tbody>'+fila(d.finalizadas,[function(r){return ymd(r.d);},function(r){return esc(r.t);},function(r){return esc(r.mod);},function(r){return esc(r.resp);}])+'</tbody></table>'+
+    '<h2>Pendientes del período</h2><table><thead><tr><th>Fecha</th><th>Detalle</th><th>Módulo</th><th>Responsable</th><th>Estado</th></tr></thead><tbody>'+fila(d.pend,[function(r){return ymd(r.d);},function(r){return esc(r.t);},function(r){return esc(r.mod);},function(r){return esc(r.resp);},function(r){return esc(r.e||'');}])+'</tbody></table>'+
+    '<h2>Agenda del período</h2><table><thead><tr><th>Fecha</th><th>Evento</th><th>Referente</th></tr></thead><tbody>'+fila(d.eventos,[function(r){return ymd(r.d);},function(r){return esc(r.titulo);},function(r){return esc(r.resp||'');}])+'</tbody></table>'+
+    '<footer class="rf"><span>Generado el '+ymd(new Date())+' por '+esc((SESSION&&(SESSION.nombre||SESSION.usuario))||'Dirección')+'</span><button onclick="window.print()" class="pb">Imprimir / Guardar PDF</button></footer>'+
+    '</div></body></html>';
+}
+
+/* ===================== RENDER MAESTRO ===================== */
+function render(){renderCal();renderPendientes();renderTablas();renderCumplidos();renderKPI();renderInformePanel();renderDatalists();renderContadores();}
+
+/* ===================== HIDRATAR DESDE SHEETS (JSONP) ===================== */
+function hidratar(){
+  if(EN_APPS_SCRIPT){
+    google.script.run.withSuccessHandler(function(data){mergeData(data);render();}).withFailureHandler(function(e){console.error(e);}).obtenerTodo();
+    return;
+  }
+  if(!HAY_ENDPOINT)return;
+  var cb='__cb'+Date.now();
+  window[cb]=function(data){try{mergeData(data);render();}catch(e){console.error(e);}delete window[cb];};
+  var s=document.createElement('script');
+  s.src=ENDPOINT+'?action=all&callback='+cb+'&t='+Date.now();
+  s.onerror=function(){console.warn('No se pudo leer desde Sheets (revisá el acceso de la implementación).');};
+  document.body.appendChild(s);
+}
+function mergeData(data){
+  if(!data)return;
+  for(var h in DB){
+    if(data[h]&&data[h].length){
+      // conserva la semilla de Dirección en Equipo y evita duplicar
+      if(h==='Equipo'){
+        data[h].forEach(function(r){if(!DB.Equipo.some(function(p){return (p.Nombre||'')===(r.Nombre||'');}))DB.Equipo.push(r);});
+      } else { DB[h]=data[h]; }
+    }
+  }
+}
+
+/* ===================== INIT ===================== */
+initAuth();
+</script>
+</body>
+</html>

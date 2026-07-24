@@ -1,0 +1,53 @@
+<button class="btn-volver" (click)="volver()"><i class="fas fa-arrow-left"></i> Volver a Usuarios</button>
+<div class="card acento" style="max-width:720px">
+  <h2>{{ esNuevo ? 'Nuevo acceso' : 'Editar acceso' }}</h2>
+  <p class="desc">El rol define a qué panel entra y qué puede hacer.</p>
+
+  <div class="form-group">
+    <label>Nombre y apellido</label>
+    <input type="text" name="nombre" [(ngModel)]="usuario.Nombre">
+  </div>
+
+  <div class="grid-container">
+    <div class="form-group">
+      <label>Usuario</label>
+      <input type="text" name="usuario" [(ngModel)]="usuario.Usuario" placeholder="ej. mica">
+    </div>
+    <div class="form-group">
+      <label>Correo</label>
+      <input type="email" name="correo" [(ngModel)]="usuario.Correo">
+    </div>
+    <div class="form-group">
+      <label>Rol</label>
+      <select name="rol" [(ngModel)]="usuario.Rol">
+        <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+      </select>
+    </div>
+    <div class="form-group" *ngIf="necesitaEmpresa">
+      <label>Empresa</label>
+      <select name="empresa" [(ngModel)]="usuario.EmpresaID">
+        <option value="">— Elegir —</option>
+        <option *ngFor="let e of empresas" [value]="e.ID">{{ e.Nombre }}</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>Contraseña {{ esNuevo ? '' : '(dejala vacía para no cambiarla)' }}</label>
+    <input type="password" name="clave" [(ngModel)]="clave" autocomplete="new-password"
+           placeholder="Se cifra antes de enviarse">
+  </div>
+
+  <div class="nota">
+    Si no le ponés contraseña, esta persona va a poder entrar con su correo hasta que se la definas.
+    Sirve para no dejar a nadie afuera mientras se migran los accesos.
+  </div>
+
+  <p class="mensaje error" *ngIf="mensaje">{{ mensaje }}</p>
+  <div class="acciones-modal">
+    <button class="btn gris" (click)="volver()">Cancelar</button>
+    <button class="btn success" (click)="guardar()" [disabled]="guardando">
+      <i class="fas fa-save"></i> {{ guardando ? 'Guardando…' : 'Guardar' }}
+    </button>
+  </div>
+</div>

@@ -1,0 +1,90 @@
+<div class="card acento">
+  <div class="card-header">
+    <div>
+      <h2><i class="fas" [ngClass]="config.icono"></i> {{ config.titulo }}</h2>
+      <p class="desc">{{ config.descripcion }}</p>
+    </div>
+    <button class="btn" *ngIf="puede('crear')" (click)="nuevo()">
+      <i class="fas fa-plus-circle"></i> Nuevo
+    </button>
+  </div>
+
+  <div class="nota" *ngIf="config.entidad === 'Accesos' && rol === 'Interno'">
+    <i class="fas fa-lock"></i> Podés ver la bóveda pero no modificarla. Solo Dirección la edita.
+  </div>
+
+  <input type="text" class="search-bar" placeholder="Buscar…" [(ngModel)]="filtro">
+
+  <p class="mensaje" *ngIf="mensaje">{{ mensaje }}</p>
+  <p class="vacio" *ngIf="cargando"><i class="fas fa-spinner fa-spin"></i> Cargando…</p>
+
+  <div class="tabla-cont" *ngIf="!cargando">
+    <table>
+      <thead>
+        <tr>
+          <th *ngFor="let c of columnas">{{ c.etiqueta }}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let f of visibles">
+          <td *ngFor="let c of columnas" [attr.data-label]="c.etiqueta">
+            <span *ngIf="c.badge" class="badge badge-azul">{{ f[c.clave] || '—' }}</span>
+            <ng-container *ngIf="!c.badge">
+              <span *ngIf="c.tipo === 'password'">
+                {{ mostrar(f, c) }}
+                <i class="fas fa-eye" style="cursor:pointer;color:#7f8c8d;margin-left:6px"
+                   (click)="alternarClave(f)"></i>
+              </span>
+              <a *ngIf="c.tipo === 'url' && f[c.clave]" [href]="f[c.clave]" target="_blank" rel="noopener">abrir</a>
+              <span *ngIf="c.tipo !== 'password' && c.tipo !== 'url'">{{ f[c.clave] || '—' }}</span>
+              <span *ngIf="c.tipo === 'url' && !f[c.clave]">—</span>
+            </ng-container>
+          </td>
+          <td class="acciones">
+            <button class="btn-accion btn-editar" title="Editar" *ngIf="puede('editar')" (click)="editar(f)">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn-accion btn-borrar" title="Eliminar" *ngIf="puede('eliminar')" (click)="eliminar(f)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="vacio" *ngIf="!visibles.length">Todavía no hay registros.</p>
+  </div>
+</div>
+
+<!-- Alta / edición -->
+<div class="modal-fondo" *ngIf="editando" (click)="cerrar()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <i class="fas" [ngClass]="config.icono"></i> {{ esNuevo ? 'Nuevo' : 'Editar' }} · {{ config.titulo }}
+    </div>
+
+    <div class="form-group" *ngFor="let c of config.campos">
+      <label>{{ c.etiqueta }}</label>
+
+      <textarea *ngIf="c.tipo === 'textarea'" [(ngModel)]="editando[c.clave]" rows="3"></textarea>
+
+      <select *ngIf="c.tipo === 'select'" [(ngModel)]="editando[c.clave]">
+        <option value="">— Elegir —</option>
+        <option *ngFor="let o of opcionesDe(c)" [value]="o">{{ o }}</option>
+      </select>
+
+      <input *ngIf="c.tipo === 'fecha'" type="date" [(ngModel)]="editando[c.clave]">
+      <input *ngIf="c.tipo === 'url'" type="url" [(ngModel)]="editando[c.clave]" placeholder="https://…">
+      <input *ngIf="c.tipo === 'password'" type="text" [(ngModel)]="editando[c.clave]">
+      <input *ngIf="c.tipo === 'texto'" type="text" [(ngModel)]="editando[c.clave]">
+    </div>
+
+    <p class="mensaje error" *ngIf="mensaje">{{ mensaje }}</p>
+    <div class="acciones-modal">
+      <button class="btn gris" (click)="cerrar()">Cancelar</button>
+      <button class="btn success" (click)="guardar()" [disabled]="guardando">
+        <i class="fas fa-save"></i> {{ guardando ? 'Guardando…' : 'Guardar' }}
+      </button>
+    </div>
+  </div>
+</div>

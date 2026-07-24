@@ -1,0 +1,47 @@
+<button class="btn-volver" (click)="volver()"><i class="fas fa-arrow-left"></i> Volver</button>
+<div class="card acento" style="max-width:640px">
+  <h2><i class="fas fa-user-check"></i> Presentar candidato</h2>
+  <p class="desc">Primero verificamos el documento; después se habilita el resto.</p>
+
+  <div class="form-group">
+    <label>Documento</label>
+    <div class="fila">
+      <input type="text" name="dni" [(ngModel)]="candidato.DNI" [disabled]="dniVerificado" placeholder="Sin puntos ni espacios">
+      <button class="btn" *ngIf="!dniVerificado" (click)="verificarDni()" [disabled]="verificando" style="white-space:nowrap">
+        <i class="fas fa-search"></i> {{ verificando ? 'Consultando…' : 'Verificar' }}
+      </button>
+      <button class="btn gris" *ngIf="dniVerificado" (click)="corregirDni()">Corregir</button>
+    </div>
+  </div>
+
+  <p class="mensaje" [class.error]="error" *ngIf="mensaje">{{ mensaje }}</p>
+
+  <ng-container *ngIf="dniVerificado">
+    <div class="form-group">
+      <label>Nombre y apellido</label>
+      <input type="text" name="nombre" [(ngModel)]="candidato.Nombre">
+    </div>
+    <div class="form-group">
+      <label>Búsqueda</label>
+      <select name="busqueda" [(ngModel)]="candidato.BusquedaID">
+        <option value="">— Elegir —</option>
+        <option *ngFor="let b of busquedas" [value]="b.ID">{{ b.Puesto }} · {{ b.Provincia }}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Enlace al CV</label>
+      <input type="url" name="cv" [(ngModel)]="candidato.LinkCV" placeholder="https://…">
+    </div>
+    <div class="form-group">
+      <label>Enlace al video de presentación</label>
+      <input type="url" name="video" [(ngModel)]="candidato.LinkVideo" placeholder="https://…">
+    </div>
+
+    <div class="acciones-modal">
+      <button class="btn gris" (click)="volver()">Cancelar</button>
+      <button class="btn success" (click)="guardar()" [disabled]="guardando">
+        <i class="fas fa-upload"></i> {{ guardando ? 'Guardando…' : 'Presentar candidato' }}
+      </button>
+    </div>
+  </ng-container>
+</div>

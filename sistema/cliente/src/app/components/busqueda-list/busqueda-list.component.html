@@ -1,0 +1,60 @@
+<div class="card acento">
+  <div class="card-header">
+    <div>
+      <h2>Búsquedas</h2>
+      <p class="desc">Todas las vacantes, activas e históricas.</p>
+    </div>
+    <button class="btn" (click)="nueva()"><i class="fas fa-plus-circle"></i> Nueva búsqueda</button>
+  </div>
+
+  <input type="text" class="search-bar" placeholder="Buscar por puesto, empresa, provincia o etapa…"
+         [(ngModel)]="filtro">
+
+  <p class="mensaje" *ngIf="mensaje">{{ mensaje }}</p>
+  <p class="vacio" *ngIf="cargando"><i class="fas fa-spinner fa-spin"></i> Cargando…</p>
+
+  <div class="tabla-cont" *ngIf="!cargando">
+    <table>
+      <thead>
+        <tr><th>Puesto</th><th>Empresa</th><th>Provincia</th><th>Etapa</th>
+            <th>Consultores</th><th>Estado</th><th></th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let b of visibles">
+          <td data-label="Puesto"><a (click)="abrir(b)" class="enlace"><strong>{{ b.Puesto }}</strong></a></td>
+          <td data-label="Empresa">{{ empresa(b.EmpresaID) }}</td>
+          <td data-label="Provincia">{{ b.Provincia || '—' }}</td>
+          <td data-label="Etapa"><span class="badge badge-azul">{{ b.Etapa }}</span></td>
+          <td data-label="Consultores" class="chico">{{ nombresAsignados(b) }}</td>
+          <td data-label="Estado"><span class="badge" [ngClass]="b.Estado === 'Activa' ? 'badge-activa' : 'badge-gris'">{{ b.Estado }}</span></td>
+          <td class="acciones">
+            <button class="btn-accion btn-asignar" title="Asignar consultores" (click)="abrirAsignacion(b)"><i class="fas fa-user-tie"></i></button>
+            <button class="btn-accion btn-editar" title="Editar" (click)="editar(b)"><i class="fas fa-edit"></i></button>
+            <button class="btn-accion btn-estado" title="Activar/Deshabilitar" (click)="cambiarEstado(b)"><i class="fas fa-power-off"></i></button>
+            <button class="btn-accion btn-volver" title="Cerrar búsqueda" style="width:34px;margin:0 0 0 3px" (click)="darDeBaja(b)"><i class="fas fa-lock"></i></button>
+            <button class="btn-accion btn-borrar" title="Eliminar" *ngIf="esAdmin" (click)="eliminar(b)"><i class="fas fa-trash"></i></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="vacio" *ngIf="!visibles.length">No hay búsquedas que coincidan.</p>
+  </div>
+</div>
+
+<div class="modal-fondo" *ngIf="asignando" (click)="asignando = null">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header"><i class="fas fa-user-tie"></i> Consultores para «{{ asignando.Puesto }}»</div>
+    <p class="desc">Solo van a ver esta búsqueda quienes queden marcados.</p>
+    <div class="checkbox-list">
+      <label class="checkbox-item" *ngFor="let c of consultores">
+        <input type="checkbox" [checked]="seleccionados.includes(c.ID || '')" (change)="alternar(c.ID || '')">
+        {{ c.Nombre }} <span class="chico">{{ c.Correo }}</span>
+      </label>
+      <p class="vacio" *ngIf="!consultores.length">No hay consultores dados de alta.</p>
+    </div>
+    <div class="acciones-modal">
+      <button class="btn gris" (click)="asignando = null">Cancelar</button>
+      <button class="btn success" (click)="guardarAsignacion()">Guardar selección</button>
+    </div>
+  </div>
+</div>

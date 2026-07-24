@@ -1,0 +1,18 @@
+# Configuración de Netlify.
+# Antes servía los HTML sueltos de la raíz; ahora compila el sistema Angular
+# que está en sistema/cliente y sirve el resultado.
+
+[build]
+  base = "sistema/cliente"
+  command = "npm install && npm run build"
+  publish = "dist/escencial-sistema"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+# El sistema es una sola página (SPA): todas las rutas las maneja Angular,
+# así que cualquier dirección se sirve con index.html.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
