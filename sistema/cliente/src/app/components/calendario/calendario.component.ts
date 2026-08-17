@@ -10,6 +10,8 @@ interface Evento {
   tipo: 'pendiente' | 'finalizada' | 'viaje' | 'cumple';
   responsable?: string;
   detalle?: string;
+  /** Lo que precisa el tipo: "Incompany Clínica Ledesma", por ejemplo. */
+  detalleTipo?: string;
   /** Cliente al que corresponde, si lo tiene. Los cumpleaños no tienen. */
   empresaId?: string;
   empresa?: string;
@@ -118,7 +120,7 @@ export class CalendarioComponent implements OnInit {
   /** Abre el alta rápida con la fecha del día ya puesta. */
   abrirNuevo(dia: number): void {
     this.nuevo = {
-      Titulo: '', Tipo: '', Responsable: '', Fecha: this.ymd(dia), Estado: 'Pendiente',
+      Titulo: '', Tipo: '', Detalle: '', Responsable: '', Fecha: this.ymd(dia), Estado: 'Pendiente',
       // Si se está mirando un cliente en particular, el pendiente nace suyo.
       EmpresaID: this.filtroEmpresa
     };
@@ -171,7 +173,9 @@ export class CalendarioComponent implements OnInit {
         const fin = /finaliz/i.test(p.Estado || '');
         agregar(f.getDate(), {
           dia: f.getDate(), titulo: p.Titulo, responsable: p.Responsable,
-          tipo: fin ? 'finalizada' : 'pendiente', detalle: p.Estado,
+          tipo: fin ? 'finalizada' : 'pendiente',
+          detalle: [p.Tipo, p.Detalle, p.Estado].filter(Boolean).join(' · '),
+          detalleTipo: p.Detalle,
           empresaId: p.EmpresaID, empresa: this.nombreEmpresa(p.EmpresaID)
         });
       }

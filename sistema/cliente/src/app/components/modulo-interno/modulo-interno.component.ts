@@ -103,6 +103,21 @@ export class ModuloInternoComponent implements OnInit {
     return [];
   }
 
+  /**
+   * Las opciones del desplegable, más el valor que ya tenía el registro si hoy
+   * no está en la lista.
+   *
+   * Cuando se saca una opción del catálogo, los registros viejos siguen con el
+   * valor anterior. Sin esto, al abrirlos el desplegable aparecería vacío y con
+   * guardar se les borraría el dato sin que nadie lo pida.
+   */
+  opcionesParaEditar(campo: CampoModulo): string[] {
+    const opciones = this.opcionesDe(campo);
+    const actual = this.editando ? this.editando[campo.clave] : '';
+    if (actual && !opciones.includes(actual)) return [actual].concat(opciones);
+    return opciones;
+  }
+
   /** Este módulo se puede vincular a un cliente. */
   get tieneEmpresa(): boolean {
     return this.config.campos.some(c => c.tipo === 'empresa');
@@ -142,13 +157,31 @@ export class ModuloInternoComponent implements OnInit {
     if (campo.tipo === 'empresa') {
       return this.nombreEmpresa(v) || '—';
     }
+    // El servidor devuelve las columnas llamadas "Fecha" con la hora pegada
+    // (2026-08-10 00:00:00). En una agenda la hora no aporta y ensucia.
+    if (campo.tipo === 'fecha') {
+      return v ? String(v).slice(0, 10) : '—';
+    }
     return v || '—';
   }
 
   alternarClave(fila: any): void { this.verClaves[fila.ID] = !this.verClaves[fila.ID]; }
 
   nuevo(): void { this.esNuevo = true; this.editando = {}; }
-  editar(fila: any): void { this.esNuevo = false; this.editando = { ...fila }; }
+
+  editar(fila: any): void {
+    this.esNuevo = false;
+    const copia = { ...fila };
+    /**
+     * Las fechas vuelven del servidor con la hora pegada, y un <input type="date">
+     * no acepta ese formato: mostraba el campo vacío, y al guardar se borraba la
+     * fecha que el registro ya tenía.
+     */
+    this.config.campos
+      .filter(c => c.tipo === 'fecha')
+      .forEach(c => { if (copia[c.clave]) copia[c.clave] = String(copia[c.clave]).slice(0, 10); });
+    this.editando = copia;
+  }
   cerrar(): void { this.editando = null; }
 
   guardar(): void {

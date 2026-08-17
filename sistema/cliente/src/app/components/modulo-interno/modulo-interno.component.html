@@ -86,7 +86,7 @@
 
       <select *ngIf="c.tipo === 'select'" [(ngModel)]="editando[c.clave]">
         <option value="">— Elegir —</option>
-        <option *ngFor="let o of opcionesDe(c)" [value]="o">{{ o }}</option>
+        <option *ngFor="let o of opcionesParaEditar(c)" [value]="o">{{ o }}</option>
       </select>
 
       <select *ngIf="c.tipo === 'empresa'" [(ngModel)]="editando[c.clave]">
@@ -97,7 +97,8 @@
       <input *ngIf="c.tipo === 'fecha'" type="date" [(ngModel)]="editando[c.clave]">
       <input *ngIf="c.tipo === 'url'" type="url" [(ngModel)]="editando[c.clave]" placeholder="https://…">
       <input *ngIf="c.tipo === 'password'" type="text" [(ngModel)]="editando[c.clave]">
-      <input *ngIf="c.tipo === 'texto'" type="text" [(ngModel)]="editando[c.clave]">
+      <input *ngIf="c.tipo === 'texto'" type="text" [(ngModel)]="editando[c.clave]"
+             [placeholder]="c.ayuda || ''">
     </div>
 
     <p class="mensaje error" *ngIf="mensaje">{{ mensaje }}</p>

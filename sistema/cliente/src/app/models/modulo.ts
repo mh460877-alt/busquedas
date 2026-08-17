@@ -16,6 +16,8 @@ export interface CampoModulo {
   /** Si es un estado, se pinta como badge. */
   badge?: boolean;
   requerido?: boolean;
+  /** Texto de ejemplo dentro del campo, para que se entienda qué va ahí. */
+  ayuda?: string;
 }
 
 export interface ConfigModulo {

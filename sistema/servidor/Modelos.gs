@@ -58,7 +58,7 @@ var HOJAS = {
   /* que permite después filtrar el calendario y armar la ficha por empresa.  */
 
   Pendientes: {
-    cols: ['ID', 'Titulo', 'Tipo', 'Responsable', 'EmpresaID', 'Fecha', 'Estado', 'Observaciones', 'Link'],
+    cols: ['ID', 'Titulo', 'Tipo', 'Detalle', 'Responsable', 'EmpresaID', 'Fecha', 'Estado', 'Observaciones', 'Link'],
     requeridos: ['Titulo']
   },
   Proyectos: {
@@ -132,7 +132,10 @@ var ETAPAS_CANDIDATO = [
 var ETAPAS_VISIBLES_EMPRESA = ['Terna', 'Terna final', 'Contratado'];
 
 /* Catálogos del mundo interno. */
-var TIPOS_PENDIENTE = ['Entrega', 'Reunion', 'Reunion de alineamiento', 'Seguimiento', 'Comodin'];
+var TIPOS_PENDIENTE = [
+  'Entrega', 'Reunion', 'Reunion de alineamiento', 'Seguimiento',
+  'Capacitación Incompany'
+];
 var ESTADOS_PENDIENTE = ['Pendiente', 'En curso', 'Finalizada'];
 var ESTADOS_PROYECTO = ['Sin iniciar', 'En curso', 'En pausa', 'Finalizado'];
 var TIPOS_ONBOARDING = ['Ingreso colaborador', 'Alta cliente', 'Manual de proceso', 'Politica'];

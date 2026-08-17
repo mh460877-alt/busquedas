@@ -54,9 +54,10 @@
         <div class="cal-num">{{ c.dia }}</div>
         <div class="cal-ev" *ngFor="let e of c.eventos.slice(0, 3)"
              [ngClass]="'ev-' + e.tipo"
-             [title]="e.titulo + (e.responsable ? ' · ' + e.responsable : '') + (e.empresa ? ' · ' + e.empresa : '')">
+             [title]="e.titulo + (e.detalleTipo ? ' · ' + e.detalleTipo : '') + (e.responsable ? ' · ' + e.responsable : '') + (e.empresa ? ' · ' + e.empresa : '')">
           {{ e.titulo }}
-          <span class="ev-empresa" *ngIf="e.empresa && !filtroEmpresa">{{ e.empresa }}</span>
+          <span class="ev-empresa" *ngIf="e.detalleTipo">{{ e.detalleTipo }}</span>
+          <span class="ev-empresa" *ngIf="e.empresa && !filtroEmpresa && !e.detalleTipo">{{ e.empresa }}</span>
         </div>
         <div class="cal-mas" *ngIf="c.eventos.length > 3">+{{ c.eventos.length - 3 }} más</div>
       </ng-container>
@@ -75,6 +76,7 @@
       <span class="punto" [ngClass]="'p-' + e.tipo"></span>
       <div>
         <strong>{{ e.titulo }}</strong>
+        <span class="chico" *ngIf="e.detalleTipo"> · {{ e.detalleTipo }}</span>
         <span class="chico" *ngIf="e.responsable"> · {{ e.responsable }}</span>
         <span class="badge badge-azul" *ngIf="e.empresa">{{ e.empresa }}</span>
         <div class="chico" *ngIf="e.detalle">{{ e.detalle }}</div>
@@ -91,6 +93,7 @@
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header"><i class="fas fa-plus"></i> Nuevo pendiente · {{ nuevo.Fecha }}</div>
     <div class="form-group"><label>Actividad</label><input type="text" [(ngModel)]="nuevo.Titulo" placeholder="Qué hay que hacer"></div>
+    <div class="form-group"><label>Detalle</label><input type="text" [(ngModel)]="nuevo.Detalle" placeholder="Ej.: Incompany Clínica Ledesma"></div>
     <div class="grid-container">
       <div class="form-group"><label>Tipo</label>
         <select [(ngModel)]="nuevo.Tipo"><option value="">— Elegir —</option><option *ngFor="let t of tipos" [value]="t">{{ t }}</option></select>

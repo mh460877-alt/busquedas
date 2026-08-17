@@ -14,6 +14,12 @@ export const MODULOS: { [ruta: string]: ConfigModulo } = {
     campos: [
       { clave: 'Titulo', etiqueta: 'Actividad', tipo: 'texto', enTabla: true, requerido: true },
       { clave: 'Tipo', etiqueta: 'Tipo', tipo: 'select', catalogo: 'tiposPendiente', enTabla: true },
+      {
+        clave: 'Detalle', etiqueta: 'Detalle', tipo: 'texto', enTabla: true,
+        // Para precisar el tipo cuando la lista se queda corta: elegís
+        // "Capacitación Incompany" y acá escribís de quién.
+        ayuda: 'Ej.: Incompany Clínica Ledesma'
+      },
       { clave: 'Responsable', etiqueta: 'Responsable', tipo: 'select', catalogo: 'equipo', enTabla: true },
       { clave: 'EmpresaID', etiqueta: 'Empresa / cliente', tipo: 'empresa', enTabla: true },
       { clave: 'Fecha', etiqueta: 'Fecha', tipo: 'fecha', enTabla: true },
