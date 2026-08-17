@@ -11,15 +11,6 @@ export class LoginService {
 
   constructor(private api: ApiService, private storage: StorageService) { }
 
-  /**
-   * Primer paso: preguntar si esa cuenta ya tiene contraseña.
-   * Los consultores que todavía no la tienen entran con su correo, así nadie
-   * pierde el acceso mientras se van creando.
-   */
-  estadoAcceso(id: string): Observable<{ existe: boolean; tieneContrasena: boolean }> {
-    return this.api.llamar('estadoAcceso', { id });
-  }
-
   ingresar(id: string, hash: string): Observable<Sesion> {
     return this.api.llamar<Sesion>('login', { id, hash })
       .pipe(tap(sesion => this.storage.guardar(sesion)));

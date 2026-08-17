@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { LoginService } from '../../services/login.service';
+import { EmpresaOpcion } from '../../models/adjunto';
 
 interface Evento {
   dia: number;          // día del mes visible
@@ -9,6 +10,9 @@ interface Evento {
   tipo: 'pendiente' | 'finalizada' | 'viaje' | 'cumple';
   responsable?: string;
   detalle?: string;
+  /** Cliente al que corresponde, si lo tiene. Los cumpleaños no tienen. */
+  empresaId?: string;
+  empresa?: string;
 }
 
 interface Celda {
@@ -53,15 +57,38 @@ export class CalendarioComponent implements OnInit {
   tipos: string[] = [];
   guardando = false;
 
+  /**
+   * Filtro por cliente: "mostrame solo el mes de esta empresa".
+   * Vacío = todo. Los cumpleaños quedan fuera al filtrar, porque son del equipo
+   * y no de un cliente.
+   */
+  empresas: EmpresaOpcion[] = [];
+  filtroEmpresa = '';
+
   constructor(private api: ApiService, private loginService: LoginService) { }
 
   ngOnInit(): void {
     this.cargar();
     this.loginService.catalogos().subscribe({
-      next: c => { this.equipo = c.equipo || []; this.tipos = c.tiposPendiente || []; },
+      next: c => {
+        this.equipo = c.equipo || [];
+        this.tipos = c.tiposPendiente || [];
+        this.empresas = c.empresas || [];
+        this.construir();     // ya se pueden resolver los nombres de cliente
+      },
       error: () => { }
     });
   }
+
+  nombreEmpresa(id?: string): string {
+    if (!id) return '';
+    return this.empresas.find(e => e.id === id)?.nombre ?? '';
+  }
+
+  /** Se vuelve a armar la grilla con el cliente elegido. */
+  cambiarEmpresa(): void { this.construir(); }
+
+  get empresaElegida(): string { return this.nombreEmpresa(this.filtroEmpresa); }
 
   private cargar(): void {
     this.cargando = true;
@@ -90,7 +117,11 @@ export class CalendarioComponent implements OnInit {
 
   /** Abre el alta rápida con la fecha del día ya puesta. */
   abrirNuevo(dia: number): void {
-    this.nuevo = { Titulo: '', Tipo: '', Responsable: '', Fecha: this.ymd(dia), Estado: 'Pendiente' };
+    this.nuevo = {
+      Titulo: '', Tipo: '', Responsable: '', Fecha: this.ymd(dia), Estado: 'Pendiente',
+      // Si se está mirando un cliente en particular, el pendiente nace suyo.
+      EmpresaID: this.filtroEmpresa
+    };
   }
 
   guardarNuevo(): void {
@@ -127,6 +158,9 @@ export class CalendarioComponent implements OnInit {
     // Eventos que caen en el mes visible, agrupados por día.
     const porDia: { [dia: number]: Evento[] } = {};
     const agregar = (dia: number, ev: Evento) => {
+      // Con un cliente elegido, solo entra lo suyo. Un evento sin cliente
+      // —un cumpleaños, un pendiente interno— no pertenece a ninguno.
+      if (this.filtroEmpresa && String(ev.empresaId || '') !== this.filtroEmpresa) return;
       if (!porDia[dia]) porDia[dia] = [];
       porDia[dia].push(ev);
     };
@@ -137,7 +171,8 @@ export class CalendarioComponent implements OnInit {
         const fin = /finaliz/i.test(p.Estado || '');
         agregar(f.getDate(), {
           dia: f.getDate(), titulo: p.Titulo, responsable: p.Responsable,
-          tipo: fin ? 'finalizada' : 'pendiente', detalle: p.Estado
+          tipo: fin ? 'finalizada' : 'pendiente', detalle: p.Estado,
+          empresaId: p.EmpresaID, empresa: this.nombreEmpresa(p.EmpresaID)
         });
       }
     });
@@ -147,7 +182,8 @@ export class CalendarioComponent implements OnInit {
       if (f && f.getFullYear() === anio && f.getMonth() === mes) {
         agregar(f.getDate(), {
           dia: f.getDate(), titulo: '✈ ' + (v.Destino || 'Viaje'),
-          responsable: v.Viajero, tipo: 'viaje', detalle: v.Cliente
+          responsable: v.Viajero, tipo: 'viaje', detalle: v.Cliente,
+          empresaId: v.EmpresaID, empresa: this.nombreEmpresa(v.EmpresaID)
         });
       }
     });

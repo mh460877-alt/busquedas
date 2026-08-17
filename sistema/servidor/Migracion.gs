@@ -172,3 +172,70 @@ function migrarYMostrar() {
   var resultado = migrarDatosAnteriores();
   SpreadsheetApp.getUi().alert('Migración terminada', resultado, SpreadsheetApp.getUi().ButtonSet.OK);
 }
+
+/* ================== VINCULAR REGISTROS VIEJOS CON SU CLIENTE ================== */
+
+/**
+ * Antes, el cliente de un proyecto o de un viaje era texto libre. Ahora es un
+ * vínculo con la hoja Empresas, que es lo que permite filtrar el calendario y
+ * armar la ficha de cada cliente.
+ *
+ * Esto recorre lo ya cargado y, cuando el texto coincide con el nombre de una
+ * empresa, completa el EmpresaID. Lo que no coincide se informa para revisarlo
+ * a mano: no se inventa ninguna empresa ni se pisa nada.
+ *
+ * Se puede correr las veces que haga falta: saltea lo que ya está vinculado.
+ */
+var CAMPO_CLIENTE_VIEJO = {
+  Proyectos: 'Cliente',
+  Viajes: 'Cliente',
+  Onboarding: 'Empresa'
+};
+
+function vincularEmpresasPorNombre() {
+  var porNombre = {};
+  listarTodo_('Empresas').forEach(function (e) {
+    porNombre[String(e.Nombre).trim().toLowerCase()] = e.ID;
+  });
+
+  var informe = [];
+  var sinCoincidir = {};
+
+  for (var entidad in CAMPO_CLIENTE_VIEJO) {
+    var campo = CAMPO_CLIENTE_VIEJO[entidad];
+    var vinculados = 0, yaEstaban = 0;
+
+    listarTodo_(entidad).forEach(function (fila) {
+      if (fila.EmpresaID) { yaEstaban++; return; }
+      var texto = String(fila[campo] || '').trim();
+      if (!texto) return;
+
+      var id = porNombre[texto.toLowerCase()];
+      if (id) {
+        actualizar_(entidad, fila.ID, { EmpresaID: id });
+        vinculados++;
+      } else {
+        sinCoincidir[texto] = true;
+      }
+    });
+
+    informe.push(entidad + ': ' + vinculados + ' vinculados' +
+                 (yaEstaban ? ', ' + yaEstaban + ' ya lo estaban' : ''));
+  }
+
+  var huerfanos = Object.keys(sinCoincidir);
+  if (huerfanos.length) {
+    informe.push('');
+    informe.push('Sin empresa que coincida (cargalas en Empresas y volvé a correr esto):');
+    informe.push('  ' + huerfanos.join(', '));
+  }
+
+  var texto = informe.join('\n');
+  Logger.log(texto);
+  return texto;
+}
+
+function vincularEmpresasYMostrar() {
+  SpreadsheetApp.getUi().alert('Clientes vinculados', vincularEmpresasPorNombre(),
+    SpreadsheetApp.getUi().ButtonSet.OK);
+}

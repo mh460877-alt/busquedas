@@ -65,6 +65,19 @@ function nuevoId_(prefijo) {
   return prefijo + '-' + Utilities.getUuid().slice(0, 8);
 }
 
+/**
+ * Evita inyección de fórmulas en la planilla. Un texto que empieza con = + - @
+ * lo interpretaría Google Sheets como fórmula al abrir la hoja (por ejemplo,
+ * =IMPORTXML(...) para filtrar datos). Se le antepone una comilla, que Sheets
+ * usa como marca de "esto es texto": se guarda y se lee igual, pero no ejecuta.
+ */
+function seguroParaCelda_(valor) {
+  if (typeof valor === 'string' && valor.length && '=+-@'.indexOf(valor.charAt(0)) >= 0) {
+    return "'" + valor;
+  }
+  return valor;
+}
+
 function hoy_() {
   return Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd');
 }
@@ -113,16 +126,26 @@ function filaDe_(entidad, id) {
 
 function insertar_(entidad, datos) {
   var sh = hoja_(entidad);
-  var cols = columnasDe(entidad);
   var faltantes = (HOJAS[entidad].requeridos || []).filter(function (c) {
     return !datos[c] && datos[c] !== 0;
   });
   if (faltantes.length) throw new Error('Faltan datos obligatorios: ' + faltantes.join(', '));
 
   if (!datos.ID) datos.ID = nuevoId_(entidad.slice(0, 3).toUpperCase());
-  var fila = cols.map(function (c) {
+
+  /**
+   * La fila se arma siguiendo el encabezado REAL de la hoja, no el orden en que
+   * las columnas están declaradas en Modelos.gs.
+   *
+   * Cuando se suma una columna nueva a un modelo, hoja_ la agrega al final del
+   * encabezado de las hojas que ya existen. Si acá usáramos el orden declarado,
+   * a partir de ese momento cada alta escribiría los valores corridos de lugar:
+   * el dato de una columna terminaría guardado en otra.
+   */
+  var cab = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+  var fila = cab.map(function (c) {
     if (c === 'MarcaTiempo') return new Date();
-    return datos[c] !== undefined && datos[c] !== null ? datos[c] : '';
+    return seguroParaCelda_(datos[c] !== undefined && datos[c] !== null ? datos[c] : '');
   });
   sh.appendRow(fila);
   return datos;
@@ -137,7 +160,7 @@ function actualizar_(entidad, id, cambios) {
   for (var campo in cambios) {
     var col = cab.indexOf(campo);
     if (col >= 0 && campo !== 'ID' && campo !== 'MarcaTiempo') {
-      sh.getRange(fila, col + 1).setValue(cambios[campo]);
+      sh.getRange(fila, col + 1).setValue(seguroParaCelda_(cambios[campo]));
       tocados.push(campo);
     }
   }

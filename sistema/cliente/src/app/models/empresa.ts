@@ -1,3 +1,7 @@
+import { Adjunto } from './adjunto';
+import { Busqueda } from './busqueda';
+import { Candidato } from './candidato';
+
 export interface Empresa {
   ID?: string;
   Nombre: string;
@@ -11,4 +15,18 @@ export interface Empresa {
   /** Desde cuándo se trabaja con el cliente: referencia para facturar. */
   FechaAlta?: string;
   MarcaTiempo?: string;
+}
+
+/**
+ * Todo lo que el sistema sabe de un cliente, junto.
+ * Es lo que devuelve la acción `fichaEmpresa` del servidor.
+ */
+export interface FichaEmpresa {
+  empresa: Empresa;
+  busquedas: Busqueda[];
+  candidatos: Candidato[];
+  /** Registros de cada módulo interno vinculados a esta empresa. */
+  modulos: { [entidad: string]: any[] };
+  /** Enlaces de la empresa y de todo lo que cuelga de ella. */
+  adjuntos: Adjunto[];
 }

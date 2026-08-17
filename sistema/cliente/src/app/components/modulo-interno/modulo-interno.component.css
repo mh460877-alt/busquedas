@@ -1,0 +1,15 @@
+/* Buscador y filtro por cliente, uno al lado del otro. */
+.filtros { display: flex; gap: 10px; align-items: center; margin-bottom: 4px; }
+.filtros .search-bar { flex: 1; margin-bottom: 0; }
+.filtro-empresa { width: 220px; flex-shrink: 0; margin-bottom: 0; }
+
+/* Cantidad de enlaces, pegada al clip. */
+.cuenta {
+  display: inline-block; margin-left: 4px; font-size: 0.7rem; font-weight: 700;
+  background: #e1f5fe; color: #0288d1; border-radius: 10px; padding: 1px 6px;
+}
+
+@media (max-width: 700px) {
+  .filtros { flex-direction: column; align-items: stretch; }
+  .filtro-empresa { width: 100%; }
+}

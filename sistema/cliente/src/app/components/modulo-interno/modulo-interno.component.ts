@@ -3,8 +3,10 @@ import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { LoginService } from '../../services/login.service';
 import { StorageService } from '../../services/storage.service';
+import { AdjuntoService } from '../../services/adjunto.service';
 import { MODULOS } from '../../models/modulos.config';
 import { ConfigModulo, CampoModulo } from '../../models/modulo';
+import { Adjunto, EmpresaOpcion } from '../../models/adjunto';
 
 /**
  * Componente genérico para los módulos internos (agenda RR.HH.).
@@ -33,10 +35,20 @@ export class ModuloInternoComponent implements OnInit {
   guardando = false;
   verClaves: { [id: string]: boolean } = {};   // mostrar/ocultar en la bóveda
 
+  /** Clientes, para el campo Empresa y para filtrar la tabla por cliente. */
+  empresas: EmpresaOpcion[] = [];
+  filtroEmpresa = '';
+
+  /** Enlaces de cada fila, traídos todos juntos en una sola llamada. */
+  enlacesPorRegistro: { [registroId: string]: Adjunto[] } = {};
+  /** Fila cuyos enlaces se están mirando. */
+  enlazando: any | null = null;
+
   constructor(
     private api: ApiService,
     private loginService: LoginService,
     private storage: StorageService,
+    private adjuntos: AdjuntoService,
     private ruta: ActivatedRoute
   ) { }
 
@@ -50,6 +62,8 @@ export class ModuloInternoComponent implements OnInit {
     const clave = this.ruta.snapshot.data['modulo'];
     this.config = MODULOS[clave];
     this.editando = null;
+    this.enlazando = null;
+    this.filtroEmpresa = '';
     this.cargar();
   }
 
@@ -58,6 +72,7 @@ export class ModuloInternoComponent implements OnInit {
     this.loginService.catalogos().subscribe({
       next: c => {
         this.catalogos = c;
+        this.empresas = c.empresas || [];
         this.permisos = (c.permisos && c.permisos[this.config.entidad]) || [];
       },
       error: () => { }
@@ -65,6 +80,15 @@ export class ModuloInternoComponent implements OnInit {
     this.api.listar<any>(this.config.entidad).subscribe({
       next: f => { this.filas = f; this.cargando = false; },
       error: e => { this.mensaje = e.message; this.cargando = false; }
+    });
+    this.cargarEnlaces();
+  }
+
+  /** Los enlaces de todas las filas, de una sola vez. */
+  cargarEnlaces(): void {
+    this.adjuntos.listar(this.config.entidad).subscribe({
+      next: lista => this.enlacesPorRegistro = this.adjuntos.agrupar(lista),
+      error: () => { }
     });
   }
 
@@ -79,17 +103,44 @@ export class ModuloInternoComponent implements OnInit {
     return [];
   }
 
+  /** Este módulo se puede vincular a un cliente. */
+  get tieneEmpresa(): boolean {
+    return this.config.campos.some(c => c.tipo === 'empresa');
+  }
+
+  nombreEmpresa(id?: string): string {
+    if (!id) return '';
+    return this.empresas.find(e => e.id === id)?.nombre ?? '';
+  }
+
+  enlacesDe(fila: any): Adjunto[] {
+    return this.enlacesPorRegistro[String(fila.ID)] || [];
+  }
+
+  abrirEnlaces(fila: any): void { this.enlazando = fila; }
+  cerrarEnlaces(): void { this.enlazando = null; this.cargarEnlaces(); }
+
   get visibles(): any[] {
     const t = this.filtro.toLowerCase().trim();
-    if (!t) return this.filas;
-    return this.filas.filter(f =>
-      this.config.campos.map(c => f[c.clave]).join(' ').toLowerCase().includes(t));
+
+    return this.filas.filter(f => {
+      if (this.filtroEmpresa && String(f['EmpresaID']) !== this.filtroEmpresa) return false;
+      if (!t) return true;
+      // El nombre del cliente se resuelve para poder buscarlo: en la fila
+      // guardada hay un ID, que a nadie le sirve para buscar.
+      const texto = this.config.campos.map(c => f[c.clave]).join(' ') +
+                    ' ' + this.nombreEmpresa(f['EmpresaID']);
+      return texto.toLowerCase().includes(t);
+    });
   }
 
   mostrar(fila: any, campo: CampoModulo): string {
     const v = fila[campo.clave];
     if (campo.tipo === 'password') {
       return this.verClaves[fila.ID] ? (v || '—') : '••••••••';
+    }
+    if (campo.tipo === 'empresa') {
+      return this.nombreEmpresa(v) || '—';
     }
     return v || '—';
   }

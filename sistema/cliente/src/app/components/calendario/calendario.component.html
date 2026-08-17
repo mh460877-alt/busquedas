@@ -13,6 +13,24 @@
 
   <h3 class="cal-titulo">{{ titulo }}</h3>
 
+  <!-- Buscar por cliente: el mes muestra solo lo de esa empresa. -->
+  <div class="cal-filtro">
+    <label><i class="fas fa-building"></i> Cliente</label>
+    <select [(ngModel)]="filtroEmpresa" (ngModelChange)="cambiarEmpresa()">
+      <option value="">Todos · el mes completo</option>
+      <option *ngFor="let e of empresas" [value]="e.id">{{ e.nombre }}</option>
+    </select>
+    <a class="btn chico" *ngIf="filtroEmpresa" [routerLink]="['/empresa', filtroEmpresa]">
+      <i class="fas fa-folder-open"></i> Ver toda la ficha de {{ empresaElegida }}
+    </a>
+  </div>
+
+  <p class="nota" *ngIf="filtroEmpresa">
+    <i class="fas fa-filter"></i>
+    Estás viendo solo lo de <strong>{{ empresaElegida }}</strong>.
+    Los cumpleaños no aparecen porque son del equipo, no de un cliente.
+  </p>
+
   <div class="cal-leyenda">
     <span><i class="punto p-pendiente"></i> Pendiente</span>
     <span><i class="punto p-finalizada"></i> Finalizada</span>
@@ -36,8 +54,9 @@
         <div class="cal-num">{{ c.dia }}</div>
         <div class="cal-ev" *ngFor="let e of c.eventos.slice(0, 3)"
              [ngClass]="'ev-' + e.tipo"
-             [title]="e.titulo + (e.responsable ? ' · ' + e.responsable : '')">
+             [title]="e.titulo + (e.responsable ? ' · ' + e.responsable : '') + (e.empresa ? ' · ' + e.empresa : '')">
           {{ e.titulo }}
+          <span class="ev-empresa" *ngIf="e.empresa && !filtroEmpresa">{{ e.empresa }}</span>
         </div>
         <div class="cal-mas" *ngIf="c.eventos.length > 3">+{{ c.eventos.length - 3 }} más</div>
       </ng-container>
@@ -57,6 +76,7 @@
       <div>
         <strong>{{ e.titulo }}</strong>
         <span class="chico" *ngIf="e.responsable"> · {{ e.responsable }}</span>
+        <span class="badge badge-azul" *ngIf="e.empresa">{{ e.empresa }}</span>
         <div class="chico" *ngIf="e.detalle">{{ e.detalle }}</div>
       </div>
     </div>
@@ -78,6 +98,12 @@
       <div class="form-group"><label>Responsable</label>
         <select [(ngModel)]="nuevo.Responsable"><option value="">— Elegir —</option><option *ngFor="let p of equipo" [value]="p">{{ p }}</option></select>
       </div>
+    </div>
+    <div class="form-group"><label>Empresa / cliente</label>
+      <select [(ngModel)]="nuevo.EmpresaID">
+        <option value="">— Sin cliente —</option>
+        <option *ngFor="let e of empresas" [value]="e.id">{{ e.nombre }}</option>
+      </select>
     </div>
     <p class="mensaje error" *ngIf="mensaje">{{ mensaje }}</p>
     <div class="acciones-modal">

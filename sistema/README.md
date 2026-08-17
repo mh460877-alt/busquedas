@@ -64,6 +64,35 @@ datos por fuera de la aplicación, no los recibe.
 | 2 | La empresa no ve qué consultor lo presentó | `Modelos.gs` → `CAMPOS_OCULTOS` |
 | 3 | La empresa no ve el documento | `Modelos.gs` → `CAMPOS_OCULTOS` |
 
+## Enlaces y ficha del cliente
+
+Cada registro del sistema —un pendiente, una búsqueda, un candidato, un
+cliente— puede tener **todos los enlaces que haga falta**, con su nombre, en
+lugar del único campo `Link` de antes. Es la idea de los adjuntos de una
+tarjeta de Trello, pero adentro del sistema: la carpeta de Drive, el informe,
+la planilla de seguimiento quedan guardados donde corresponde y no en el chat
+de nadie.
+
+| | Dónde |
+|---|---|
+| Tabla de enlaces | `servidor/Modelos.gs` → hoja `Adjuntos` |
+| Permisos y validación | `servidor/Adjuntos.gs` — hereda el permiso del registro al que cuelga |
+| Componente único de pantalla | `cliente/components/enlaces/` — `<app-enlaces entidad="…" [registroId]="…">` |
+
+Los módulos internos además se vinculan a un cliente (`EmpresaID`). Eso habilita
+dos cosas:
+
+- **Filtrar el calendario por empresa**: elegís el cliente y el mes muestra solo
+  lo suyo.
+- **La ficha del cliente** (`/empresa/:id`): sus búsquedas, sus candidatos, y lo
+  que tenga cargado en cada módulo interno, con todos sus enlaces, en una sola
+  pantalla y una sola llamada al servidor (`fichaEmpresa`).
+
+Si ya había proyectos o viajes con el cliente escrito a mano, el menú de la
+planilla tiene **«3 · Vincular registros viejos con su cliente»**, que completa
+el `EmpresaID` cuando el texto coincide con una empresa cargada e informa los
+que no coincidieron.
+
 ## Diferencias con el sistema anterior
 
 - **Un solo acceso** para los cuatro paneles. Se terminó el `admin/admin123`
@@ -81,5 +110,5 @@ datos por fuera de la aplicación, no los recibe.
 ## Pendiente
 
 - Migrar los datos actuales (7 búsquedas, 10 candidatos, 9 consultores).
-- Sumar los módulos de la agenda: pendientes, calendario, proyectos, viajes,
-  capacitaciones, cumpleaños y bóveda.
+- Sumar capacitaciones y comunicaciones al calendario: hoy solo se pintan
+  pendientes, viajes y cumpleaños.

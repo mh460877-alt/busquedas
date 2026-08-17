@@ -1,0 +1,25 @@
+.enlaces { display: flex; flex-direction: column; gap: 8px; }
+
+.enlace {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 9px 12px; border: 1px solid #e8ecef; border-radius: 8px;
+  background: #fbfcfd;
+}
+.enlace > .fa-link { color: #7f8c8d; margin-top: 3px; flex-shrink: 0; }
+.enlace-cuerpo { flex: 1; min-width: 0; }
+.enlace-cuerpo a { font-weight: 600; word-break: break-word; }
+
+.atenuado { opacity: 0.75; }
+
+.enlace-form {
+  border: 1px dashed #cfd8dc; border-radius: 8px; padding: 12px 14px; background: #fbfcfd;
+}
+.enlace-form .form-group { margin-bottom: 10px; }
+.enlace-form .acciones-modal { margin-top: 4px; }
+
+/* El botón de agregar no ocupa todo el ancho: es una acción secundaria. */
+.enlaces > .btn { align-self: flex-start; }
+
+@media (max-width: 600px) {
+  .enlaces > .btn { align-self: stretch; }
+}

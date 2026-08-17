@@ -1,0 +1,32 @@
+.cabecera-acciones { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* Cuatro números que dan el panorama del cliente de un vistazo. */
+.resumen {
+  display: flex; flex-wrap: wrap; gap: 10px; margin: 4px 0 16px;
+}
+.dato {
+  flex: 1; min-width: 130px; text-align: center;
+  background: #f7fafc; border: 1px solid #eaeff2; border-radius: 9px; padding: 12px 10px;
+  font-size: 0.78rem; color: #7f8c8d;
+}
+.dato .n {
+  display: block; font-size: 1.5rem; font-weight: 700; color: var(--primary); line-height: 1.2;
+}
+
+.contacto {
+  display: flex; flex-wrap: wrap; gap: 8px 20px;
+  font-size: 0.84rem; color: #5a6b78;
+  border-top: 1px solid #f0f3f5; padding-top: 14px;
+}
+.contacto span, .contacto a { display: inline-flex; align-items: center; gap: 6px; }
+.contacto i { color: #93a0a9; }
+
+.mini-enlace {
+  display: block; font-size: 0.78rem; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; max-width: 220px;
+}
+
+@media (max-width: 700px) {
+  .dato { min-width: calc(50% - 5px); }
+  .mini-enlace { max-width: none; }
+}

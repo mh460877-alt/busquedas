@@ -39,8 +39,9 @@ export class LoginComponent implements OnInit {
     this.cargando = true;
     this.mensaje = '';
 
-    // La contraseña se cifra en el navegador; si está vacía va vacía (cuentas
-    // que todavía no la tienen definida entran solo con su correo).
+    // La contraseña se hashea en el navegador antes de salir. En el primer
+    // ingreso, la contraseña que elijas queda asociada a tu cuenta; después
+    // se te pide siempre. Si la dejás vacía, el servidor te la va a exigir.
     const hash = this.clave ? await this.loginService.hashear(this.clave) : '';
 
     this.loginService.ingresar(id, hash).subscribe({

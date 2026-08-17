@@ -36,31 +36,49 @@ var HOJAS = {
     requeridos: []
   },
 
+  /**
+   * Enlaces guardados sobre cualquier registro del sistema.
+   *
+   * Es el "cajón" de la plataforma: en lugar de un único Link por ficha, cada
+   * registro puede tener todos los enlaces que haga falta, con su nombre, igual
+   * que los adjuntos de una tarjeta de Trello. Así el sistema deja de ser solo
+   * un organizador y pasa a ser también el resguardo de dónde está cada cosa.
+   *
+   * No se lee ni se escribe con las acciones genéricas: tiene las suyas, que
+   * antes de responder verifican el permiso sobre el registro al que cuelga.
+   */
+  Adjuntos: {
+    cols: ['ID', 'Entidad', 'RegistroID', 'Titulo', 'URL', 'Nota', 'AutorID', 'AutorNombre', 'Fecha'],
+    requeridos: ['Entidad', 'RegistroID', 'URL']
+  },
+
   /* ===================== MUNDO INTERNO (agenda RR.HH.) ===================== */
   /* Mismas columnas que la agenda actual, para poder migrar sin fricción.    */
+  /* EmpresaID enlaza cada registro con el cliente de la hoja Empresas: es lo */
+  /* que permite después filtrar el calendario y armar la ficha por empresa.  */
 
   Pendientes: {
-    cols: ['ID', 'Titulo', 'Tipo', 'Responsable', 'Fecha', 'Estado', 'Observaciones', 'Link'],
+    cols: ['ID', 'Titulo', 'Tipo', 'Responsable', 'EmpresaID', 'Fecha', 'Estado', 'Observaciones', 'Link'],
     requeridos: ['Titulo']
   },
   Proyectos: {
-    cols: ['ID', 'Proyecto', 'Cliente', 'Linea', 'Responsable', 'Estado', 'FechaInicio', 'FechaFin', 'Avance', 'Observaciones', 'Link'],
+    cols: ['ID', 'Proyecto', 'EmpresaID', 'Cliente', 'Linea', 'Responsable', 'Estado', 'FechaInicio', 'FechaFin', 'Avance', 'Observaciones', 'Link'],
     requeridos: ['Proyecto']
   },
   Viajes: {
-    cols: ['ID', 'Viajero', 'Destino', 'Motivo', 'Cliente', 'FechaSalida', 'FechaRegreso', 'Paga', 'Estado', 'Observaciones'],
+    cols: ['ID', 'Viajero', 'Destino', 'Motivo', 'EmpresaID', 'Cliente', 'FechaSalida', 'FechaRegreso', 'Paga', 'Estado', 'Observaciones'],
     requeridos: ['Viajero', 'Destino']
   },
   Onboarding: {
-    cols: ['ID', 'Tipo', 'Persona', 'Empresa', 'Etapa', 'Responsable', 'Fecha', 'Estado', 'Observaciones', 'Link'],
+    cols: ['ID', 'Tipo', 'Persona', 'EmpresaID', 'Empresa', 'Etapa', 'Responsable', 'Fecha', 'Estado', 'Observaciones', 'Link'],
     requeridos: ['Persona']
   },
   Capacitaciones: {
-    cols: ['ID', 'Fecha', 'Tema', 'Linea', 'Facilitador', 'Ambito', 'Formato', 'Observaciones', 'Link'],
+    cols: ['ID', 'Fecha', 'Tema', 'Linea', 'EmpresaID', 'Facilitador', 'Ambito', 'Formato', 'Observaciones', 'Link'],
     requeridos: ['Tema']
   },
   Comunicaciones: {
-    cols: ['ID', 'Fecha', 'Titulo', 'Nivel', 'Canal', 'Responsable', 'Resumen', 'Link'],
+    cols: ['ID', 'Fecha', 'Titulo', 'Nivel', 'EmpresaID', 'Canal', 'Responsable', 'Resumen', 'Link'],
     requeridos: ['Titulo']
   },
   Cumpleanos: {
@@ -72,10 +90,24 @@ var HOJAS = {
     requeridos: ['Sistema']
   },
   Materiales: {
-    cols: ['ID', 'Titulo', 'Tipo', 'Destinatario', 'Estado', 'Responsable', 'Link', 'Fecha', 'Observaciones'],
+    cols: ['ID', 'Titulo', 'Tipo', 'Destinatario', 'EmpresaID', 'Estado', 'Responsable', 'Link', 'Fecha', 'Observaciones'],
     requeridos: ['Titulo']
   }
 };
+
+/**
+ * Tablas del mundo interno que se pueden vincular a un cliente.
+ * Es lo que junta la ficha de una empresa y lo que filtra el calendario.
+ */
+var ENTIDADES_POR_EMPRESA = [
+  'Pendientes', 'Proyectos', 'Viajes', 'Onboarding',
+  'Capacitaciones', 'Comunicaciones', 'Materiales'
+];
+
+/** Dónde se pueden colgar enlaces. Todo lo que se trabaja, menos la auditoría. */
+var ENTIDADES_CON_ADJUNTOS = [
+  'Empresas', 'Busquedas', 'Candidatos', 'Accesos'
+].concat(ENTIDADES_POR_EMPRESA).concat(['Cumpleanos']);
 
 /* ============================ CATÁLOGOS ============================ */
 

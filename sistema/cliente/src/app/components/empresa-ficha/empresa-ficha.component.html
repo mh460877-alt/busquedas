@@ -1,0 +1,113 @@
+<p class="vacio" *ngIf="cargando"><i class="fas fa-spinner fa-spin"></i> Cargando la ficha del cliente…</p>
+<p class="mensaje error" *ngIf="mensaje">{{ mensaje }}</p>
+
+<ng-container *ngIf="ficha">
+
+  <!-- Encabezado -->
+  <div class="card acento">
+    <div class="card-header">
+      <div>
+        <h2><i class="fas fa-building"></i> {{ ficha.empresa.Nombre }}</h2>
+        <p class="desc">
+          {{ ficha.empresa.Linea || 'Sin línea asignada' }}
+          <span class="badge badge-azul" *ngIf="ficha.empresa.Estado">{{ ficha.empresa.Estado }}</span>
+        </p>
+      </div>
+      <div class="cabecera-acciones">
+        <button class="btn gris chico" (click)="volver()"><i class="fas fa-arrow-left"></i> Volver</button>
+        <button class="btn chico" (click)="editar()"><i class="fas fa-edit"></i> Editar datos</button>
+      </div>
+    </div>
+
+    <div class="resumen">
+      <div class="dato"><span class="n">{{ ficha.busquedas.length }}</span> búsquedas</div>
+      <div class="dato"><span class="n">{{ ficha.candidatos.length }}</span> candidatos</div>
+      <div class="dato"><span class="n">{{ totalRegistros }}</span> registros internos</div>
+      <div class="dato"><span class="n">{{ totalEnlaces }}</span> enlaces guardados</div>
+    </div>
+
+    <div class="contacto">
+      <span *ngIf="ficha.empresa.Contacto"><i class="fas fa-user"></i> {{ ficha.empresa.Contacto }}</span>
+      <span *ngIf="ficha.empresa.Email"><i class="fas fa-envelope"></i> {{ ficha.empresa.Email }}</span>
+      <span *ngIf="ficha.empresa.Telefono"><i class="fas fa-phone"></i> {{ ficha.empresa.Telefono }}</span>
+      <span *ngIf="ficha.empresa.FechaAlta"><i class="fas fa-calendar-check"></i> Cliente desde {{ ficha.empresa.FechaAlta }}</span>
+      <a *ngIf="ficha.empresa.LinkInformes" [href]="ficha.empresa.LinkInformes" target="_blank" rel="noopener">
+        <i class="fas fa-folder-open"></i> Carpeta de informes
+      </a>
+      <a *ngIf="ficha.empresa.LinkCVs" [href]="ficha.empresa.LinkCVs" target="_blank" rel="noopener">
+        <i class="fas fa-folder"></i> Carpeta de CVs
+      </a>
+    </div>
+  </div>
+
+  <!-- Enlaces del cliente -->
+  <div class="card">
+    <h3><i class="fas fa-link"></i> Enlaces del cliente</h3>
+    <p class="desc">Todo lo que se usa para trabajar con esta empresa, guardado acá.</p>
+    <app-enlaces entidad="Empresas" [registroId]="ficha.empresa.ID || ''"></app-enlaces>
+  </div>
+
+  <!-- Búsquedas -->
+  <div class="card" *ngIf="ficha.busquedas.length">
+    <h3><i class="fas fa-briefcase"></i> Búsquedas ({{ ficha.busquedas.length }})</h3>
+    <div class="tabla-cont">
+      <table>
+        <thead>
+          <tr><th>Puesto</th><th>Provincia</th><th>Etapa</th><th>Estado</th><th>Candidatos</th><th>Enlaces</th><th></th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let b of ficha.busquedas">
+            <td data-label="Puesto"><strong>{{ b.Puesto }}</strong></td>
+            <td data-label="Provincia">{{ b.Provincia || '—' }}</td>
+            <td data-label="Etapa"><span class="badge badge-azul">{{ b.Etapa }}</span></td>
+            <td data-label="Estado">{{ b.Estado }}</td>
+            <td data-label="Candidatos">{{ candidatosDe(b.ID).length }}</td>
+            <td data-label="Enlaces">{{ enlacesDe('Busquedas', b.ID).length || '—' }}</td>
+            <td class="acciones">
+              <button class="btn-accion btn-ver" title="Abrir la carpeta" (click)="abrirBusqueda(b.ID)">
+                <i class="fas fa-folder-open"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Módulos internos con algo cargado para este cliente -->
+  <div class="card" *ngFor="let entidad of modulosConDatos">
+    <h3><i class="fas" [ngClass]="iconoDe(entidad)"></i> {{ tituloDe(entidad) }} ({{ filasDe(entidad).length }})</h3>
+    <div class="tabla-cont">
+      <table>
+        <thead>
+          <tr>
+            <th *ngFor="let c of columnasDe(entidad)">{{ c.etiqueta }}</th>
+            <th>Enlaces</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let f of filasDe(entidad)">
+            <td *ngFor="let c of columnasDe(entidad)" [attr.data-label]="c.etiqueta">
+              <span *ngIf="c.badge" class="badge badge-azul">{{ f[c.clave] || '—' }}</span>
+              <span *ngIf="!c.badge">{{ f[c.clave] || '—' }}</span>
+            </td>
+            <td data-label="Enlaces">
+              <a *ngFor="let a of enlacesDe(entidad, f.ID)" [href]="a.URL" target="_blank" rel="noopener" class="mini-enlace">
+                <i class="fas fa-link"></i> {{ a.Titulo }}
+              </a>
+              <span *ngIf="!enlacesDe(entidad, f.ID).length">—</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" *ngIf="!ficha.busquedas.length && !modulosConDatos.length">
+    <p class="vacio">
+      Todavía no hay nada cargado para este cliente.
+      Cuando le asignes un pendiente, un proyecto o una búsqueda, va a aparecer acá.
+    </p>
+  </div>
+
+</ng-container>

@@ -7,7 +7,7 @@ export interface UsuarioSesion {
   rol: Rol;
   empresaId: string;
   tieneContrasena: boolean;
-  modoIngreso: 'con-contrasena' | 'sin-contrasena';
+  modoIngreso: 'con-contrasena' | 'primer-ingreso';
 }
 
 export interface Sesion {

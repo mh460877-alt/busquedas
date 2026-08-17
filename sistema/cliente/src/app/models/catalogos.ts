@@ -1,3 +1,5 @@
+import { EmpresaOpcion } from './adjunto';
+
 /** Listas fijas que el servidor envía para armar los formularios. */
 export interface Catalogos {
   roles: string[];
@@ -19,5 +21,7 @@ export interface Catalogos {
   destinatariosMaterial?: string[];
   estadosMaterial?: string[];
   equipo?: string[];
+  /** Clientes, para vincular cada registro interno con su empresa. */
+  empresas?: EmpresaOpcion[];
   permisos: { [entidad: string]: string[] };
 }

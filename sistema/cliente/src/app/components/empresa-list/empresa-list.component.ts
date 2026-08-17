@@ -60,4 +60,7 @@ export class EmpresaListComponent implements OnInit {
 
   nueva(): void { this.router.navigate(['/empresa-form', 'nueva']); }
   editar(e: Empresa): void { this.router.navigate(['/empresa-form', e.ID]); }
+
+  /** Todo lo del cliente junto: búsquedas, agenda interna y enlaces. */
+  verFicha(e: Empresa): void { this.router.navigate(['/empresa', e.ID]); }
 }

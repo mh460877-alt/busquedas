@@ -14,6 +14,13 @@
     <button class="btn" (click)="presentar()"><i class="fas fa-user-plus"></i> Presentar candidato</button>
   </div>
 
+  <!-- Enlaces de la búsqueda: carpeta, pedido del cliente, lo que haga falta. -->
+  <div class="card">
+    <h3><i class="fas fa-link"></i> Enlaces de esta búsqueda</h3>
+    <p class="desc">La carpeta de trabajo, el pedido del cliente, la grilla de entrevistas.</p>
+    <app-enlaces entidad="Busquedas" [registroId]="b.ID || ''" [soloLectura]="!puedeEditar"></app-enlaces>
+  </div>
+
   <div class="card">
     <h3><i class="fas fa-users"></i> Postulantes presentados ({{ candidatos.length }})</h3>
     <p class="desc" *ngIf="rol === 'Consultor'">Estos son los que presentaste vos.</p>
@@ -37,6 +44,11 @@
               <a *ngIf="c.LinkVideo" [href]="c.LinkVideo" target="_blank" rel="noopener"><i class="fas fa-video"></i> Video</a>
               <a *ngIf="c.LinkInforme" [href]="c.LinkInforme" target="_blank" rel="noopener"><i class="fas fa-file-alt"></i> Informe</a>
               <span *ngIf="!c.LinkCV && !c.LinkVideo && !c.LinkInforme">—</span>
+              <button class="btn-accion btn-ver" title="Todos los enlaces de este candidato"
+                      (click)="abrirEnlaces(c)">
+                <i class="fas fa-link"></i>
+                <span class="cuenta" *ngIf="enlacesDe(c).length">{{ enlacesDe(c).length }}</span>
+              </button>
             </td>
             <td data-label="Etapa">
               <select *ngIf="puedeEditar" class="mini" [ngModel]="c.Etapa" (ngModelChange)="cambiarEtapa(c, $event)">
@@ -58,6 +70,18 @@
     </div>
   </div>
 </ng-container>
+
+<!-- Enlaces de un candidato -->
+<div class="modal-fondo" *ngIf="enlazando" (click)="cerrarEnlaces()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header"><i class="fas fa-link"></i> Enlaces · {{ enlazando.Nombre }}</div>
+    <p class="desc">Todo lo del candidato que no entra en los tres campos de arriba.</p>
+    <app-enlaces entidad="Candidatos" [registroId]="enlazando.ID || ''"></app-enlaces>
+    <div class="acciones-modal">
+      <button class="btn gris" (click)="cerrarEnlaces()">Cerrar</button>
+    </div>
+  </div>
+</div>
 
 <div class="modal-fondo" *ngIf="comentando" (click)="comentando = null">
   <div class="modal-content" (click)="$event.stopPropagation()">

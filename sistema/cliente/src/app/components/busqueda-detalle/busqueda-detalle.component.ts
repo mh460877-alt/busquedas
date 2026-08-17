@@ -6,10 +6,12 @@ import { UsuarioService } from '../../services/usuario.service';
 import { ObservacionService } from '../../services/observacion.service';
 import { LoginService } from '../../services/login.service';
 import { StorageService } from '../../services/storage.service';
+import { AdjuntoService } from '../../services/adjunto.service';
 import { Busqueda } from '../../models/busqueda';
 import { Candidato } from '../../models/candidato';
 import { Usuario } from '../../models/usuario';
 import { Observacion } from '../../models/observacion';
+import { Adjunto } from '../../models/adjunto';
 
 /**
  * Carpeta de una búsqueda: el descriptivo y los candidatos presentados.
@@ -36,6 +38,10 @@ export class BusquedaDetalleComponent implements OnInit {
   textoObservacion = '';
   compartirConEmpresa = false;
 
+  /** Enlaces de cada candidato, y el candidato cuyos enlaces se están mirando. */
+  enlacesPorCandidato: { [registroId: string]: Adjunto[] } = {};
+  enlazando: Candidato | null = null;
+
   constructor(
     private busquedaService: BusquedaService,
     private candidatoService: CandidatoService,
@@ -43,6 +49,7 @@ export class BusquedaDetalleComponent implements OnInit {
     private observacionService: ObservacionService,
     private loginService: LoginService,
     private storage: StorageService,
+    private adjuntos: AdjuntoService,
     private ruta: ActivatedRoute,
     private router: Router
   ) { }
@@ -72,7 +79,24 @@ export class BusquedaDetalleComponent implements OnInit {
     if (this.puedeEditar) {
       this.usuarioService.listar().subscribe({ next: u => this.consultores = u, error: () => { } });
     }
+
+    this.cargarEnlaces();
   }
+
+  /** Los enlaces de todos los candidatos a la vez, no uno por fila. */
+  cargarEnlaces(): void {
+    this.adjuntos.listar('Candidatos').subscribe({
+      next: lista => this.enlacesPorCandidato = this.adjuntos.agrupar(lista),
+      error: () => { }
+    });
+  }
+
+  enlacesDe(c: Candidato): Adjunto[] {
+    return this.enlacesPorCandidato[String(c.ID)] || [];
+  }
+
+  abrirEnlaces(c: Candidato): void { this.enlazando = c; }
+  cerrarEnlaces(): void { this.enlazando = null; this.cargarEnlaces(); }
 
   get rol(): string { return this.storage.rol; }
   get puedeEditar(): boolean { return this.rol === 'Admin' || this.rol === 'Interno'; }

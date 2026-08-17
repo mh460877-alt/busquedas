@@ -34,9 +34,10 @@ function procesar_(e) {
     var p = JSON.parse(e.postData.contents);
     var accion = p.accion;
 
-    // Acciones abiertas: no requieren sesión.
+    // Única acción abierta: el ingreso. Todo lo demás exige sesión.
+    // 'estadoAcceso' se quitó: revelaba, sin autenticación, qué cuentas existían
+    // y cuáles no tenían contraseña (enumeración de usuarios).
     if (accion === 'login')         return { ok: true, datos: login_(p) };
-    if (accion === 'estadoAcceso')  return { ok: true, datos: estadoAcceso_(p) };
 
     // De acá en adelante, hay que estar identificado.
     var sesion = leerSesion_(p.token);
@@ -71,6 +72,20 @@ function procesar_(e) {
 
       case 'asignar':
         return { ok: true, datos: asignar_(sesion, p.busquedaId, p.consultores || []) };
+
+      /* --- Enlaces colgados de un registro (ver Adjuntos.gs) --- */
+      case 'adjuntos':
+        return { ok: true, datos: listarAdjuntos_(sesion, p.entidad, p.registroId) };
+
+      case 'adjuntar':
+        return { ok: true, datos: crearAdjunto_(sesion, p.datos || {}) };
+
+      case 'quitarAdjunto':
+        return { ok: true, datos: quitarAdjunto_(sesion, p.id) };
+
+      /* --- Todo lo de un cliente, en una sola llamada --- */
+      case 'fichaEmpresa':
+        return { ok: true, datos: fichaEmpresa_(sesion, p.empresaId) };
 
       default:
         throw new Error('Acción no reconocida: ' + accion);
@@ -148,6 +163,7 @@ function eliminarRegistro_(sesion, entidad, id, forzar) {
     };
   }
   eliminar_(entidad, id);
+  borrarAdjuntosDe_(entidad, id);   // los enlaces se van con la ficha
   auditar_(sesion, 'elimino', entidad, id, deps.length ? 'Forzado con dependencias' : '');
   return { eliminado: true, id: id };
 }
@@ -195,8 +211,79 @@ function catalogos_(sesion) {
     equipo: listarTodo_('Usuarios')
       .filter(function (u) { return u.Rol === 'Admin' || u.Rol === 'Interno'; })
       .map(function (u) { return u.Nombre; }),
+    // Clientes, para vincular cada registro interno con su empresa. Van todas,
+    // también las cerradas: si no, un registro viejo no podría mostrar su nombre.
+    empresas: empresasParaElegir_(sesion),
     permisos: PERMISOS[sesion.rol] || {}
   };
+}
+
+/** Lista de clientes para los desplegables. Solo la ve quien trabaja adentro. */
+function empresasParaElegir_(sesion) {
+  if (sesion.rol !== 'Admin' && sesion.rol !== 'Interno') return [];
+  return listarTodo_('Empresas').map(function (e) {
+    return { id: e.ID, nombre: e.Nombre, estado: e.Estado };
+  });
+}
+
+/**
+ * Ficha de un cliente: todo lo que el sistema sabe de esa empresa, junto.
+ *
+ * Va en una sola llamada a propósito. Armarlo desde el navegador serían diez
+ * pedidos, y cada pedido a Apps Script vuelve a leer la planilla entera.
+ */
+function fichaEmpresa_(sesion, empresaId) {
+  exigirPermiso_(sesion, 'Empresas', 'ver');
+  exigirAlcance_(sesion, 'Empresas', empresaId);
+
+  var empresa = buscarPorId_('Empresas', empresaId);
+  if (!empresa) throw new Error('No se encontró esa empresa');
+
+  var salida = {
+    empresa: proyectar(sesion.rol, 'Empresas', empresa),
+    busquedas: [],
+    candidatos: [],
+    modulos: {},
+    adjuntos: []
+  };
+
+  // Alcance: qué registros de esta empresa puede ver quien pregunta.
+  var idsBusquedas = [];
+  var deLaEmpresa = {};     // entidad -> IDs, para juntar después los enlaces
+
+  if (((PERMISOS[sesion.rol] || {}).Busquedas || []).indexOf('ver') >= 0) {
+    salida.busquedas = listar_(sesion, 'Busquedas').filter(function (b) {
+      return String(b.EmpresaID) === String(empresaId);
+    });
+    idsBusquedas = salida.busquedas.map(function (b) { return String(b.ID); });
+    deLaEmpresa['Busquedas'] = idsBusquedas;
+  }
+
+  if (((PERMISOS[sesion.rol] || {}).Candidatos || []).indexOf('ver') >= 0) {
+    salida.candidatos = listar_(sesion, 'Candidatos').filter(function (c) {
+      return idsBusquedas.indexOf(String(c.BusquedaID)) >= 0;
+    });
+    deLaEmpresa['Candidatos'] = salida.candidatos.map(function (c) { return String(c.ID); });
+  }
+
+  ENTIDADES_POR_EMPRESA.forEach(function (entidad) {
+    if (((PERMISOS[sesion.rol] || {})[entidad] || []).indexOf('ver') < 0) return;
+    var filas = listar_(sesion, entidad).filter(function (f) {
+      return String(f.EmpresaID) === String(empresaId);
+    });
+    salida.modulos[entidad] = filas;
+    deLaEmpresa[entidad] = filas.map(function (f) { return String(f.ID); });
+  });
+
+  // Los enlaces de la empresa misma y los de todo lo que cuelga de ella.
+  deLaEmpresa['Empresas'] = [String(empresaId)];
+  var todos = listarTodo_('Adjuntos');
+  salida.adjuntos = todos.filter(function (a) {
+    var permitidos = deLaEmpresa[String(a.Entidad)];
+    return !!permitidos && permitidos.indexOf(String(a.RegistroID)) >= 0;
+  });
+
+  return salida;
 }
 
 /** Todo lo que el panel necesita, en una sola llamada. */
@@ -222,6 +309,7 @@ function onOpen() {
   SpreadsheetApp.getUi().createMenu('Escencial')
     .addItem('1 · Migrar datos del sistema anterior', 'migrarYMostrar')
     .addItem('2 · Crear primer administrador', 'crearPrimerAdmin')
+    .addItem('3 · Vincular registros viejos con su cliente', 'vincularEmpresasYMostrar')
     .addSeparator()
     .addItem('Crear / reparar hojas', 'inicializarSistema')
     .addToUi();

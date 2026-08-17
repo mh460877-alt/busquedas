@@ -36,6 +36,9 @@
           <td data-label="Alta" class="chico">{{ e.FechaAlta || '—' }}</td>
           <td data-label="Estado"><span class="badge" [ngClass]="e.Estado === 'Activo' ? 'badge-activa' : 'badge-gris'">{{ e.Estado }}</span></td>
           <td class="acciones">
+            <button class="btn-accion btn-ver" title="Ver toda la ficha del cliente" (click)="verFicha(e)">
+              <i class="fas fa-folder-open"></i>
+            </button>
             <button class="btn-accion btn-editar" title="Editar" (click)="editar(e)"><i class="fas fa-edit"></i></button>
             <button class="btn-accion btn-volver" title="Cerrar cliente" style="width:34px;margin:0 0 0 3px" *ngIf="esAdmin" (click)="darDeBaja(e)"><i class="fas fa-lock"></i></button>
           </td>

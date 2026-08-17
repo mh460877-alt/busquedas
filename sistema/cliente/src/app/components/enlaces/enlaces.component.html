@@ -1,0 +1,48 @@
+<div class="enlaces">
+
+  <p class="vacio chico" *ngIf="cargando"><i class="fas fa-spinner fa-spin"></i> Cargando enlaces…</p>
+
+  <div class="enlace" *ngFor="let a of enlaces">
+    <i class="fas fa-link"></i>
+    <div class="enlace-cuerpo">
+      <a [href]="a.URL" target="_blank" rel="noopener">{{ a.Titulo || a.URL }}</a>
+      <div class="chico" *ngIf="a.Nota">{{ a.Nota }}</div>
+      <div class="chico atenuado" *ngIf="a.AutorNombre">{{ a.AutorNombre }} · {{ a.Fecha }}</div>
+    </div>
+    <button class="btn-accion btn-borrar" title="Quitar enlace"
+            *ngIf="puedeQuitar(a)" (click)="quitar(a)">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+
+  <p class="vacio chico" *ngIf="!cargando && !enlaces.length && !agregando">
+    Todavía no hay enlaces guardados acá.
+  </p>
+
+  <button class="btn chico" *ngIf="!agregando && !soloLectura" (click)="abrirNuevo()">
+    <i class="fas fa-plus"></i> Agregar enlace
+  </button>
+
+  <div class="enlace-form" *ngIf="agregando">
+    <div class="form-group">
+      <label>Nombre</label>
+      <input type="text" [(ngModel)]="nuevo.Titulo" placeholder="Carpeta de CVs, Informe final…">
+    </div>
+    <div class="form-group">
+      <label>Dirección</label>
+      <input type="url" [(ngModel)]="nuevo.URL" placeholder="https://…">
+    </div>
+    <div class="form-group">
+      <label>Nota</label>
+      <input type="text" [(ngModel)]="nuevo.Nota" placeholder="Opcional: para qué sirve">
+    </div>
+    <div class="acciones-modal">
+      <button class="btn gris chico" (click)="cancelar()">Cancelar</button>
+      <button class="btn success chico" (click)="guardar()" [disabled]="guardando">
+        <i class="fas fa-save"></i> {{ guardando ? 'Guardando…' : 'Guardar enlace' }}
+      </button>
+    </div>
+  </div>
+
+  <p class="mensaje error" *ngIf="mensaje">{{ mensaje }}</p>
+</div>

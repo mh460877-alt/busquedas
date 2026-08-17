@@ -6,6 +6,7 @@ import { UsuarioListComponent } from './components/usuario-list/usuario-list.com
 import { UsuarioFormComponent } from './components/usuario-form/usuario-form.component';
 import { EmpresaListComponent } from './components/empresa-list/empresa-list.component';
 import { EmpresaFormComponent } from './components/empresa-form/empresa-form.component';
+import { EmpresaFichaComponent } from './components/empresa-ficha/empresa-ficha.component';
 import { BusquedaListComponent } from './components/busqueda-list/busqueda-list.component';
 import { BusquedaFormComponent } from './components/busqueda-form/busqueda-form.component';
 import { BusquedaDetalleComponent } from './components/busqueda-detalle/busqueda-detalle.component';
@@ -55,6 +56,11 @@ const routes: Routes = [
   },
   {
     path: 'empresa-form/:id', component: EmpresaFormComponent,
+    data: { rol: ['Admin', 'Interno'] }, canActivate: [VigilanteGuard]
+  },
+  /* Ficha del cliente: todo lo suyo junto, en una sola pantalla. */
+  {
+    path: 'empresa/:id', component: EmpresaFichaComponent,
     data: { rol: ['Admin', 'Interno'] }, canActivate: [VigilanteGuard]
   },
   {

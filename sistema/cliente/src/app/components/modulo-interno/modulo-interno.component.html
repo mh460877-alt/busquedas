@@ -13,7 +13,13 @@
     <i class="fas fa-lock"></i> Podés ver la bóveda pero no modificarla. Solo Dirección la edita.
   </div>
 
-  <input type="text" class="search-bar" placeholder="Buscar…" [(ngModel)]="filtro">
+  <div class="filtros">
+    <input type="text" class="search-bar" placeholder="Buscar…" [(ngModel)]="filtro">
+    <select class="filtro-empresa" *ngIf="tieneEmpresa" [(ngModel)]="filtroEmpresa">
+      <option value="">Todos los clientes</option>
+      <option *ngFor="let e of empresas" [value]="e.id">{{ e.nombre }}</option>
+    </select>
+  </div>
 
   <p class="mensaje" *ngIf="mensaje">{{ mensaje }}</p>
   <p class="vacio" *ngIf="cargando"><i class="fas fa-spinner fa-spin"></i> Cargando…</p>
@@ -23,13 +29,14 @@
       <thead>
         <tr>
           <th *ngFor="let c of columnas">{{ c.etiqueta }}</th>
+          <th>Enlaces</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let f of visibles">
           <td *ngFor="let c of columnas" [attr.data-label]="c.etiqueta">
-            <span *ngIf="c.badge" class="badge badge-azul">{{ f[c.clave] || '—' }}</span>
+            <span *ngIf="c.badge" class="badge badge-azul">{{ mostrar(f, c) }}</span>
             <ng-container *ngIf="!c.badge">
               <span *ngIf="c.tipo === 'password'">
                 {{ mostrar(f, c) }}
@@ -37,10 +44,19 @@
                    (click)="alternarClave(f)"></i>
               </span>
               <a *ngIf="c.tipo === 'url' && f[c.clave]" [href]="f[c.clave]" target="_blank" rel="noopener">abrir</a>
-              <span *ngIf="c.tipo !== 'password' && c.tipo !== 'url'">{{ f[c.clave] || '—' }}</span>
+              <span *ngIf="c.tipo !== 'password' && c.tipo !== 'url'">{{ mostrar(f, c) }}</span>
               <span *ngIf="c.tipo === 'url' && !f[c.clave]">—</span>
             </ng-container>
           </td>
+
+          <!-- Todos los enlaces guardados sobre este registro -->
+          <td data-label="Enlaces">
+            <button class="btn-accion btn-ver" title="Ver y agregar enlaces" (click)="abrirEnlaces(f)">
+              <i class="fas fa-link"></i>
+              <span class="cuenta" *ngIf="enlacesDe(f).length">{{ enlacesDe(f).length }}</span>
+            </button>
+          </td>
+
           <td class="acciones">
             <button class="btn-accion btn-editar" title="Editar" *ngIf="puede('editar')" (click)="editar(f)">
               <i class="fas fa-edit"></i>
@@ -73,6 +89,11 @@
         <option *ngFor="let o of opcionesDe(c)" [value]="o">{{ o }}</option>
       </select>
 
+      <select *ngIf="c.tipo === 'empresa'" [(ngModel)]="editando[c.clave]">
+        <option value="">— Sin cliente —</option>
+        <option *ngFor="let e of empresas" [value]="e.id">{{ e.nombre }}</option>
+      </select>
+
       <input *ngIf="c.tipo === 'fecha'" type="date" [(ngModel)]="editando[c.clave]">
       <input *ngIf="c.tipo === 'url'" type="url" [(ngModel)]="editando[c.clave]" placeholder="https://…">
       <input *ngIf="c.tipo === 'password'" type="text" [(ngModel)]="editando[c.clave]">
@@ -85,6 +106,26 @@
       <button class="btn success" (click)="guardar()" [disabled]="guardando">
         <i class="fas fa-save"></i> {{ guardando ? 'Guardando…' : 'Guardar' }}
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- Enlaces del registro -->
+<div class="modal-fondo" *ngIf="enlazando" (click)="cerrarEnlaces()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <i class="fas fa-link"></i> Enlaces · {{ enlazando[config.campos[0].clave] }}
+    </div>
+    <p class="desc">
+      Todo lo que se use para esto: la carpeta de Drive, el informe, la planilla.
+      Queda guardado acá, no en el chat de nadie.
+    </p>
+
+    <app-enlaces [entidad]="config.entidad" [registroId]="enlazando.ID"
+                 [soloLectura]="!puede('editar') && !puede('crear')"></app-enlaces>
+
+    <div class="acciones-modal">
+      <button class="btn gris" (click)="cerrarEnlaces()">Cerrar</button>
     </div>
   </div>
 </div>
