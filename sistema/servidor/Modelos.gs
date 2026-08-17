@@ -92,6 +92,34 @@ var HOJAS = {
   Materiales: {
     cols: ['ID', 'Titulo', 'Tipo', 'Destinatario', 'EmpresaID', 'Estado', 'Responsable', 'Link', 'Fecha', 'Observaciones'],
     requeridos: ['Titulo']
+  },
+
+  /* ===================== NÓMINA DE PERSONAL ===================== */
+
+  /**
+   * Una fila por colaborador: lo que no cambia todos los días.
+   * Los datos de liquidación viven acá pero no le llegan a cualquiera; ver
+   * CAMPOS_SENSIBLES_NOMINA más abajo.
+   */
+  Colaboradores: {
+    cols: [
+      'ID', 'Nombre', 'DNI', 'FechaNacimiento', 'Correo', 'Telefono', 'Direccion', 'Localidad',
+      'Puesto', 'Area', 'FechaIngreso', 'TipoContrato', 'Estado',
+      'CUIL', 'Sueldo', 'Banco', 'CBU', 'ObraSocial',
+      'TalleRemera', 'TallePantalon', 'TalleCalzado',
+      'Observaciones'
+    ],
+    requeridos: ['Nombre']
+  },
+
+  /**
+   * Cada permiso o licencia es su propio registro, porque se repiten en el
+   * tiempo. Con las fechas de cada uno el calendario puede mostrar quién está
+   * ausente cada día.
+   */
+  Permisos: {
+    cols: ['ID', 'ColaboradorID', 'Tipo', 'Desde', 'Hasta', 'Dias', 'Estado', 'Motivo', 'Autoriza', 'Observaciones'],
+    requeridos: ['ColaboradorID', 'Tipo', 'Desde']
   }
 };
 
@@ -106,7 +134,8 @@ var ENTIDADES_POR_EMPRESA = [
 
 /** Dónde se pueden colgar enlaces. Todo lo que se trabaja, menos la auditoría. */
 var ENTIDADES_CON_ADJUNTOS = [
-  'Empresas', 'Busquedas', 'Candidatos', 'Accesos'
+  'Empresas', 'Busquedas', 'Candidatos', 'Accesos',
+  'Colaboradores', 'Permisos'
 ].concat(ENTIDADES_POR_EMPRESA).concat(['Cumpleanos']);
 
 /* ============================ CATÁLOGOS ============================ */
@@ -145,6 +174,27 @@ var TIPOS_CUMPLE = ['Cumpleaños de vida', 'Cumpleaños laboral'];
 var DESTINATARIOS_MATERIAL = ['Interno', 'Docentes', 'Empresas'];
 var ESTADOS_MATERIAL = ['Borrador', 'En revisión', 'Aprobado'];
 
+/* Catálogos de la nómina. */
+var TIPOS_PERMISO = [
+  'Vacaciones', 'Licencia por enfermedad', 'Licencia por estudio',
+  'Permiso personal', 'Maternidad / paternidad', 'Duelo', 'Sin goce de sueldo'
+];
+var ESTADOS_PERMISO = ['Solicitado', 'Aprobado', 'Rechazado', 'Tomado'];
+var TIPOS_CONTRATO = ['Relación de dependencia', 'Monotributista', 'Pasantía', 'Eventual'];
+var AREAS_TRABAJO = [
+  'Dirección', 'Seleccion y reclutamiento', 'Consultoria externa',
+  'Soluciones integrales', 'Administración'
+];
+var ESTADOS_COLABORADOR = ['Activo', 'Licencia', 'Baja'];
+
+/**
+ * Datos de liquidación. Están en la misma ficha porque pertenecen a la persona,
+ * pero no salen del servidor para el equipo interno: no es desconfianza, es que
+ * un sueldo o un CBU no hacen falta para el trabajo diario, y lo que no se envía
+ * no se puede filtrar.
+ */
+var CAMPOS_SENSIBLES_NOMINA = ['CUIL', 'Sueldo', 'Banco', 'CBU'];
+
 var ESTADOS_BUSQUEDA = ['Activa', 'Deshabilitada', 'Cerrada'];
 var ESTADOS_GENERALES = ['Activo', 'Baja'];
 var ESTADOS_EMPRESA = ['Activo', 'En pausa', 'Cerrado'];
@@ -165,7 +215,8 @@ var CAMPOS_OCULTOS = {
     Usuarios: ['Salt', 'Hash']
   },
   Interno: {
-    Usuarios: ['Salt', 'Hash']
+    Usuarios: ['Salt', 'Hash'],
+    Colaboradores: CAMPOS_SENSIBLES_NOMINA
   },
   Admin: {
     Usuarios: ['Salt', 'Hash']

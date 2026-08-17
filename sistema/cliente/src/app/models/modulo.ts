@@ -3,11 +3,15 @@ export interface CampoModulo {
   clave: string;
   etiqueta: string;
   /**
-   * 'empresa' es un desplegable de clientes: guarda el ID de la hoja Empresas
-   * y muestra el nombre. Es lo que permite filtrar el calendario por cliente y
-   * juntar después todo lo suyo en su ficha.
+   * 'referencia' es un desplegable que apunta a otra tabla: guarda el ID y
+   * muestra el nombre. Se usa para el cliente de un pendiente y para de quién
+   * es un permiso. Qué lista ofrece lo dice `refCatalogo`.
    */
-  tipo: 'texto' | 'textarea' | 'fecha' | 'select' | 'url' | 'password' | 'empresa';
+  tipo: 'texto' | 'textarea' | 'fecha' | 'select' | 'url' | 'password' | 'referencia';
+  /** Para 'referencia': catálogo de {id, nombre} que el servidor manda. */
+  refCatalogo?: string;
+  /** Datos sensibles: no se le muestran a quien no sea Administración. */
+  soloAdmin?: boolean;
   /** Para tipo select: nombre de la lista dentro de catálogos, o valores fijos. */
   catalogo?: string;
   opciones?: string[];

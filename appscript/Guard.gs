@@ -28,7 +28,10 @@ var PERMISOS = {
     Comunicaciones:['ver', 'crear', 'editar', 'baja', 'eliminar'],
     Cumpleanos:    ['ver', 'crear', 'editar', 'baja', 'eliminar'],
     Accesos:       ['ver', 'crear', 'editar', 'baja', 'eliminar'],   // bóveda
-    Materiales:    ['ver', 'crear', 'editar', 'baja', 'eliminar']
+    Materiales:    ['ver', 'crear', 'editar', 'baja', 'eliminar'],
+    // Nómina
+    Colaboradores: ['ver', 'crear', 'editar', 'baja', 'eliminar'],
+    Permisos:      ['ver', 'crear', 'editar', 'baja', 'eliminar']
   },
   Interno: {
     Usuarios:      ['ver'],
@@ -47,7 +50,11 @@ var PERMISOS = {
     Comunicaciones:['ver', 'crear', 'editar', 'baja'],
     Cumpleanos:    ['ver', 'crear', 'editar', 'baja'],
     Accesos:       ['ver'],   // la bóveda la ve, pero no la toca
-    Materiales:    ['ver', 'crear', 'editar', 'baja']
+    Materiales:    ['ver', 'crear', 'editar', 'baja'],
+    // Nómina: trabaja con ella, pero sin los datos de liquidación —el servidor
+    // no se los manda— y sin poder borrar legajos.
+    Colaboradores: ['ver', 'crear', 'editar', 'baja'],
+    Permisos:      ['ver', 'crear', 'editar', 'baja']
   },
   Consultor: {
     Usuarios:      [],

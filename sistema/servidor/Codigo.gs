@@ -114,6 +114,7 @@ function listar_(sesion, entidad) {
 
 function crear_(sesion, entidad, datos) {
   exigirPermiso_(sesion, entidad, 'crear');
+  quitarCamposVedados_(sesion, entidad, datos);
   datos = validarAlta_(sesion, entidad, datos);
   // La contraseña de la bóveda se guarda cifrada.
   if (entidad === 'Accesos' && datos.Clave) datos.Clave = cifrar_(datos.Clave);
@@ -130,6 +131,7 @@ function editar_(sesion, entidad, id, cambios) {
 
   // Nadie edita a mano lo que el sistema controla.
   ['ID', 'Salt', 'Hash', 'ConsultorID', 'AutorID'].forEach(function (c) { delete cambios[c]; });
+  quitarCamposVedados_(sesion, entidad, cambios);
   if (entidad === 'Usuarios' && sesion.rol !== 'Admin') delete cambios.Rol;
   // Si se cambia la contraseña de la bóveda, se guarda cifrada.
   if (entidad === 'Accesos' && cambios.Clave) cambios.Clave = cifrar_(cambios.Clave);
@@ -207,6 +209,13 @@ function catalogos_(sesion) {
     tiposCumple: TIPOS_CUMPLE,
     destinatariosMaterial: DESTINATARIOS_MATERIAL,
     estadosMaterial: ESTADOS_MATERIAL,
+    // Nómina
+    tiposPermiso: TIPOS_PERMISO,
+    estadosPermiso: ESTADOS_PERMISO,
+    tiposContrato: TIPOS_CONTRATO,
+    areasTrabajo: AREAS_TRABAJO,
+    estadosColaborador: ESTADOS_COLABORADOR,
+    colaboradores: colaboradoresParaElegir_(sesion),
     // Nombres del equipo, para elegir responsables sin escribirlos a mano
     equipo: listarTodo_('Usuarios')
       .filter(function (u) { return u.Rol === 'Admin' || u.Rol === 'Interno'; })
@@ -216,6 +225,14 @@ function catalogos_(sesion) {
     empresas: empresasParaElegir_(sesion),
     permisos: PERMISOS[sesion.rol] || {}
   };
+}
+
+/** Nombres de la nómina, para colgarle un permiso a quien corresponde. */
+function colaboradoresParaElegir_(sesion) {
+  if (((PERMISOS[sesion.rol] || {}).Colaboradores || []).indexOf('ver') < 0) return [];
+  return listarTodo_('Colaboradores').map(function (c) {
+    return { id: c.ID, nombre: c.Nombre, estado: c.Estado };
+  });
 }
 
 /** Lista de clientes para los desplegables. Solo la ve quien trabaja adentro. */
@@ -305,6 +322,19 @@ function panel_(sesion) {
     }
   }
   return salida;
+}
+
+/**
+ * Lo que un rol no puede ver, tampoco lo puede escribir.
+ *
+ * Sin esto, el equipo interno no vería el sueldo de un colaborador pero podría
+ * cambiarlo mandando el campo por fuera de la pantalla. Se descarta en silencio:
+ * el resto de la operación sigue su curso normalmente.
+ */
+function quitarCamposVedados_(sesion, entidad, datos) {
+  var ocultos = (CAMPOS_OCULTOS[sesion.rol] || {})[entidad] || [];
+  ocultos.forEach(function (campo) { delete datos[campo]; });
+  return datos;
 }
 
 function resumen_(datos) {

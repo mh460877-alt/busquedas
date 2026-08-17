@@ -92,7 +92,7 @@ export class EmpresaFichaComponent implements OnInit {
   columnasDe(entidad: string) {
     const config = this.configDe(entidad);
     if (!config) return [];
-    return config.campos.filter(c => c.enTabla && c.tipo !== 'empresa');
+    return config.campos.filter(c => c.enTabla && c.clave !== 'EmpresaID');
   }
 
   candidatosDe(busquedaId?: string): any[] {

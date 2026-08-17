@@ -109,6 +109,9 @@ const routes: Routes = [
   { path: 'cumpleanos',     component: ModuloInternoComponent, data: { rol: ['Admin','Interno'], modulo: 'cumpleanos' },     canActivate: [VigilanteGuard] },
   { path: 'boveda',         component: ModuloInternoComponent, data: { rol: ['Admin','Interno'], modulo: 'boveda' },         canActivate: [VigilanteGuard] },
   { path: 'materiales',     component: ModuloInternoComponent, data: { rol: ['Admin','Interno'], modulo: 'materiales' },     canActivate: [VigilanteGuard] },
+  /* Nómina de personal */
+  { path: 'colaboradores',  component: ModuloInternoComponent, data: { rol: ['Admin','Interno'], modulo: 'colaboradores' }, canActivate: [VigilanteGuard] },
+  { path: 'permisos',       component: ModuloInternoComponent, data: { rol: ['Admin','Interno'], modulo: 'permisos' },      canActivate: [VigilanteGuard] },
   { path: 'informes',       component: InformesComponent,      data: { rol: ['Admin','Interno'] },                          canActivate: [VigilanteGuard] },
   { path: 'mi-cuenta',      component: MiCuentaComponent,       canActivate: [VigilanteGuard] },
 

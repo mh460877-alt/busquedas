@@ -96,7 +96,16 @@ export class ModuloInternoComponent implements OnInit {
   get rol(): string { return this.storage.rol; }
   puede(accion: string): boolean { return this.permisos.includes(accion); }
 
-  get columnas(): CampoModulo[] { return this.config.campos.filter(c => c.enTabla); }
+  /**
+   * Los campos que este rol puede ver. Los marcados como sensibles el servidor
+   * directamente no los envía a quien no es Administración; esconderlos acá
+   * evita mostrarle casilleros vacíos que parecen datos faltantes.
+   */
+  get campos(): CampoModulo[] {
+    return this.config.campos.filter(c => !c.soloAdmin || this.rol === 'Admin');
+  }
+
+  get columnas(): CampoModulo[] { return this.campos.filter(c => c.enTabla); }
 
   opcionesDe(campo: CampoModulo): string[] {
     if (campo.opciones) return campo.opciones;
@@ -121,12 +130,23 @@ export class ModuloInternoComponent implements OnInit {
 
   /** Este módulo se puede vincular a un cliente. */
   get tieneEmpresa(): boolean {
-    return this.config.campos.some(c => c.tipo === 'empresa');
+    return this.config.campos.some(c => c.clave === 'EmpresaID');
   }
 
   nombreEmpresa(id?: string): string {
     if (!id) return '';
     return this.empresas.find(e => e.id === id)?.nombre ?? '';
+  }
+
+  /** Opciones de un campo que apunta a otra tabla. */
+  opcionesRef(campo: CampoModulo): EmpresaOpcion[] {
+    return this.catalogos[campo.refCatalogo || ''] || [];
+  }
+
+  /** El nombre detrás de un ID guardado. */
+  nombreRef(campo: CampoModulo, id?: string): string {
+    if (!id) return '';
+    return this.opcionesRef(campo).find(o => o.id === id)?.nombre ?? '';
   }
 
   enlacesDe(fila: any): Adjunto[] {
@@ -142,10 +162,13 @@ export class ModuloInternoComponent implements OnInit {
     return nuevosPrimero(this.filas.filter(f => {
       if (this.filtroEmpresa && String(f['EmpresaID']) !== this.filtroEmpresa) return false;
       if (!t) return true;
-      // El nombre del cliente se resuelve para poder buscarlo: en la fila
-      // guardada hay un ID, que a nadie le sirve para buscar.
-      const texto = this.config.campos.map(c => f[c.clave]).join(' ') +
-                    ' ' + this.nombreEmpresa(f['EmpresaID']);
+      // Los nombres detrás de cada referencia se resuelven para poder buscarlos:
+      // en la fila guardada hay un ID, que a nadie le sirve para buscar.
+      const refs = this.campos
+        .filter(c => c.tipo === 'referencia')
+        .map(c => this.nombreRef(c, f[c.clave]))
+        .join(' ');
+      const texto = this.campos.map(c => f[c.clave]).join(' ') + ' ' + refs;
       return texto.toLowerCase().includes(t);
     }));
   }
@@ -155,8 +178,8 @@ export class ModuloInternoComponent implements OnInit {
     if (campo.tipo === 'password') {
       return this.verClaves[fila.ID] ? (v || '—') : '••••••••';
     }
-    if (campo.tipo === 'empresa') {
-      return this.nombreEmpresa(v) || '—';
+    if (campo.tipo === 'referencia') {
+      return this.nombreRef(campo, v) || '—';
     }
     // El servidor devuelve las columnas llamadas "Fecha" con la hora pegada
     // (2026-08-10 00:00:00). En una agenda la hora no aporta y ensucia.
@@ -178,7 +201,7 @@ export class ModuloInternoComponent implements OnInit {
      * no acepta ese formato: mostraba el campo vacío, y al guardar se borraba la
      * fecha que el registro ya tenía.
      */
-    this.config.campos
+    this.campos
       .filter(c => c.tipo === 'fecha')
       .forEach(c => { if (copia[c.clave]) copia[c.clave] = String(copia[c.clave]).slice(0, 10); });
     this.editando = copia;
@@ -186,7 +209,7 @@ export class ModuloInternoComponent implements OnInit {
   cerrar(): void { this.editando = null; }
 
   guardar(): void {
-    const faltan = this.config.campos
+    const faltan = this.campos
       .filter(c => c.requerido && !this.editando[c.clave])
       .map(c => c.etiqueta);
     if (faltan.length) { this.mensaje = 'Faltan: ' + faltan.join(', '); return; }

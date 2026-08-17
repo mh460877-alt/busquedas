@@ -32,6 +32,7 @@
 .p-finalizada { background: #27ae60; }
 .p-viaje { background: #8e44ad; }
 .p-cumple { background: #e67e22; }
+.p-permiso { background: #16a085; }
 
 /* ---- grilla ---- */
 .cal-grid {
@@ -66,6 +67,7 @@
 .ev-finalizada { background: #e4f6ea; color: #1f7a45; }
 .ev-viaje      { background: #f1e6f8; color: #6f3d90; }
 .ev-cumple     { background: #fcecdb; color: #b5651a; }
+.ev-permiso    { background: #e0f2ee; color: #10726a; }
 .cal-mas { font-size: 0.65rem; color: #93a0a9; padding-left: 4px; }
 
 /* ---- detalle del día ---- */

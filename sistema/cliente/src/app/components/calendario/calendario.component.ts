@@ -4,10 +4,11 @@ import { ApiService } from '../../services/api.service';
 import { LoginService } from '../../services/login.service';
 import { EmpresaOpcion } from '../../models/adjunto';
 
+
 interface Evento {
   dia: number;          // día del mes visible
   titulo: string;
-  tipo: 'pendiente' | 'finalizada' | 'viaje' | 'cumple';
+  tipo: 'pendiente' | 'finalizada' | 'viaje' | 'cumple' | 'permiso';
   responsable?: string;
   detalle?: string;
   /** Lo que precisa el tipo: "Incompany Clínica Ledesma", por ejemplo. */
@@ -48,6 +49,8 @@ export class CalendarioComponent implements OnInit {
   pendientes: any[] = [];
   viajes: any[] = [];
   cumples: any[] = [];
+  permisos: any[] = [];
+  colaboradores: EmpresaOpcion[] = [];
 
   diaSeleccionado: number | null = null;
   cargando = true;
@@ -76,7 +79,8 @@ export class CalendarioComponent implements OnInit {
         this.equipo = c.equipo || [];
         this.tipos = c.tiposPendiente || [];
         this.empresas = c.empresas || [];
-        this.construir();     // ya se pueden resolver los nombres de cliente
+        this.colaboradores = c.colaboradores || [];
+        this.construir();     // ya se pueden resolver los nombres
       },
       error: () => { }
     });
@@ -85,6 +89,11 @@ export class CalendarioComponent implements OnInit {
   nombreEmpresa(id?: string): string {
     if (!id) return '';
     return this.empresas.find(e => e.id === id)?.nombre ?? '';
+  }
+
+  nombreColaborador(id?: string): string {
+    if (!id) return '';
+    return this.colaboradores.find(c => c.id === id)?.nombre ?? '';
   }
 
   /** Se vuelve a armar la grilla con el cliente elegido. */
@@ -98,12 +107,14 @@ export class CalendarioComponent implements OnInit {
     forkJoin({
       pendientes: this.api.listar<any>('Pendientes'),
       viajes: this.api.listar<any>('Viajes'),
-      cumples: this.api.listar<any>('Cumpleanos')
+      cumples: this.api.listar<any>('Cumpleanos'),
+      permisos: this.api.listar<any>('Permisos')
     }).subscribe({
       next: r => {
         this.pendientes = r.pendientes;
         this.viajes = r.viajes;
         this.cumples = r.cumples;
+        this.permisos = r.permisos;
         this.cargando = false;
         this.construir();
       },
@@ -199,6 +210,35 @@ export class CalendarioComponent implements OnInit {
           dia: f.getDate(), titulo: '🎂 ' + c.Persona,
           tipo: 'cumple', detalle: c.Tipo
         });
+      }
+    });
+
+    /**
+     * Los permisos se pintan en cada día que dura la licencia, no solo el
+     * primero: la pregunta que hay que poder contestar mirando el mes es
+     * "¿quién está hoy?", y para eso el rango tiene que verse entero.
+     * Los rechazados no se muestran: esa persona trabaja normalmente.
+     */
+    this.permisos.forEach(p => {
+      if (/rechaz/i.test(p.Estado || '')) return;
+      const desde = this.parse(p.Desde);
+      if (!desde) return;
+      const hasta = this.parse(p.Hasta) || desde;
+
+      const persona = this.nombreColaborador(p.ColaboradorID);
+      const cursor = new Date(desde);
+      while (cursor <= hasta) {
+        if (cursor.getFullYear() === anio && cursor.getMonth() === mes) {
+          agregar(cursor.getDate(), {
+            dia: cursor.getDate(),
+            titulo: '🌴 ' + (persona || 'Licencia'),
+            responsable: persona,
+            tipo: 'permiso',
+            detalle: [p.Tipo, p.Estado].filter(Boolean).join(' · '),
+            detalleTipo: p.Tipo
+          });
+        }
+        cursor.setDate(cursor.getDate() + 1);
       }
     });
 

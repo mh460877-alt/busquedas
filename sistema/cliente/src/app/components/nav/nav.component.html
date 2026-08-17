@@ -56,6 +56,15 @@
       <i class="fas fa-chart-line"></i> Informes y KPIs
     </a>
 
+    <!-- Nómina de personal -->
+    <div class="nav-grupo" *ngIf="es('Admin','Interno')">Personal</div>
+    <a *ngIf="es('Admin','Interno')" routerLink="/colaboradores" routerLinkActive="active" class="nav-link">
+      <i class="fas fa-id-card"></i> Nómina de personal
+    </a>
+    <a *ngIf="es('Admin','Interno')" routerLink="/permisos" routerLinkActive="active" class="nav-link">
+      <i class="fas fa-calendar-minus"></i> Permisos y licencias
+    </a>
+
     <!-- Administración -->
     <div class="nav-grupo" *ngIf="es('Admin')">Administración</div>
     <a *ngIf="es('Admin')" routerLink="/usuarios" routerLinkActive="active" class="nav-link">

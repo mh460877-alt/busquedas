@@ -23,5 +23,13 @@ export interface Catalogos {
   equipo?: string[];
   /** Clientes, para vincular cada registro interno con su empresa. */
   empresas?: EmpresaOpcion[];
+  // Nómina
+  tiposPermiso?: string[];
+  estadosPermiso?: string[];
+  tiposContrato?: string[];
+  areasTrabajo?: string[];
+  estadosColaborador?: string[];
+  /** La nómina, para colgarle un permiso a quien corresponde. */
+  colaboradores?: EmpresaOpcion[];
   permisos: { [entidad: string]: string[] };
 }

@@ -79,7 +79,7 @@
       <i class="fas" [ngClass]="config.icono"></i> {{ esNuevo ? 'Nuevo' : 'Editar' }} · {{ config.titulo }}
     </div>
 
-    <div class="form-group" *ngFor="let c of config.campos">
+    <div class="form-group" *ngFor="let c of campos">
       <label>{{ c.etiqueta }}</label>
 
       <textarea *ngIf="c.tipo === 'textarea'" [(ngModel)]="editando[c.clave]" rows="3"></textarea>
@@ -89,9 +89,9 @@
         <option *ngFor="let o of opcionesParaEditar(c)" [value]="o">{{ o }}</option>
       </select>
 
-      <select *ngIf="c.tipo === 'empresa'" [(ngModel)]="editando[c.clave]">
-        <option value="">— Sin cliente —</option>
-        <option *ngFor="let e of empresas" [value]="e.id">{{ e.nombre }}</option>
+      <select *ngIf="c.tipo === 'referencia'" [(ngModel)]="editando[c.clave]">
+        <option value="">— Elegir —</option>
+        <option *ngFor="let o of opcionesRef(c)" [value]="o.id">{{ o.nombre }}</option>
       </select>
 
       <input *ngIf="c.tipo === 'fecha'" type="date" [(ngModel)]="editando[c.clave]">
