@@ -79,14 +79,22 @@ function igualesSeguro_(a, b) {
 /**
  * Hash robusto de contraseña: HMAC-SHA256 iterado, con la sal del usuario y el
  * pepper del servidor. Formato guardado: "v2$<iteraciones>$<hex>".
+ *
+ * Todo el ciclo trabaja con bytes. Apps Script ofrece dos formas de llamar a
+ * computeHmacSha256Signature —texto con texto, o bytes con bytes— y ninguna
+ * mezcla las dos. Como cada vuelta devuelve bytes, la clave también tiene que
+ * ir en bytes: si no, a partir de la segunda vuelta no hay firma que coincida
+ * y el ingreso corta con error.
  */
-function hashClave_(salt, clientHash) {
-  var pepper = secretoPass_();
-  var u = Utilities.computeHmacSha256Signature(salt + ':' + clientHash, pepper);
-  for (var i = 1; i < ITERACIONES_HASH; i++) {
+function hashClave_(salt, clientHash, iteraciones) {
+  var vueltas = iteraciones || ITERACIONES_HASH;
+  var pepper = Utilities.newBlob(secretoPass_()).getBytes();
+  var u = Utilities.computeHmacSha256Signature(
+    Utilities.newBlob(salt + ':' + clientHash).getBytes(), pepper);
+  for (var i = 1; i < vueltas; i++) {
     u = Utilities.computeHmacSha256Signature(u, pepper);
   }
-  return 'v2$' + ITERACIONES_HASH + '$' + hexDe_(u);
+  return 'v2$' + vueltas + '$' + hexDe_(u);
 }
 
 /**
@@ -97,7 +105,14 @@ function hashClave_(salt, clientHash) {
 function verificarClave_(usuario, clientHash) {
   var guardado = String(usuario.Hash || '');
   if (guardado.indexOf('v2$') === 0) {
-    return igualesSeguro_(hashClave_(usuario.Salt, clientHash), guardado);
+    /**
+     * Con cuántas vueltas se generó viene adentro del propio hash. Se usa esa
+     * cifra y no la constante actual: así, el día que convenga subir el costo,
+     * las contraseñas ya guardadas se siguen validando en lugar de quedar todas
+     * inservibles de golpe.
+     */
+    var vueltas = Number(guardado.split('$')[1]) || ITERACIONES_HASH;
+    return igualesSeguro_(hashClave_(usuario.Salt, clientHash, vueltas), guardado);
   }
   return igualesSeguro_(sha256_(usuario.Salt + clientHash), guardado);   // heredado
 }

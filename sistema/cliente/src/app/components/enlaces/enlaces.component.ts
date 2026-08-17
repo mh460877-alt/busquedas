@@ -88,6 +88,13 @@ export class EnlacesComponent implements OnChanges {
     });
   }
 
+  /**
+   * Solo el día, sin la hora.
+   * La columna se llama "Fecha", y a las columnas con ese nombre el servidor
+   * les devuelve también la hora; acá no aporta nada y ensucia la línea.
+   */
+  soloDia(fecha?: string): string { return (fecha || '').slice(0, 10); }
+
   /** Solo quien lo cargó, y Dirección o el equipo interno. */
   puedeQuitar(a: Adjunto): boolean {
     if (this.soloLectura) return false;

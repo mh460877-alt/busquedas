@@ -7,7 +7,7 @@
     <div class="enlace-cuerpo">
       <a [href]="a.URL" target="_blank" rel="noopener">{{ a.Titulo || a.URL }}</a>
       <div class="chico" *ngIf="a.Nota">{{ a.Nota }}</div>
-      <div class="chico atenuado" *ngIf="a.AutorNombre">{{ a.AutorNombre }} · {{ a.Fecha }}</div>
+      <div class="chico atenuado" *ngIf="a.AutorNombre">{{ a.AutorNombre }} · {{ soloDia(a.Fecha) }}</div>
     </div>
     <button class="btn-accion btn-borrar" title="Quitar enlace"
             *ngIf="puedeQuitar(a)" (click)="quitar(a)">
