@@ -40,6 +40,51 @@
     </div>
   </div>
 
+  <!-- Quiénes de este cliente pueden entrar al sistema -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <h3><i class="fas fa-user-shield"></i> Accesos de este cliente ({{ usuarios.length }})</h3>
+        <p class="desc">La gente de la empresa que puede entrar a ver su proceso.</p>
+      </div>
+      <button class="btn" *ngIf="esAdmin" (click)="abrirAltaAcceso()">
+        <i class="fas fa-user-plus"></i> Agregar acceso
+      </button>
+    </div>
+
+    <div class="tabla-cont" *ngIf="usuarios.length">
+      <table>
+        <thead>
+          <tr><th>Nombre</th><th>Usuario</th><th>Correo</th><th>Contraseña</th><th>Estado</th><th></th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let u of usuarios">
+            <td data-label="Nombre"><strong>{{ u.Nombre }}</strong></td>
+            <td data-label="Usuario" class="chico">{{ u.Usuario || '—' }}</td>
+            <td data-label="Correo" class="chico">{{ u.Correo || '—' }}</td>
+            <td data-label="Contraseña">
+              <span class="badge" [ngClass]="tieneContrasena(u) ? 'badge-activa' : 'badge-ambar'">
+                {{ tieneContrasena(u) ? 'Definida' : 'La elige al entrar' }}
+              </span>
+            </td>
+            <td data-label="Estado">
+              <span class="badge" [ngClass]="u.Estado === 'Baja' ? 'badge-rojo' : 'badge-activa'">{{ u.Estado }}</span>
+            </td>
+            <td class="acciones" *ngIf="esAdmin">
+              <button class="btn-accion btn-editar" title="Editar" (click)="editarAcceso(u)"><i class="fas fa-edit"></i></button>
+              <button class="btn-accion btn-borrar" title="Dar de baja" *ngIf="u.Estado !== 'Baja'" (click)="darDeBajaAcceso(u)"><i class="fas fa-user-slash"></i></button>
+              <button class="btn-accion btn-ver" title="Reactivar" *ngIf="u.Estado === 'Baja'" (click)="reactivarAcceso(u)"><i class="fas fa-rotate-left"></i></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="vacio" *ngIf="!usuarios.length">
+      Todavía nadie de este cliente tiene acceso al sistema.
+    </p>
+  </div>
+
   <!-- Enlaces del cliente -->
   <div class="card">
     <h3><i class="fas fa-link"></i> Enlaces del cliente</h3>
@@ -108,6 +153,49 @@
       Todavía no hay nada cargado para este cliente.
       Cuando le asignes un pendiente, un proyecto o una búsqueda, va a aparecer acá.
     </p>
+  </div>
+
+  <!-- Alta de un acceso: el rol y la empresa ya vienen puestos -->
+  <div class="modal-fondo" *ngIf="altaAcceso" (click)="cerrarAltaAcceso()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <i class="fas fa-user-plus"></i> Nuevo acceso · {{ ficha.empresa.Nombre }}
+      </div>
+      <p class="desc">
+        Entra a ver solamente el proceso de {{ ficha.empresa.Nombre }}: sus búsquedas y
+        los candidatos desde terna en adelante. No ve documentos ni qué consultor los presentó.
+      </p>
+
+      <div class="form-group">
+        <label>Nombre y apellido</label>
+        <input type="text" [(ngModel)]="altaAcceso.Nombre" placeholder="Cómo se llama la persona">
+      </div>
+      <div class="form-group">
+        <label>Correo</label>
+        <input type="email" [(ngModel)]="altaAcceso.Correo" placeholder="con este correo entra">
+      </div>
+      <div class="form-group">
+        <label>Usuario</label>
+        <input type="text" [(ngModel)]="altaAcceso.Usuario" placeholder="opcional: un nombre corto para entrar">
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="text" [(ngModel)]="claveAcceso" placeholder="dejala vacía y la elige la persona">
+        <p class="chico">
+          Si le ponés una, pasásela por un canal seguro y que la cambie desde «Mi cuenta».
+          Si la dejás vacía, la define en su primer ingreso — más cómodo, pero quien
+          conozca el correo antes que el titular podría quedarse con la cuenta.
+        </p>
+      </div>
+
+      <p class="mensaje error" *ngIf="mensajeAcceso">{{ mensajeAcceso }}</p>
+      <div class="acciones-modal">
+        <button class="btn gris" (click)="cerrarAltaAcceso()">Cancelar</button>
+        <button class="btn success" (click)="guardarAcceso()" [disabled]="guardandoAcceso">
+          <i class="fas fa-save"></i> {{ guardandoAcceso ? 'Creando…' : 'Crear acceso' }}
+        </button>
+      </div>
+    </div>
   </div>
 
 </ng-container>

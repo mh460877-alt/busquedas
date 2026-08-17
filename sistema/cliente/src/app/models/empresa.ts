@@ -1,6 +1,7 @@
 import { Adjunto } from './adjunto';
 import { Busqueda } from './busqueda';
 import { Candidato } from './candidato';
+import { Usuario } from './usuario';
 
 export interface Empresa {
   ID?: string;
@@ -25,6 +26,8 @@ export interface FichaEmpresa {
   empresa: Empresa;
   busquedas: Busqueda[];
   candidatos: Candidato[];
+  /** Los accesos al sistema que tiene esa empresa. */
+  usuarios: Usuario[];
   /** Registros de cada módulo interno vinculados a esta empresa. */
   modulos: { [entidad: string]: any[] };
   /** Enlaces de la empresa y de todo lo que cuelga de ella. */

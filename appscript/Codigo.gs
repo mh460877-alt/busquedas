@@ -243,9 +243,18 @@ function fichaEmpresa_(sesion, empresaId) {
     empresa: proyectar(sesion.rol, 'Empresas', empresa),
     busquedas: [],
     candidatos: [],
+    usuarios: [],
     modulos: {},
     adjuntos: []
   };
+
+  // Los accesos que tiene esa empresa. Solo los ve quien puede ver usuarios,
+  // que hoy es Administración y, de solo lectura, el equipo interno.
+  if (((PERMISOS[sesion.rol] || {}).Usuarios || []).indexOf('ver') >= 0) {
+    salida.usuarios = listar_(sesion, 'Usuarios').filter(function (u) {
+      return String(u.EmpresaID) === String(empresaId);
+    });
+  }
 
   // Alcance: qué registros de esta empresa puede ver quien pregunta.
   var idsBusquedas = [];
