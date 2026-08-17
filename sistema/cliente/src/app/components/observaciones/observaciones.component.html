@@ -1,0 +1,35 @@
+<div class="obs-lista">
+  <p class="vacio chico" *ngIf="cargando"><i class="fas fa-spinner fa-spin"></i> Cargando…</p>
+
+  <div class="obs-item" *ngFor="let o of observaciones">
+    <div class="obs-cabecera">
+      <span class="badge" [ngClass]="o.Visibilidad === 'Compartida' ? 'badge-activa' : 'badge-gris'">
+        {{ o.Visibilidad === 'Compartida' ? 'Compartida' : 'Interna' }}
+      </span>
+      <span class="chico">{{ o.RolAutor }} · {{ o.Fecha }}</span>
+    </div>
+    <div class="obs-texto">{{ o.Texto }}</div>
+  </div>
+
+  <p class="vacio chico" *ngIf="!cargando && !observaciones.length">
+    Todavía no hay comentarios sobre este candidato.
+  </p>
+</div>
+
+<div class="obs-nueva">
+  <textarea [(ngModel)]="texto" rows="3"
+            placeholder="Dejá tu comentario o el avance del proceso…"></textarea>
+
+  <label class="checkbox-item" *ngIf="puedeCompartir">
+    <input type="checkbox" [(ngModel)]="compartir">
+    Compartir con el consultor que lo presentó y con la empresa
+  </label>
+  <p class="chico" *ngIf="puedeCompartir">
+    Sin tildar queda como nota interna del equipo: no la ve el partner ni el cliente.
+  </p>
+
+  <p class="mensaje error" *ngIf="mensaje">{{ mensaje }}</p>
+  <button class="btn success chico" (click)="guardar()" [disabled]="guardando">
+    <i class="fas fa-comment"></i> {{ guardando ? 'Guardando…' : 'Guardar comentario' }}
+  </button>
+</div>

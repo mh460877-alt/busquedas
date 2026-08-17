@@ -1,38 +1,83 @@
 <div class="card acento">
   <h2><i class="fas fa-database"></i> Registro global de candidatos</h2>
-  <p class="desc">Todos los postulantes presentados, de todas las búsquedas.</p>
+  <p class="desc">Quién presentó a cada postulante, y en qué está su proceso.</p>
 
   <input type="text" class="search-bar" placeholder="Buscar por nombre, documento, puesto o consultor…" [(ngModel)]="filtro">
 
   <p class="mensaje" *ngIf="mensaje">{{ mensaje }}</p>
   <p class="vacio" *ngIf="cargando"><i class="fas fa-spinner fa-spin"></i> Cargando…</p>
 
-  <div class="tabla-cont" *ngIf="!cargando">
-    <table>
-      <thead>
-        <tr><th>DNI</th><th>Nombre</th><th>Búsqueda</th><th>Presentó</th>
-            <th>Material</th><th>Etapa</th><th>Ve empresa</th><th *ngIf="esAdmin"></th></tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let c of visibles">
-          <td data-label="DNI" class="chico">{{ c.DNI }}</td>
-          <td data-label="Nombre"><strong>{{ c.Nombre }}</strong></td>
-          <td data-label="Búsqueda"><a (click)="abrir(c)" class="enlace">{{ puesto(c.BusquedaID) }}</a></td>
-          <td data-label="Presentó" class="chico">{{ consultor(c.ConsultorID) }}</td>
-          <td data-label="Material" class="chico">
-            <a *ngIf="c.LinkCV" [href]="c.LinkCV" target="_blank" rel="noopener"><i class="fas fa-file-pdf"></i> CV</a>
-            <a *ngIf="c.LinkVideo" [href]="c.LinkVideo" target="_blank" rel="noopener"><i class="fas fa-video"></i> Video</a>
-          </td>
-          <td data-label="Etapa">
-            <select class="mini" [ngModel]="c.Etapa" (ngModelChange)="cambiarEtapa(c, $event)">
-              <option *ngFor="let e of etapas" [value]="e">{{ e }}</option>
-            </select>
-          </td>
-          <td data-label="Ve empresa"><span class="badge" [ngClass]="visibleParaEmpresa(c) ? 'badge-activa' : 'badge-gris'">{{ visibleParaEmpresa(c) ? 'Sí' : 'Todavía no' }}</span></td>
-          <td *ngIf="esAdmin"><button class="btn-accion btn-borrar" title="Eliminar" (click)="eliminar(c)"><i class="fas fa-trash"></i></button></td>
-        </tr>
-      </tbody>
-    </table>
-    <p class="vacio" *ngIf="!visibles.length">No hay candidatos que coincidan.</p>
+  <div class="acciones-grupos" *ngIf="!cargando && grupos.length > 1">
+    <button class="btn gris chico" (click)="desplegarTodos()"><i class="fas fa-angle-double-down"></i> Abrir todos</button>
+    <button class="btn gris chico" (click)="plegarTodos()"><i class="fas fa-angle-double-up"></i> Cerrar todos</button>
+  </div>
+
+  <!-- Un bloque por partner: sus candidatos y el estado de cada uno. -->
+  <div class="grupo" *ngFor="let g of grupos; trackBy: trackGrupo" [class.huerfano]="!g.id">
+    <div class="grupo-cabecera" (click)="alternarGrupo(g.id)">
+      <i class="fas" [ngClass]="abierto(g.id) ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+      <i class="fas fa-user-tie"></i>
+      <span class="grupo-nombre">{{ g.nombre }}</span>
+      <span class="grupo-cuenta">
+        {{ g.candidatos.length }} {{ g.candidatos.length === 1 ? 'candidato' : 'candidatos' }}
+        <span *ngIf="g.enTerna"> · {{ g.enTerna }} que ya ve la empresa</span>
+      </span>
+    </div>
+
+    <div class="tabla-cont" *ngIf="abierto(g.id)">
+      <table>
+        <thead>
+          <tr><th>DNI</th><th>Nombre</th><th>Búsqueda</th>
+              <th>Material</th><th>Etapa</th><th>Ve empresa</th><th>Comentarios</th><th *ngIf="esAdmin"></th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of g.candidatos">
+            <td data-label="DNI" class="chico">{{ c.DNI }}</td>
+            <td data-label="Nombre"><strong>{{ c.Nombre }}</strong></td>
+            <td data-label="Búsqueda"><a (click)="abrir(c)" class="enlace">{{ puesto(c.BusquedaID) }}</a></td>
+            <td data-label="Material" class="chico">
+              <a *ngIf="c.LinkCV" [href]="c.LinkCV" target="_blank" rel="noopener"><i class="fas fa-file-pdf"></i> CV</a>
+              <a *ngIf="c.LinkVideo" [href]="c.LinkVideo" target="_blank" rel="noopener"><i class="fas fa-video"></i> Video</a>
+              <span *ngIf="!c.LinkCV && !c.LinkVideo">—</span>
+            </td>
+            <td data-label="Etapa">
+              <select class="mini" [ngModel]="c.Etapa" (ngModelChange)="cambiarEtapa(c, $event)">
+                <option *ngFor="let e of etapas" [value]="e">{{ e }}</option>
+              </select>
+            </td>
+            <td data-label="Ve empresa"><span class="badge" [ngClass]="visibleParaEmpresa(c) ? 'badge-activa' : 'badge-gris'">{{ visibleParaEmpresa(c) ? 'Sí' : 'Todavía no' }}</span></td>
+            <td data-label="Comentarios">
+              <button class="btn-accion btn-ver" title="Comentarios y avances" (click)="abrirObservaciones(c)">
+                <i class="fas fa-comment-dots"></i>
+                <span class="cuenta" *ngIf="observacionesDe(c).length">{{ observacionesDe(c).length }}</span>
+              </button>
+            </td>
+            <td *ngIf="esAdmin"><button class="btn-accion btn-borrar" title="Eliminar" (click)="eliminar(c)"><i class="fas fa-trash"></i></button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <p class="vacio" *ngIf="!cargando && !visibles.length">No hay candidatos que coincidan.</p>
+</div>
+
+<!-- Comentarios y avances de un candidato -->
+<div class="modal-fondo" *ngIf="comentando" (click)="cerrarObservaciones()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <i class="fas fa-comment-dots"></i> {{ comentando.Nombre }}
+    </div>
+    <p class="desc">
+      Presentado por {{ consultor(comentando.ConsultorID) }} · {{ puesto(comentando.BusquedaID) }}
+    </p>
+
+    <app-observaciones
+      [candidatoId]="comentando.ID || ''"
+      [precargadas]="observacionesDe(comentando)"></app-observaciones>
+
+    <div class="acciones-modal">
+      <button class="btn gris" (click)="cerrarObservaciones()">Cerrar</button>
+    </div>
   </div>
 </div>

@@ -9,6 +9,16 @@ import { Candidato } from '../../models/candidato';
 import { Busqueda } from '../../models/busqueda';
 import { Usuario } from '../../models/usuario';
 import { nuevosPrimero } from '../../models/orden';
+import { ObservacionService } from '../../services/observacion.service';
+import { Observacion } from '../../models/observacion';
+
+/** Los candidatos que presentó una misma persona, plegados bajo su nombre. */
+interface GrupoConsultor {
+  id: string;
+  nombre: string;
+  candidatos: Candidato[];
+  enTerna: number;
+}
 
 /** Registro global de candidatos. Lo ven Administración e Interno. */
 @Component({
@@ -27,11 +37,19 @@ export class CandidatoListComponent implements OnInit {
   cargando = true;
   mensaje = '';
 
+  /** Partners con su lista cerrada. Por omisión están todos abiertos. */
+  plegados: { [consultorId: string]: boolean } = {};
+
+  /** Comentarios por candidato, y el candidato que se está mirando. */
+  observaciones: Observacion[] = [];
+  comentando: Candidato | null = null;
+
   constructor(
     private candidatoService: CandidatoService,
     private busquedaService: BusquedaService,
     private usuarioService: UsuarioService,
     private loginService: LoginService,
+    private observacionService: ObservacionService,
     private storage: StorageService,
     private router: Router
   ) { }
@@ -55,7 +73,56 @@ export class CandidatoListComponent implements OnInit {
       },
       error: () => { }
     });
+    this.cargarObservaciones();
   }
+
+  /** Todos los comentarios de una vez, no una llamada por candidato. */
+  cargarObservaciones(): void {
+    this.observacionService.listar().subscribe({
+      next: o => this.observaciones = o,
+      error: () => { }
+    });
+  }
+
+  observacionesDe(c: Candidato): Observacion[] {
+    return this.observaciones.filter(o => String(o.CandidatoID) === String(c.ID));
+  }
+
+  abrirObservaciones(c: Candidato): void { this.comentando = c; }
+  cerrarObservaciones(): void { this.comentando = null; this.cargarObservaciones(); }
+
+  /**
+   * Los candidatos agrupados por quién los presentó.
+   *
+   * Cada partner ve su propio registro cuando entra; esto es la contracara
+   * adentro: de un vistazo, qué presentó cada uno y en qué está.
+   */
+  get grupos(): GrupoConsultor[] {
+    const porConsultor = new Map<string, Candidato[]>();
+    this.visibles.forEach(c => {
+      const clave = c.ConsultorID || '';
+      if (!porConsultor.has(clave)) porConsultor.set(clave, []);
+      porConsultor.get(clave)!.push(c);
+    });
+
+    const grupos: GrupoConsultor[] = [];
+    porConsultor.forEach((candidatos, id) => grupos.push({
+      id,
+      nombre: id ? this.consultor(id) : 'Sin consultor asignado',
+      candidatos,
+      enTerna: candidatos.filter(c => this.visibleParaEmpresa(c)).length
+    }));
+
+    // Los sin consultor, al final: se ven y se corrigen en vez de perderse.
+    return grupos.sort((a, b) => (a.id ? 0 : 1) - (b.id ? 0 : 1));
+  }
+
+  trackGrupo(_: number, g: GrupoConsultor): string { return g.id; }
+
+  abierto(id: string): boolean { return this.plegados[id] !== true; }
+  alternarGrupo(id: string): void { this.plegados[id] = !this.plegados[id]; }
+  plegarTodos(): void { this.grupos.forEach(g => this.plegados[g.id] = true); }
+  desplegarTodos(): void { this.plegados = {}; }
 
   get visibles(): Candidato[] {
     const t = this.filtro.toLowerCase().trim();

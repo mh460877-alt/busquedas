@@ -126,7 +126,16 @@ function filtrarPorPertenencia_(sesion, entidad, filas) {
     if (entidad === 'Observaciones') {
       var propios = filtrarPorPertenencia_(sesion, 'Candidatos', listarTodo_('Candidatos'))
         .map(function (c) { return String(c.ID); });
-      return filas.filter(function (f) { return propios.indexOf(String(f.CandidatoID)) >= 0; });
+      return filas.filter(function (f) {
+        if (propios.indexOf(String(f.CandidatoID)) < 0) return false;
+        /**
+         * Mismo criterio que con las empresas: ve las suyas y las que el equipo
+         * marcó como compartidas. Una observación "Interna" es una nota del
+         * equipo sobre el candidato —a veces sobre por qué no convence—, y
+         * mandársela a quien lo presentó es exactamente lo que esa marca evita.
+         */
+        return String(f.AutorID) === String(sesion.uid) || String(f.Visibilidad) === 'Compartida';
+      });
     }
     return [];
   }
