@@ -1,12 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EmpresaService } from '../../services/empresa.service';
-import { UsuarioService } from '../../services/usuario.service';
-import { LoginService } from '../../services/login.service';
-import { StorageService } from '../../services/storage.service';
 import { FichaEmpresa } from '../../models/empresa';
 import { Adjunto } from '../../models/adjunto';
-import { Usuario } from '../../models/usuario';
 import { MODULOS } from '../../models/modulos.config';
 
 /**
@@ -37,17 +33,8 @@ export class EmpresaFichaComponent implements OnInit {
     'Capacitaciones', 'Comunicaciones', 'Materiales'
   ];
 
-  /* ---- Alta de accesos para la gente del cliente ---- */
-  altaAcceso: Usuario | null = null;
-  claveAcceso = '';
-  guardandoAcceso = false;
-  mensajeAcceso = '';
-
   constructor(
     private empresaService: EmpresaService,
-    private usuarioService: UsuarioService,
-    private loginService: LoginService,
-    private storage: StorageService,
     private ruta: ActivatedRoute,
     private router: Router
   ) { }
@@ -120,71 +107,6 @@ export class EmpresaFichaComponent implements OnInit {
   }
 
   get totalEnlaces(): number { return this.ficha?.adjuntos.length ?? 0; }
-
-  /* ---------------- Accesos del cliente ---------------- */
-
-  get esAdmin(): boolean { return this.storage.rol === 'Admin'; }
-
-  get usuarios(): Usuario[] { return this.ficha?.usuarios ?? []; }
-
-  tieneContrasena(u: Usuario): boolean { return !!(u as any).TieneContrasena; }
-
-  abrirAltaAcceso(): void {
-    this.mensajeAcceso = '';
-    this.claveAcceso = '';
-    // El rol y la empresa ya vienen resueltos: es la ficha de este cliente.
-    this.altaAcceso = {
-      Nombre: '', Usuario: '', Correo: '',
-      Rol: 'Empresa', EmpresaID: this.ficha?.empresa.ID ?? ''
-    };
-  }
-
-  cerrarAltaAcceso(): void { this.altaAcceso = null; this.mensajeAcceso = ''; }
-
-  async guardarAcceso(): Promise<void> {
-    if (!this.altaAcceso?.Nombre?.trim()) {
-      this.mensajeAcceso = 'Poné el nombre de la persona.';
-      return;
-    }
-    this.guardandoAcceso = true;
-
-    const hash = this.claveAcceso ? await this.loginService.hashear(this.claveAcceso) : '';
-
-    this.usuarioService.crear(this.altaAcceso).subscribe({
-      next: creado => {
-        if (!hash) { this.terminarAlta(); return; }
-        this.loginService.definirContrasena(hash, creado.ID ?? '').subscribe({
-          next: () => this.terminarAlta(),
-          error: e => { this.guardandoAcceso = false; this.mensajeAcceso = e.message; }
-        });
-      },
-      error: e => { this.guardandoAcceso = false; this.mensajeAcceso = e.message; }
-    });
-  }
-
-  private terminarAlta(): void {
-    this.guardandoAcceso = false;
-    this.altaAcceso = null;
-    this.claveAcceso = '';
-    this.cargar();
-  }
-
-  darDeBajaAcceso(u: Usuario): void {
-    if (!confirm(`¿Dar de baja el acceso de ${u.Nombre}? Deja de poder entrar, pero se conserva lo que haya hecho.`)) return;
-    this.usuarioService.baja(u.ID ?? '').subscribe({
-      next: () => this.cargar(),
-      error: e => this.mensaje = e.message
-    });
-  }
-
-  reactivarAcceso(u: Usuario): void {
-    this.usuarioService.editar(u.ID ?? '', { Estado: 'Activo' }).subscribe({
-      next: () => this.cargar(),
-      error: e => this.mensaje = e.message
-    });
-  }
-
-  editarAcceso(u: Usuario): void { this.router.navigate(['/usuario-form', u.ID]); }
 
   abrirBusqueda(id?: string): void { this.router.navigate(['/busqueda', id]); }
   editar(): void { this.router.navigate(['/empresa-form', this.ficha?.empresa.ID]); }

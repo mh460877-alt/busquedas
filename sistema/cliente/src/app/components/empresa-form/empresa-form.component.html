@@ -61,3 +61,18 @@
     </button>
   </div>
 </div>
+
+<!-- Los accesos de este cliente, en la misma pantalla donde se lo edita -->
+<div class="card" *ngIf="!esNueva">
+  <app-accesos-empresa
+    [empresaId]="empresa.ID || ''"
+    [empresaNombre]="empresa.Nombre"></app-accesos-empresa>
+</div>
+
+<div class="card" *ngIf="esNueva">
+  <h3><i class="fas fa-user-shield"></i> Accesos de este cliente</h3>
+  <p class="vacio">
+    Guardá primero los datos de la empresa. Apenas quede creada vas a poder
+    cargar acá a la gente que tenga que entrar al sistema.
+  </p>
+</div>

@@ -1,0 +1,5 @@
+/* El componente se dibuja adentro de la tarjeta de quien lo usa, así que no
+   pone marco propio: solo respira arriba cuando va después de un formulario. */
+:host { display: block; }
+
+.tabla-cont { margin-top: 4px; }
