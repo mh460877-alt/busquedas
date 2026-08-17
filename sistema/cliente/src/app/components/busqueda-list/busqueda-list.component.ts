@@ -9,6 +9,15 @@ import { Busqueda } from '../../models/busqueda';
 import { Empresa } from '../../models/empresa';
 import { Usuario } from '../../models/usuario';
 import { Asignacion } from '../../models/asignacion';
+import { nuevosPrimero } from '../../models/orden';
+
+/** Las búsquedas de un cliente, plegadas bajo su nombre. */
+interface GrupoEmpresa {
+  id: string;
+  nombre: string;
+  busquedas: Busqueda[];
+  activas: number;
+}
 
 @Component({
   selector: 'app-busqueda-list',
@@ -28,6 +37,9 @@ export class BusquedaListComponent implements OnInit {
   /** Búsqueda cuya asignación se está editando. */
   asignando: Busqueda | null = null;
   seleccionados: string[] = [];
+
+  /** Clientes con su lista cerrada. Por omisión están todos abiertos. */
+  plegados: { [empresaId: string]: boolean } = {};
 
   constructor(
     private busquedaService: BusquedaService,
@@ -58,15 +70,70 @@ export class BusquedaListComponent implements OnInit {
 
   get visibles(): Busqueda[] {
     const t = this.filtro.toLowerCase().trim();
-    if (!t) return this.busquedas;
-    return this.busquedas.filter(b =>
+    const filtradas = !t ? this.busquedas : this.busquedas.filter(b =>
       [b.Puesto, b.Provincia, b.Etapa, b.Estado, this.empresa(b.EmpresaID)]
         .join(' ').toLowerCase().includes(t));
+    return nuevosPrimero(filtradas);
+  }
+
+  /**
+   * Las búsquedas agrupadas bajo el nombre de su cliente.
+   *
+   * Los clientes van ordenados por lo último que se cargó para cada uno, y las
+   * búsquedas de adentro también: lo más reciente arriba. Las que todavía no
+   * tienen empresa asignada caen juntas al final, para que se vean y se puedan
+   * corregir en lugar de quedar perdidas entre las demás.
+   */
+  get grupos(): GrupoEmpresa[] {
+    const porEmpresa = new Map<string, Busqueda[]>();
+    this.visibles.forEach(b => {
+      const clave = b.EmpresaID || '';
+      if (!porEmpresa.has(clave)) porEmpresa.set(clave, []);
+      porEmpresa.get(clave)!.push(b);
+    });
+
+    const grupos: GrupoEmpresa[] = [];
+    porEmpresa.forEach((busquedas, id) => grupos.push({
+      id,
+      nombre: id ? this.empresa(id) : 'Sin empresa asignada',
+      busquedas,
+      activas: busquedas.filter(b => b.Estado === 'Activa').length
+    }));
+
+    // `visibles` ya viene de lo más nuevo a lo más viejo, así que el orden en
+    // que aparecieron los clientes es el que corresponde. Los huérfanos, últimos.
+    return grupos.sort((a, b) => (a.id ? 0 : 1) - (b.id ? 0 : 1));
+  }
+
+  /**
+   * Sin esto, como `grupos` arma objetos nuevos en cada ciclo de detección,
+   * Angular los tomaría por distintos y volvería a dibujar todas las tablas una
+   * y otra vez. Con el id alcanza para que reconozca que son los mismos.
+   */
+  trackGrupo(_: number, g: GrupoEmpresa): string { return g.id; }
+
+  abierto(id: string): boolean {
+    // Sin nada elegido, se abren todos: con pocos clientes esconder todo estorba.
+    return this.plegados[id] !== true;
+  }
+
+  alternarGrupo(id: string): void {
+    this.plegados[id] = !this.plegados[id];
+  }
+
+  plegarTodos(): void {
+    this.grupos.forEach(g => this.plegados[g.id] = true);
+  }
+
+  desplegarTodos(): void {
+    this.plegados = {};
   }
 
   empresa(id?: string): string {
     return this.empresas.find(e => e.ID === id)?.Nombre ?? '—';
   }
+
+  verFicha(id: string): void { this.router.navigate(['/empresa', id]); }
 
   nombresAsignados(busqueda: Busqueda): string {
     const ids = this.asignacionService.consultoresDe(this.asignaciones, busqueda.ID ?? '');

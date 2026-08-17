@@ -7,6 +7,7 @@ import { AdjuntoService } from '../../services/adjunto.service';
 import { MODULOS } from '../../models/modulos.config';
 import { ConfigModulo, CampoModulo } from '../../models/modulo';
 import { Adjunto, EmpresaOpcion } from '../../models/adjunto';
+import { nuevosPrimero } from '../../models/orden';
 
 /**
  * Componente genérico para los módulos internos (agenda RR.HH.).
@@ -138,7 +139,7 @@ export class ModuloInternoComponent implements OnInit {
   get visibles(): any[] {
     const t = this.filtro.toLowerCase().trim();
 
-    return this.filas.filter(f => {
+    return nuevosPrimero(this.filas.filter(f => {
       if (this.filtroEmpresa && String(f['EmpresaID']) !== this.filtroEmpresa) return false;
       if (!t) return true;
       // El nombre del cliente se resuelve para poder buscarlo: en la fila
@@ -146,7 +147,7 @@ export class ModuloInternoComponent implements OnInit {
       const texto = this.config.campos.map(c => f[c.clave]).join(' ') +
                     ' ' + this.nombreEmpresa(f['EmpresaID']);
       return texto.toLowerCase().includes(t);
-    });
+    }));
   }
 
   mostrar(fila: any, campo: CampoModulo): string {

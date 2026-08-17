@@ -1,0 +1,31 @@
+.acciones-grupos { display: flex; gap: 8px; margin: 0 0 14px; }
+
+/* ---- un bloque por cliente ---- */
+.grupo {
+  border: 1px solid #e8ecef; border-radius: 10px; margin-bottom: 12px; overflow: hidden;
+}
+.grupo.huerfano { border-style: dashed; border-color: #dfe5ea; }
+
+.grupo-cabecera {
+  display: flex; align-items: center; gap: 10px; cursor: pointer;
+  padding: 13px 16px; background: #f7fafc; transition: background .12s;
+}
+.grupo-cabecera:hover { background: #eef4f8; }
+.grupo-cabecera > .fa-chevron-down,
+.grupo-cabecera > .fa-chevron-right { color: #7f8c8d; width: 12px; font-size: 0.8rem; }
+.grupo-cabecera > .fa-building { color: var(--secondary); }
+
+.grupo-nombre { font-weight: 700; color: var(--primary); }
+.huerfano .grupo-nombre { color: #7f8c8d; font-style: italic; }
+
+.grupo-cuenta { font-size: 0.78rem; color: #7f8c8d; }
+.grupo-cabecera .btn { margin-left: auto; }
+
+/* La tabla ya no necesita su propio marco: el marco es el del bloque. */
+.grupo .tabla-cont { border: none; border-radius: 0; margin: 0; }
+.grupo .nota { margin: 0 16px 14px; }
+
+@media (max-width: 700px) {
+  .grupo-cabecera { flex-wrap: wrap; }
+  .grupo-cabecera .btn { margin-left: 0; width: 100%; }
+}

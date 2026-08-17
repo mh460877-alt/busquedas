@@ -5,6 +5,7 @@ import { BusquedaService } from '../../services/busqueda.service';
 import { StorageService } from '../../services/storage.service';
 import { Empresa } from '../../models/empresa';
 import { Busqueda } from '../../models/busqueda';
+import { nuevosPrimero } from '../../models/orden';
 
 @Component({
   selector: 'app-empresa-list',
@@ -41,9 +42,9 @@ export class EmpresaListComponent implements OnInit {
 
   get visibles(): Empresa[] {
     const t = this.filtro.toLowerCase().trim();
-    if (!t) return this.empresas;
-    return this.empresas.filter(e =>
+    const filtradas = !t ? this.empresas : this.empresas.filter(e =>
       [e.Nombre, e.Linea, e.Contacto, e.Email, e.Estado].join(' ').toLowerCase().includes(t));
+    return nuevosPrimero(filtradas);
   }
 
   cantidadBusquedas(e: Empresa): number {

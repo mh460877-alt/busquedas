@@ -4,6 +4,7 @@ import { UsuarioService } from '../../services/usuario.service';
 import { EmpresaService } from '../../services/empresa.service';
 import { Usuario } from '../../models/usuario';
 import { Empresa } from '../../models/empresa';
+import { nuevosPrimero } from '../../models/orden';
 
 /** Altas y bajas de accesos. Solo Administración. */
 @Component({
@@ -38,9 +39,9 @@ export class UsuarioListComponent implements OnInit {
 
   get visibles(): Usuario[] {
     const t = this.filtro.toLowerCase().trim();
-    if (!t) return this.usuarios;
-    return this.usuarios.filter(u =>
+    const filtrados = !t ? this.usuarios : this.usuarios.filter(u =>
       [u.Nombre, u.Usuario, u.Correo, u.Rol].join(' ').toLowerCase().includes(t));
+    return nuevosPrimero(filtrados);
   }
 
   empresa(id?: string): string {

@@ -13,32 +13,59 @@
   <p class="mensaje" *ngIf="mensaje">{{ mensaje }}</p>
   <p class="vacio" *ngIf="cargando"><i class="fas fa-spinner fa-spin"></i> Cargando…</p>
 
-  <div class="tabla-cont" *ngIf="!cargando">
-    <table>
-      <thead>
-        <tr><th>Puesto</th><th>Empresa</th><th>Provincia</th><th>Etapa</th>
-            <th>Consultores</th><th>Estado</th><th></th></tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let b of visibles">
-          <td data-label="Puesto"><a (click)="abrir(b)" class="enlace"><strong>{{ b.Puesto }}</strong></a></td>
-          <td data-label="Empresa">{{ empresa(b.EmpresaID) }}</td>
-          <td data-label="Provincia">{{ b.Provincia || '—' }}</td>
-          <td data-label="Etapa"><span class="badge badge-azul">{{ b.Etapa }}</span></td>
-          <td data-label="Consultores" class="chico">{{ nombresAsignados(b) }}</td>
-          <td data-label="Estado"><span class="badge" [ngClass]="b.Estado === 'Activa' ? 'badge-activa' : 'badge-gris'">{{ b.Estado }}</span></td>
-          <td class="acciones">
-            <button class="btn-accion btn-asignar" title="Asignar consultores" (click)="abrirAsignacion(b)"><i class="fas fa-user-tie"></i></button>
-            <button class="btn-accion btn-editar" title="Editar" (click)="editar(b)"><i class="fas fa-edit"></i></button>
-            <button class="btn-accion btn-estado" title="Activar/Deshabilitar" (click)="cambiarEstado(b)"><i class="fas fa-power-off"></i></button>
-            <button class="btn-accion btn-volver" title="Cerrar búsqueda" style="width:34px;margin:0 0 0 3px" (click)="darDeBaja(b)"><i class="fas fa-lock"></i></button>
-            <button class="btn-accion btn-borrar" title="Eliminar" *ngIf="esAdmin" (click)="eliminar(b)"><i class="fas fa-trash"></i></button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <p class="vacio" *ngIf="!visibles.length">No hay búsquedas que coincidan.</p>
+  <div class="acciones-grupos" *ngIf="!cargando && grupos.length > 1">
+    <button class="btn gris chico" (click)="desplegarTodos()"><i class="fas fa-angle-double-down"></i> Abrir todas</button>
+    <button class="btn gris chico" (click)="plegarTodos()"><i class="fas fa-angle-double-up"></i> Cerrar todas</button>
   </div>
+
+  <!-- Un bloque por cliente. Se hace clic en el nombre y se abren sus búsquedas. -->
+  <div class="grupo" *ngFor="let g of grupos; trackBy: trackGrupo" [class.huerfano]="!g.id">
+    <div class="grupo-cabecera" (click)="alternarGrupo(g.id)">
+      <i class="fas" [ngClass]="abierto(g.id) ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+      <i class="fas fa-building"></i>
+      <span class="grupo-nombre">{{ g.nombre }}</span>
+      <span class="grupo-cuenta">
+        {{ g.busquedas.length }} {{ g.busquedas.length === 1 ? 'búsqueda' : 'búsquedas' }}
+        <span *ngIf="g.activas"> · {{ g.activas }} activa{{ g.activas === 1 ? '' : 's' }}</span>
+      </span>
+      <button class="btn chico" *ngIf="g.id" (click)="verFicha(g.id); $event.stopPropagation()">
+        <i class="fas fa-folder-open"></i> Ficha del cliente
+      </button>
+    </div>
+
+    <div class="tabla-cont" *ngIf="abierto(g.id)">
+      <table>
+        <thead>
+          <tr><th>Puesto</th><th>Provincia</th><th>Etapa</th>
+              <th>Consultores</th><th>Estado</th><th></th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let b of g.busquedas">
+            <td data-label="Puesto"><a (click)="abrir(b)" class="enlace"><strong>{{ b.Puesto }}</strong></a></td>
+            <td data-label="Provincia">{{ b.Provincia || '—' }}</td>
+            <td data-label="Etapa"><span class="badge badge-azul">{{ b.Etapa }}</span></td>
+            <td data-label="Consultores" class="chico">{{ nombresAsignados(b) }}</td>
+            <td data-label="Estado"><span class="badge" [ngClass]="b.Estado === 'Activa' ? 'badge-activa' : 'badge-gris'">{{ b.Estado }}</span></td>
+            <td class="acciones">
+              <button class="btn-accion btn-asignar" title="Asignar consultores" (click)="abrirAsignacion(b)"><i class="fas fa-user-tie"></i></button>
+              <button class="btn-accion btn-editar" title="Editar" (click)="editar(b)"><i class="fas fa-edit"></i></button>
+              <button class="btn-accion btn-estado" title="Activar/Deshabilitar" (click)="cambiarEstado(b)"><i class="fas fa-power-off"></i></button>
+              <button class="btn-accion btn-volver" title="Cerrar búsqueda" style="width:34px;margin:0 0 0 3px" (click)="darDeBaja(b)"><i class="fas fa-lock"></i></button>
+              <button class="btn-accion btn-borrar" title="Eliminar" *ngIf="esAdmin" (click)="eliminar(b)"><i class="fas fa-trash"></i></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="nota" *ngIf="!g.id && abierto(g.id)">
+      <i class="fas fa-circle-info"></i>
+      Estas búsquedas todavía no tienen empresa. Entrá a editar cada una y elegí
+      el cliente: ahí se ordenan solas y aparecen en su ficha.
+    </p>
+  </div>
+
+  <p class="vacio" *ngIf="!cargando && !visibles.length">No hay búsquedas que coincidan.</p>
 </div>
 
 <div class="modal-fondo" *ngIf="asignando" (click)="asignando = null">

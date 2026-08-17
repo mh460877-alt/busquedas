@@ -8,6 +8,7 @@ import { StorageService } from '../../services/storage.service';
 import { Candidato } from '../../models/candidato';
 import { Busqueda } from '../../models/busqueda';
 import { Usuario } from '../../models/usuario';
+import { nuevosPrimero } from '../../models/orden';
 
 /** Registro global de candidatos. Lo ven Administración e Interno. */
 @Component({
@@ -58,10 +59,10 @@ export class CandidatoListComponent implements OnInit {
 
   get visibles(): Candidato[] {
     const t = this.filtro.toLowerCase().trim();
-    if (!t) return this.candidatos;
-    return this.candidatos.filter(c =>
+    const filtrados = !t ? this.candidatos : this.candidatos.filter(c =>
       [c.DNI, c.Nombre, c.Etapa, this.puesto(c.BusquedaID), this.consultor(c.ConsultorID)]
         .join(' ').toLowerCase().includes(t));
+    return nuevosPrimero(filtrados);
   }
 
   puesto(id?: string): string { return this.busquedas.find(b => b.ID === id)?.Puesto ?? '—'; }
