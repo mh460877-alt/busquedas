@@ -185,8 +185,37 @@ var DEPENDENCIAS = {
                { entidad: 'Asignaciones', campo: 'BusquedaID', nombre: 'asignaciones' }],
   Usuarios:   [{ entidad: 'Candidatos', campo: 'ConsultorID', nombre: 'candidatos cargados' },
                { entidad: 'Asignaciones', campo: 'ConsultorID', nombre: 'asignaciones' }],
-  Candidatos: [{ entidad: 'Observaciones', campo: 'CandidatoID', nombre: 'observaciones' }]
+  Candidatos: [{ entidad: 'Observaciones', campo: 'CandidatoID', nombre: 'observaciones' }],
+  Colaboradores: [{ entidad: 'Permisos', campo: 'ColaboradorID', nombre: 'permisos' }]
 };
+
+/**
+ * Lo que no tiene sentido sin su padre y se borra con él.
+ *
+ * Es a propósito más corto que DEPENDENCIAS: una observación sin candidato no
+ * es nada, pero una búsqueda sin empresa sigue siendo una búsqueda. Por eso
+ * borrar una empresa no arrastra sus búsquedas —ahí el sistema avisa y pide
+ * confirmación— y borrar un candidato sí se lleva sus comentarios, que es lo
+ * que el propio mensaje de la pantalla viene prometiendo.
+ */
+var HIJOS_EN_CASCADA = {
+  Candidatos:    [{ entidad: 'Observaciones', campo: 'CandidatoID' }],
+  Busquedas:     [{ entidad: 'Asignaciones', campo: 'BusquedaID' }],
+  Usuarios:      [{ entidad: 'Asignaciones', campo: 'ConsultorID' }],
+  Colaboradores: [{ entidad: 'Permisos', campo: 'ColaboradorID' }]
+};
+
+/** Borra los registros que colgaban del que se acaba de eliminar. */
+function borrarHijos_(entidad, id) {
+  (HIJOS_EN_CASCADA[entidad] || []).forEach(function (regla) {
+    listarTodo_(regla.entidad)
+      .filter(function (f) { return String(f[regla.campo]) === String(id); })
+      .forEach(function (f) {
+        eliminar_(regla.entidad, f.ID);
+        borrarAdjuntosDe_(regla.entidad, f.ID);
+      });
+  });
+}
 
 /** Cuenta qué quedaría huérfano si se borra este registro. */
 function dependenciasDe_(entidad, id) {

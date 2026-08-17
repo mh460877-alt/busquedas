@@ -166,6 +166,7 @@ function eliminarRegistro_(sesion, entidad, id, forzar) {
   }
   eliminar_(entidad, id);
   borrarAdjuntosDe_(entidad, id);   // los enlaces se van con la ficha
+  borrarHijos_(entidad, id);        // y lo que no existe sin ella, también
   auditar_(sesion, 'elimino', entidad, id, deps.length ? 'Forzado con dependencias' : '');
   return { eliminado: true, id: id };
 }
