@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { forkJoin } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { LoginService } from '../../services/login.service';
 import { EmpresaOpcion } from '../../models/adjunto';
@@ -8,7 +7,8 @@ import { EmpresaOpcion } from '../../models/adjunto';
 interface Evento {
   dia: number;          // día del mes visible
   titulo: string;
-  tipo: 'pendiente' | 'finalizada' | 'viaje' | 'cumple' | 'permiso';
+  tipo: 'pendiente' | 'finalizada' | 'viaje' | 'cumple' | 'permiso'
+      | 'proyecto' | 'onboarding' | 'capacitacion' | 'comunicacion';
   responsable?: string;
   detalle?: string;
   /** Lo que precisa el tipo: "Incompany Clínica Ledesma", por ejemplo. */
@@ -50,6 +50,10 @@ export class CalendarioComponent implements OnInit {
   viajes: any[] = [];
   cumples: any[] = [];
   permisos: any[] = [];
+  proyectos: any[] = [];
+  onboarding: any[] = [];
+  capacitaciones: any[] = [];
+  comunicaciones: any[] = [];
   colaboradores: EmpresaOpcion[] = [];
 
   diaSeleccionado: number | null = null;
@@ -103,18 +107,22 @@ export class CalendarioComponent implements OnInit {
 
   private cargar(): void {
     this.cargando = true;
-    // Se traen las tres tablas de una sola vez.
-    forkJoin({
-      pendientes: this.api.listar<any>('Pendientes'),
-      viajes: this.api.listar<any>('Viajes'),
-      cumples: this.api.listar<any>('Cumpleanos'),
-      permisos: this.api.listar<any>('Permisos')
-    }).subscribe({
+    /**
+     * Todo en un solo pedido. Antes eran tres listados sueltos y con las cuatro
+     * tablas nuevas habrían sido nueve: cada llamada a Apps Script vuelve a
+     * abrir la planilla, así que el calendario tardaba más en armarse que en
+     * leerse.
+     */
+    this.api.llamar<any>('agenda').subscribe({
       next: r => {
-        this.pendientes = r.pendientes;
-        this.viajes = r.viajes;
-        this.cumples = r.cumples;
-        this.permisos = r.permisos;
+        this.pendientes = r.Pendientes || [];
+        this.viajes = r.Viajes || [];
+        this.cumples = r.Cumpleanos || [];
+        this.permisos = r.Permisos || [];
+        this.proyectos = r.Proyectos || [];
+        this.onboarding = r.Onboarding || [];
+        this.capacitaciones = r.Capacitaciones || [];
+        this.comunicaciones = r.Comunicaciones || [];
         this.cargando = false;
         this.construir();
       },
@@ -241,6 +249,43 @@ export class CalendarioComponent implements OnInit {
         cursor.setDate(cursor.getDate() + 1);
       }
     });
+
+    /**
+     * El resto de la gestión: proyectos, onboarding, capacitaciones y
+     * comunicaciones. Cada uno en su fecha propia, para que el calendario sea
+     * el registro de todo lo que pasa y no solo de los pendientes.
+     */
+    const sumar = (
+      filas: any[], campoFecha: string, tipo: Evento['tipo'],
+      titulo: (f: any) => string, resp: (f: any) => string, det: (f: any) => string
+    ) => {
+      filas.forEach(f => {
+        const d = this.parse(f[campoFecha]);
+        if (!d || d.getFullYear() !== anio || d.getMonth() !== mes) return;
+        agregar(d.getDate(), {
+          dia: d.getDate(), titulo: titulo(f), responsable: resp(f), tipo,
+          detalle: det(f), empresaId: f.EmpresaID, empresa: this.nombreEmpresa(f.EmpresaID)
+        });
+      });
+    };
+
+    // Los proyectos aparecen dos veces: cuando arrancan y cuando se cierran.
+    sumar(this.proyectos, 'FechaInicio', 'proyecto',
+      p => '\u25B6 ' + (p.Proyecto || 'Proyecto'), p => p.Responsable, p => 'Inicia \u00B7 ' + (p.Estado || ''));
+    sumar(this.proyectos, 'FechaFin', 'proyecto',
+      p => '\uD83C\uDFC1 ' + (p.Proyecto || 'Proyecto'), p => p.Responsable, p => 'Cierre \u00B7 ' + (p.Estado || ''));
+
+    sumar(this.onboarding, 'Fecha', 'onboarding',
+      o => '\uD83D\uDC64 ' + (o.Persona || 'Alta'), o => o.Responsable,
+      o => [o.Tipo, o.Estado].filter(Boolean).join(' \u00B7 '));
+
+    sumar(this.capacitaciones, 'Fecha', 'capacitacion',
+      c => '\uD83C\uDF93 ' + (c.Tema || 'Capacitaci\u00F3n'), c => c.Facilitador,
+      c => [c.Ambito, c.Formato].filter(Boolean).join(' \u00B7 '));
+
+    sumar(this.comunicaciones, 'Fecha', 'comunicacion',
+      c => '\uD83D\uDCE3 ' + (c.Titulo || 'Comunicaci\u00F3n'), c => c.Responsable,
+      c => [c.Nivel, c.Canal].filter(Boolean).join(' \u00B7 '));
 
     // Grilla del mes: relleno inicial hasta el día de semana del día 1 (lunes primero).
     const primero = new Date(anio, mes, 1);

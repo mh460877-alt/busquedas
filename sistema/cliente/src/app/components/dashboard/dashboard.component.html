@@ -1,0 +1,71 @@
+<div class="card acento">
+  <div class="card-header">
+    <div>
+      <h2><i class="fas fa-gauge-high"></i> Tablero de gestión</h2>
+      <p class="desc">Qué hizo cada persona en el período, sobre lo que ya se carga en el sistema.</p>
+    </div>
+    <button class="btn" (click)="descargar()"><i class="fas fa-download"></i> Descargar</button>
+  </div>
+
+  <div class="periodos">
+    <button *ngFor="let p of periodos" class="btn chico"
+            [class.gris]="periodo !== p.clave" (click)="periodo = p.clave">
+      {{ p.etiqueta }}
+    </button>
+  </div>
+
+  <h3 class="periodo-titulo">{{ etiquetaPeriodo }}</h3>
+
+  <p class="mensaje" *ngIf="mensaje">{{ mensaje }}</p>
+  <p class="vacio" *ngIf="cargando"><i class="fas fa-spinner fa-spin"></i> Cargando…</p>
+
+  <ng-container *ngIf="!cargando">
+    <div class="tarjetas">
+      <div class="tarjeta"><span class="n">{{ totales.gestiones }}</span> gestiones</div>
+      <div class="tarjeta"><span class="n">{{ totales.pendientes }}</span> pendientes</div>
+      <div class="tarjeta"><span class="n">{{ totales.finalizadas }}</span> finalizadas</div>
+      <div class="tarjeta"><span class="n">{{ totales.cumplimiento }}%</span> cumplimiento</div>
+      <div class="tarjeta"><span class="n">{{ totales.personas }}</span> con movimiento</div>
+    </div>
+
+    <div class="tabla-cont">
+      <table>
+        <thead>
+          <tr>
+            <th>Persona</th><th>Carga</th><th>Pend.</th><th>Fin.</th><th>%</th>
+            <th>Proy.</th><th>Capac.</th><th>Comun.</th><th>Onbrd.</th><th>Viajes</th><th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let g of gestiones">
+            <td data-label="Persona"><strong>{{ g.persona }}</strong></td>
+            <td data-label="Carga" class="barra-celda">
+              <div class="barra"><div class="barra-int" [style.width.%]="ancho(g)"></div></div>
+            </td>
+            <td data-label="Pendientes">{{ g.pendientes }}</td>
+            <td data-label="Finalizadas">{{ g.finalizadas }}</td>
+            <td data-label="Cumplimiento">
+              <span class="badge" [ngClass]="g.cumplimiento >= 70 ? 'badge-activa' : (g.cumplimiento >= 40 ? 'badge-ambar' : 'badge-gris')">
+                {{ g.cumplimiento }}%
+              </span>
+            </td>
+            <td data-label="Proyectos">{{ g.proyectos }}</td>
+            <td data-label="Capacitaciones">{{ g.capacitaciones }}</td>
+            <td data-label="Comunicaciones">{{ g.comunicaciones }}</td>
+            <td data-label="Onboarding">{{ g.onboarding }}</td>
+            <td data-label="Viajes">{{ g.viajes }}</td>
+            <td data-label="Total"><strong>{{ g.total }}</strong></td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="vacio" *ngIf="!gestiones.length">No hay nadie cargado todavía.</p>
+    </div>
+
+    <p class="nota">
+      <i class="fas fa-circle-info"></i>
+      Cuenta gestiones registradas en el sistema, no horas ni esfuerzo. Sirve para ver
+      movimiento y repartir carga; un número bajo puede significar poca carga o poca carga
+      <em>registrada</em>.
+    </p>
+  </ng-container>
+</div>

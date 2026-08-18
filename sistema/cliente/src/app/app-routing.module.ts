@@ -18,6 +18,7 @@ import { AuditoriaComponent } from './components/auditoria/auditoria.component';
 import { ModuloInternoComponent } from './components/modulo-interno/modulo-interno.component';
 import { CalendarioComponent } from './components/calendario/calendario.component';
 import { InformesComponent } from './components/informes/informes.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { MiCuentaComponent } from './components/mi-cuenta/mi-cuenta.component';
 import { VigilanteGuard } from './vigilante.guard';
 
@@ -112,6 +113,7 @@ const routes: Routes = [
   /* Nómina de personal */
   { path: 'colaboradores',  component: ModuloInternoComponent, data: { rol: ['Admin','Interno'], modulo: 'colaboradores' }, canActivate: [VigilanteGuard] },
   { path: 'permisos',       component: ModuloInternoComponent, data: { rol: ['Admin','Interno'], modulo: 'permisos' },      canActivate: [VigilanteGuard] },
+  { path: 'dashboard',      component: DashboardComponent,     data: { rol: ['Admin','Interno'] },                          canActivate: [VigilanteGuard] },
   { path: 'informes',       component: InformesComponent,      data: { rol: ['Admin','Interno'] },                          canActivate: [VigilanteGuard] },
   { path: 'mi-cuenta',      component: MiCuentaComponent,       canActivate: [VigilanteGuard] },
 

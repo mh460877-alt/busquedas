@@ -17,6 +17,7 @@ import { EmpresaFichaComponent } from './components/empresa-ficha/empresa-ficha.
 import { EnlacesComponent } from './components/enlaces/enlaces.component';
 import { AccesosEmpresaComponent } from './components/accesos-empresa/accesos-empresa.component';
 import { ObservacionesComponent } from './components/observaciones/observaciones.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { BusquedaListComponent } from './components/busqueda-list/busqueda-list.component';
 import { BusquedaFormComponent } from './components/busqueda-form/busqueda-form.component';
 import { BusquedaDetalleComponent } from './components/busqueda-detalle/busqueda-detalle.component';
@@ -43,6 +44,7 @@ import { MiCuentaComponent } from './components/mi-cuenta/mi-cuenta.component';
     EnlacesComponent,
     AccesosEmpresaComponent,
     ObservacionesComponent,
+    DashboardComponent,
     BusquedaListComponent,
     BusquedaFormComponent,
     BusquedaDetalleComponent,

@@ -2,7 +2,7 @@
   <div class="card-header">
     <div>
       <h2><i class="fas fa-calendar-days"></i> Calendario</h2>
-      <p class="desc">Pendientes, viajes y cumpleaños del equipo, día por día.</p>
+      <p class="desc">Toda la gestión del equipo, día por día.</p>
     </div>
     <div class="cal-nav">
       <button class="btn gris chico" (click)="mesAnterior()"><i class="fas fa-chevron-left"></i></button>
@@ -34,9 +34,13 @@
   <div class="cal-leyenda">
     <span><i class="punto p-pendiente"></i> Pendiente</span>
     <span><i class="punto p-finalizada"></i> Finalizada</span>
+    <span><i class="punto p-proyecto"></i> Proyecto</span>
+    <span><i class="punto p-onboarding"></i> Onboarding</span>
+    <span><i class="punto p-capacitacion"></i> Capacitación</span>
+    <span><i class="punto p-comunicacion"></i> Comunicación</span>
     <span><i class="punto p-viaje"></i> Viaje</span>
-    <span><i class="punto p-cumple"></i> Cumpleaños</span>
     <span><i class="punto p-permiso"></i> Licencia</span>
+    <span><i class="punto p-cumple"></i> Cumpleaños</span>
   </div>
 
   <p class="mensaje" *ngIf="mensaje">{{ mensaje }}</p>

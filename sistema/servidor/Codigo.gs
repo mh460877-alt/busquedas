@@ -83,6 +83,10 @@ function procesar_(e) {
       case 'quitarAdjunto':
         return { ok: true, datos: quitarAdjunto_(sesion, p.id) };
 
+      /* --- Toda la agenda interna, en una sola llamada --- */
+      case 'agenda':
+        return { ok: true, datos: agenda_(sesion) };
+
       /* --- Todo lo de un cliente, en una sola llamada --- */
       case 'fichaEmpresa':
         return { ok: true, datos: fichaEmpresa_(sesion, p.empresaId) };
@@ -226,6 +230,27 @@ function catalogos_(sesion) {
     empresas: empresasParaElegir_(sesion),
     permisos: PERMISOS[sesion.rol] || {}
   };
+}
+
+/**
+ * Las tablas que alimentan el calendario y el tablero.
+ *
+ * Van juntas en una sola llamada a propósito. Pedirlas por separado eran nueve
+ * viajes al servidor, y cada viaje a Apps Script vuelve a abrir la planilla:
+ * el calendario tardaba más en dibujarse que en leerse.
+ */
+var TABLAS_AGENDA = [
+  'Pendientes', 'Viajes', 'Cumpleanos', 'Permisos',
+  'Proyectos', 'Onboarding', 'Capacitaciones', 'Comunicaciones', 'Candidatos'
+];
+
+function agenda_(sesion) {
+  var salida = {};
+  TABLAS_AGENDA.forEach(function (entidad) {
+    var puede = ((PERMISOS[sesion.rol] || {})[entidad] || []).indexOf('ver') >= 0;
+    salida[entidad] = puede ? listar_(sesion, entidad) : [];
+  });
+  return salida;
 }
 
 /** Nombres de la nómina, para colgarle un permiso a quien corresponde. */
