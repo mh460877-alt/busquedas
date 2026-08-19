@@ -1,0 +1,22 @@
+.tarjetas { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 6px; }
+.tarjeta {
+  flex: 1; min-width: 140px; text-align: center; cursor: pointer;
+  background: #f7fafc; border: 1px solid #eaeff2; border-radius: 9px; padding: 14px 10px;
+  font-size: 0.8rem; color: #7f8c8d; transition: .12s;
+}
+.tarjeta:hover { border-color: var(--secondary); background: #eef4f8; }
+.tarjeta .n { display: block; font-size: 1.7rem; font-weight: 700; color: var(--primary); line-height: 1.2; }
+.tarjeta.alerta { background: #fff8e1; border-color: #f5d78e; }
+.tarjeta.alerta .n { color: #b7791f; }
+
+.grid-dos { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.proxima { display: flex; align-items: flex-start; gap: 12px; padding: 9px 0; border-bottom: 1px solid #f2f5f7; }
+.proxima:last-of-type { border-bottom: none; }
+.proxima .fecha { font-size: 0.78rem; color: #7f8c8d; white-space: nowrap; min-width: 82px; }
+.proxima i { color: #93a0a9; margin-top: 3px; }
+
+@media (max-width: 800px) {
+  .grid-dos { grid-template-columns: 1fr; }
+  .tarjeta { min-width: calc(50% - 5px); }
+}

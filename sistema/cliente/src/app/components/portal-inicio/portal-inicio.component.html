@@ -1,0 +1,66 @@
+<div class="card acento">
+  <div class="card-header">
+    <div>
+      <h2><i class="fas fa-house"></i> Hola, {{ nombre }}</h2>
+      <p class="desc">Este es el estado de tu trabajo con Escencial{{ empresa ? ' · ' + empresa : '' }}.</p>
+    </div>
+    <button class="btn" (click)="ir('/mis-solicitudes')">
+      <i class="fas fa-plus-circle"></i> Hacer un pedido
+    </button>
+  </div>
+
+  <p class="mensaje error" *ngIf="mensaje">{{ mensaje }}</p>
+  <p class="vacio" *ngIf="cargando"><i class="fas fa-spinner fa-spin"></i> Cargando tu portal…</p>
+
+  <ng-container *ngIf="!cargando">
+    <div class="tarjetas">
+      <div class="tarjeta" (click)="ir('/mis-solicitudes')">
+        <span class="n">{{ solicitudesAbiertas }}</span> pedidos abiertos
+      </div>
+      <div class="tarjeta alerta" *ngIf="esperandome" (click)="ir('/mis-solicitudes')">
+        <span class="n">{{ esperandome }}</span> esperan tu respuesta
+      </div>
+      <div class="tarjeta" (click)="ir('/mi-proceso')">
+        <span class="n">{{ busquedasActivas }}</span> búsquedas activas
+      </div>
+      <div class="tarjeta" (click)="ir('/mi-proceso')">
+        <span class="n">{{ candidatosPresentados }}</span> candidatos presentados
+      </div>
+      <div class="tarjeta" (click)="ir('/mis-servicios')">
+        <span class="n">{{ proyectosEnCurso }}</span> proyectos en curso
+      </div>
+    </div>
+
+    <p class="nota" *ngIf="sinDevolucion">
+      <i class="fas fa-comment-dots"></i>
+      Hay <strong>{{ sinDevolucion }}</strong> candidato(s) esperando tu devolución.
+      <a class="enlace" (click)="ir('/mi-proceso')">Verlos ahora</a>
+    </p>
+  </ng-container>
+</div>
+
+<div class="grid-dos" *ngIf="!cargando">
+  <div class="card">
+    <h3><i class="fas fa-calendar-day"></i> Lo que viene</h3>
+    <div class="proxima" *ngFor="let x of proximas">
+      <span class="fecha">{{ x.fecha }}</span>
+      <div>
+        <strong>{{ x.titulo }}</strong>
+        <span class="badge badge-azul">{{ x.tipo }}</span>
+      </div>
+    </div>
+    <p class="vacio" *ngIf="!proximas.length">No hay fechas próximas agendadas.</p>
+  </div>
+
+  <div class="card">
+    <h3><i class="fas fa-folder-open"></i> Documentos recientes</h3>
+    <div class="proxima" *ngFor="let a of documentosRecientes">
+      <i class="fas fa-link"></i>
+      <div><a [href]="a.URL" target="_blank" rel="noopener">{{ a.Titulo }}</a></div>
+    </div>
+    <p class="vacio" *ngIf="!documentosRecientes.length">Todavía no hay documentos compartidos.</p>
+    <button class="btn gris chico" (click)="ir('/mis-documentos')" *ngIf="documentosRecientes.length">
+      Ver todos
+    </button>
+  </div>
+</div>

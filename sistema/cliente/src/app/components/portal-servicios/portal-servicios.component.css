@@ -1,0 +1,8 @@
+.item { padding: 12px 0; border-bottom: 1px solid #f2f5f7; }
+.item:last-child { border-bottom: none; }
+.item-cabecera { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-bottom: 3px; }
+.avance {
+  white-space: pre-wrap; background: #f7fafc; border-radius: 8px;
+  padding: 9px 12px; margin: 7px 0; font-size: 0.87rem;
+}
+.enlace-item { display: block; font-size: 0.83rem; padding: 2px 0; }

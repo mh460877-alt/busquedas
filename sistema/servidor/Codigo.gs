@@ -83,6 +83,17 @@ function procesar_(e) {
       case 'quitarAdjunto':
         return { ok: true, datos: quitarAdjunto_(sesion, p.id) };
 
+      /* --- Conversación sobre un pedido (ver Mensajes.gs) --- */
+      case 'mensajes':
+        return { ok: true, datos: listarMensajes_(sesion, p.entidad, p.registroId) };
+
+      case 'mensajear':
+        return { ok: true, datos: crearMensaje_(sesion, p.datos || {}) };
+
+      /* --- El portal del cliente, en una sola llamada --- */
+      case 'portalCliente':
+        return { ok: true, datos: portalCliente_(sesion) };
+
       /* --- Toda la agenda interna, en una sola llamada --- */
       case 'agenda':
         return { ok: true, datos: agenda_(sesion) };
@@ -170,7 +181,8 @@ function eliminarRegistro_(sesion, entidad, id, forzar) {
   }
   eliminar_(entidad, id);
   borrarAdjuntosDe_(entidad, id);   // los enlaces se van con la ficha
-  borrarHijos_(entidad, id);        // y lo que no existe sin ella, también
+  borrarMensajesDe_(entidad, id);   // la conversación, también
+  borrarHijos_(entidad, id);        // y lo que no existe sin ella
   auditar_(sesion, 'elimino', entidad, id, deps.length ? 'Forzado con dependencias' : '');
   return { eliminado: true, id: id };
 }
@@ -214,6 +226,11 @@ function catalogos_(sesion) {
     tiposCumple: TIPOS_CUMPLE,
     destinatariosMaterial: DESTINATARIOS_MATERIAL,
     estadosMaterial: ESTADOS_MATERIAL,
+    // Portal del cliente
+    categoriasSolicitud: CATEGORIAS_SOLICITUD,
+    tiposSolicitud: TIPOS_SOLICITUD,
+    estadosSolicitud: ESTADOS_SOLICITUD,
+    prioridades: PRIORIDADES,
     // Nómina
     tiposPermiso: TIPOS_PERMISO,
     estadosPermiso: ESTADOS_PERMISO,
@@ -250,6 +267,63 @@ function agenda_(sesion) {
     var puede = ((PERMISOS[sesion.rol] || {})[entidad] || []).indexOf('ver') >= 0;
     salida[entidad] = puede ? listar_(sesion, entidad) : [];
   });
+  return salida;
+}
+
+/**
+ * Todo lo que el cliente necesita ver de su vínculo con Escencial, junto.
+ *
+ * Una sola llamada por la misma razón que la ficha de empresa: cada pedido a
+ * Apps Script vuelve a abrir la planilla, y el portal muestra ocho cosas a la
+ * vez. El recorte lo hace listar_ como siempre —el cliente recibe lo suyo y
+ * nada más—, así que acá no hay que volver a filtrar por empresa.
+ */
+function portalCliente_(sesion) {
+  var puede = function (entidad) {
+    return ((PERMISOS[sesion.rol] || {})[entidad] || []).indexOf('ver') >= 0;
+  };
+  var leer = function (entidad) { return puede(entidad) ? listar_(sesion, entidad) : []; };
+
+  var salida = {
+    empresa: null,
+    solicitudes: leer('Solicitudes'),
+    busquedas: leer('Busquedas'),
+    candidatos: leer('Candidatos'),
+    observaciones: leer('Observaciones'),
+    proyectos: leer('Proyectos'),
+    capacitaciones: leer('Capacitaciones'),
+    adjuntos: [],
+    mensajes: []
+  };
+
+  if (puede('Empresas')) {
+    var empresas = listar_(sesion, 'Empresas');
+    salida.empresa = empresas.length ? empresas[0] : null;
+  }
+
+  /**
+   * Los enlaces de todo lo que el cliente alcanza: el informe de un candidato,
+   * el entregable de un proyecto, lo que se adjuntó a su pedido.
+   */
+  var alcance = {
+    Candidatos: salida.candidatos.map(function (c) { return String(c.ID); }),
+    Busquedas: salida.busquedas.map(function (b) { return String(b.ID); }),
+    Solicitudes: salida.solicitudes.map(function (s) { return String(s.ID); }),
+    Proyectos: salida.proyectos.map(function (p) { return String(p.ID); }),
+    Capacitaciones: salida.capacitaciones.map(function (c) { return String(c.ID); })
+  };
+  if (salida.empresa) alcance.Empresas = [String(salida.empresa.ID)];
+
+  salida.adjuntos = listarTodo_('Adjuntos').filter(function (a) {
+    var ids = alcance[String(a.Entidad)];
+    return !!ids && ids.indexOf(String(a.RegistroID)) >= 0;
+  });
+
+  salida.mensajes = listarTodo_('Mensajes').filter(function (m) {
+    var ids = alcance[String(m.Entidad)];
+    return !!ids && ids.indexOf(String(m.RegistroID)) >= 0;
+  });
+
   return salida;
 }
 

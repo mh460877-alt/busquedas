@@ -20,6 +20,10 @@
       <i class="fas fa-building"></i> Empresas
     </a>
 
+    <a *ngIf="es('Admin','Interno')" routerLink="/solicitudes" routerLinkActive="active" class="nav-link">
+      <i class="fas fa-inbox"></i> Solicitudes de clientes
+    </a>
+
     <!-- Mundo interno -->
     <div class="nav-grupo" *ngIf="es('Admin','Interno')">Interno</div>
     <a *ngIf="es('Admin','Interno')" routerLink="/calendario" routerLinkActive="active" class="nav-link">
@@ -82,9 +86,21 @@
       <i class="fas fa-briefcase"></i> Mis búsquedas
     </a>
 
-    <!-- Empresa -->
+    <!-- Empresa · su portal -->
+    <a *ngIf="es('Empresa')" routerLink="/inicio" routerLinkActive="active" class="nav-link">
+      <i class="fas fa-house"></i> Inicio
+    </a>
+    <a *ngIf="es('Empresa')" routerLink="/mis-solicitudes" routerLinkActive="active" class="nav-link">
+      <i class="fas fa-inbox"></i> Mis pedidos
+    </a>
     <a *ngIf="es('Empresa')" routerLink="/mi-proceso" routerLinkActive="active" class="nav-link">
       <i class="fas fa-user-check"></i> Mi proceso
+    </a>
+    <a *ngIf="es('Empresa')" routerLink="/mis-servicios" routerLinkActive="active" class="nav-link">
+      <i class="fas fa-briefcase"></i> Mis servicios
+    </a>
+    <a *ngIf="es('Empresa')" routerLink="/mis-documentos" routerLinkActive="active" class="nav-link">
+      <i class="fas fa-folder-open"></i> Documentos
     </a>
   </nav>
 

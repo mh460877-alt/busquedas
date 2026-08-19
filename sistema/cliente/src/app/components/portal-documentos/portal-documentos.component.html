@@ -1,0 +1,29 @@
+<div class="card acento">
+  <h2><i class="fas fa-folder-open"></i> Documentos</h2>
+  <p class="desc">Todo lo que Escencial te compartió: informes, CV, referencias y entregables.</p>
+
+  <input type="text" class="search-bar" placeholder="Buscar un documento…" [(ngModel)]="filtro">
+
+  <p class="mensaje error" *ngIf="mensaje">{{ mensaje }}</p>
+  <p class="vacio" *ngIf="cargando"><i class="fas fa-spinner fa-spin"></i> Cargando…</p>
+  <p class="chico" *ngIf="!cargando && total">{{ total }} documento(s) disponibles.</p>
+</div>
+
+<div class="card" *ngFor="let g of grupos">
+  <h3><i class="fas" [ngClass]="g.icono"></i> {{ g.titulo }} ({{ g.docs.length }})</h3>
+  <div class="doc" *ngFor="let a of g.docs">
+    <i class="fas fa-link"></i>
+    <div class="doc-cuerpo">
+      <a [href]="a.URL" target="_blank" rel="noopener">{{ a.Titulo }}</a>
+      <div class="chico">{{ origen(a) }}<span *ngIf="a.Nota"> · {{ a.Nota }}</span></div>
+    </div>
+    <span class="chico fecha">{{ (a.Fecha || '').slice(0, 10) }}</span>
+  </div>
+</div>
+
+<div class="card" *ngIf="!cargando && !total">
+  <p class="vacio">
+    Todavía no hay documentos compartidos. A medida que avancemos vas a encontrar acá
+    los informes, los CV y los entregables de cada trabajo.
+  </p>
+</div>

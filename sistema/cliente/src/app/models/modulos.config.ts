@@ -154,6 +154,27 @@ export const MODULOS: { [ruta: string]: ConfigModulo } = {
     ]
   },
 
+  /* ===================== PEDIDOS DE LOS CLIENTES ===================== */
+
+  solicitudes: {
+    entidad: 'Solicitudes', titulo: 'Solicitudes de clientes', icono: 'fa-inbox',
+    descripcion: 'Lo que los clientes piden desde su portal, con su estado y su responsable.',
+    campoEstado: 'Estado',
+    campos: [
+      { clave: 'Titulo', etiqueta: 'Pedido', tipo: 'texto', enTabla: true, requerido: true },
+      { clave: 'EmpresaID', etiqueta: 'Cliente', tipo: 'referencia', refCatalogo: 'empresas', enTabla: true },
+      { clave: 'Categoria', etiqueta: 'Categoría', tipo: 'select', catalogo: 'categoriasSolicitud' },
+      { clave: 'Tipo', etiqueta: 'Tipo de pedido', tipo: 'select', catalogo: 'tiposSolicitud', enTabla: true, requerido: true },
+      { clave: 'Prioridad', etiqueta: 'Prioridad', tipo: 'select', catalogo: 'prioridades', enTabla: true, badge: true },
+      { clave: 'Estado', etiqueta: 'Estado', tipo: 'select', catalogo: 'estadosSolicitud', enTabla: true, badge: true },
+      { clave: 'ResponsableEscencial', etiqueta: 'Responsable de Escencial', tipo: 'select', catalogo: 'equipo', enTabla: true },
+      { clave: 'ResponsableCliente', etiqueta: 'Responsable del cliente', tipo: 'texto' },
+      { clave: 'FechaSolicitud', etiqueta: 'Fecha del pedido', tipo: 'fecha', enTabla: true },
+      { clave: 'FechaEstimada', etiqueta: 'Fecha estimada', tipo: 'fecha' },
+      { clave: 'Descripcion', etiqueta: 'Descripción y alcance', tipo: 'textarea' }
+    ]
+  },
+
   /* ===================== NÓMINA DE PERSONAL ===================== */
 
   colaboradores: {

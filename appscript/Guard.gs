@@ -31,7 +31,9 @@ var PERMISOS = {
     Materiales:    ['ver', 'crear', 'editar', 'baja', 'eliminar'],
     // Nómina
     Colaboradores: ['ver', 'crear', 'editar', 'baja', 'eliminar'],
-    Permisos:      ['ver', 'crear', 'editar', 'baja', 'eliminar']
+    Permisos:      ['ver', 'crear', 'editar', 'baja', 'eliminar'],
+    // Portal del cliente
+    Solicitudes:   ['ver', 'crear', 'editar', 'baja', 'eliminar']
   },
   Interno: {
     Usuarios:      ['ver'],
@@ -54,7 +56,8 @@ var PERMISOS = {
     // Nómina: trabaja con ella, pero sin los datos de liquidación —el servidor
     // no se los manda— y sin poder borrar legajos.
     Colaboradores: ['ver', 'crear', 'editar', 'baja'],
-    Permisos:      ['ver', 'crear', 'editar', 'baja']
+    Permisos:      ['ver', 'crear', 'editar', 'baja'],
+    Solicitudes:   ['ver', 'crear', 'editar', 'baja']
   },
   Consultor: {
     Usuarios:      [],
@@ -65,6 +68,12 @@ var PERMISOS = {
     Observaciones: ['ver', 'crear'],
     Auditoria:     []
   },
+  /**
+   * El cliente, en su portal. Pide y mira; no toca lo que gestiona Escencial.
+   *
+   * Puede crear solicitudes pero no editarlas: el estado de un pedido lo mueve
+   * quien lo trabaja. Para decir algo sobre un pedido tiene los mensajes.
+   */
   Empresa: {
     Usuarios:      [],
     Empresas:      ['ver'],
@@ -72,7 +81,10 @@ var PERMISOS = {
     Asignaciones:  [],
     Candidatos:    ['ver'],
     Observaciones: ['ver', 'crear'],
-    Auditoria:     []
+    Auditoria:     [],
+    Solicitudes:   ['ver', 'crear'],
+    Proyectos:     ['ver'],
+    Capacitaciones:['ver']
   }
 };
 
@@ -142,6 +154,17 @@ function filtrarPorPertenencia_(sesion, entidad, filas) {
 
   if (sesion.rol === 'Empresa') {
     var suyas = busquedasDeEmpresa_(sesion.empresaId);
+
+    /**
+     * Todo lo que lleva EmpresaID se recorta solo: el cliente ve lo suyo y
+     * nada más. Vale para sus solicitudes, sus proyectos y sus capacitaciones.
+     */
+    if (entidad === 'Solicitudes' || ENTIDADES_POR_EMPRESA.indexOf(entidad) >= 0) {
+      return filas.filter(function (f) {
+        return String(f.EmpresaID) === String(sesion.empresaId);
+      });
+    }
+
     if (entidad === 'Empresas') {
       return filas.filter(function (f) { return String(f.ID) === String(sesion.empresaId); });
     }
@@ -227,6 +250,22 @@ function validarAlta_(sesion, entidad, datos) {
   if (entidad === 'Empresas') {
     if (!datos.Estado) datos.Estado = 'Activo';
     if (!datos.FechaAlta) datos.FechaAlta = hoy_();
+  }
+
+  if (entidad === 'Solicitudes') {
+    /**
+     * La empresa del pedido la pone el servidor, no el navegador: un cliente
+     * no puede abrir un pedido a nombre de otro. Escencial sí la elige, porque
+     * a veces carga el pedido que le llegó por teléfono.
+     */
+    if (sesion.rol === 'Empresa') datos.EmpresaID = sesion.empresaId;
+    if (!datos.EmpresaID) throw new Error('Falta indicar de qué empresa es el pedido');
+
+    datos.AutorID = sesion.uid;
+    datos.AutorNombre = sesion.nombre;
+    if (!datos.FechaSolicitud) datos.FechaSolicitud = hoy_();
+    if (!datos.Estado) datos.Estado = 'Nueva';
+    if (!datos.Prioridad) datos.Prioridad = 'Normal';
   }
 
   return datos;

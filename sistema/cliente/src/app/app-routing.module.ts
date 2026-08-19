@@ -19,6 +19,10 @@ import { ModuloInternoComponent } from './components/modulo-interno/modulo-inter
 import { CalendarioComponent } from './components/calendario/calendario.component';
 import { InformesComponent } from './components/informes/informes.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { PortalInicioComponent } from './components/portal-inicio/portal-inicio.component';
+import { PortalSolicitudesComponent } from './components/portal-solicitudes/portal-solicitudes.component';
+import { PortalServiciosComponent } from './components/portal-servicios/portal-servicios.component';
+import { PortalDocumentosComponent } from './components/portal-documentos/portal-documentos.component';
 import { MiCuentaComponent } from './components/mi-cuenta/mi-cuenta.component';
 import { VigilanteGuard } from './vigilante.guard';
 
@@ -93,7 +97,11 @@ const routes: Routes = [
     data: { rol: ['Admin', 'Interno', 'Consultor'] }, canActivate: [VigilanteGuard]
   },
 
-  /* ---------- Panel E · empresas ---------- */
+  /* ---------- Panel E · el portal del cliente ---------- */
+  { path: 'inicio',         component: PortalInicioComponent,      data: { rol: ['Empresa'] }, canActivate: [VigilanteGuard] },
+  { path: 'mis-solicitudes',component: PortalSolicitudesComponent, data: { rol: ['Empresa'] }, canActivate: [VigilanteGuard] },
+  { path: 'mis-servicios',  component: PortalServiciosComponent,   data: { rol: ['Empresa'] }, canActivate: [VigilanteGuard] },
+  { path: 'mis-documentos', component: PortalDocumentosComponent,  data: { rol: ['Empresa'] }, canActivate: [VigilanteGuard] },
   {
     path: 'mi-proceso', component: MiProcesoComponent,
     data: { rol: ['Empresa'] }, canActivate: [VigilanteGuard]
@@ -110,6 +118,7 @@ const routes: Routes = [
   { path: 'cumpleanos',     component: ModuloInternoComponent, data: { rol: ['Admin','Interno'], modulo: 'cumpleanos' },     canActivate: [VigilanteGuard] },
   { path: 'boveda',         component: ModuloInternoComponent, data: { rol: ['Admin','Interno'], modulo: 'boveda' },         canActivate: [VigilanteGuard] },
   { path: 'materiales',     component: ModuloInternoComponent, data: { rol: ['Admin','Interno'], modulo: 'materiales' },     canActivate: [VigilanteGuard] },
+  { path: 'solicitudes',    component: ModuloInternoComponent, data: { rol: ['Admin','Interno'], modulo: 'solicitudes' },  canActivate: [VigilanteGuard] },
   /* Nómina de personal */
   { path: 'colaboradores',  component: ModuloInternoComponent, data: { rol: ['Admin','Interno'], modulo: 'colaboradores' }, canActivate: [VigilanteGuard] },
   { path: 'permisos',       component: ModuloInternoComponent, data: { rol: ['Admin','Interno'], modulo: 'permisos' },      canActivate: [VigilanteGuard] },

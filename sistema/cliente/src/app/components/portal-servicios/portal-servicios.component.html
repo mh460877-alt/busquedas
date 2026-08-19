@@ -1,0 +1,65 @@
+<div class="card acento">
+  <h2><i class="fas fa-briefcase"></i> Mis servicios</h2>
+  <p class="desc">Lo que tenés contratado con Escencial y cómo viene cada cosa.</p>
+  <p class="mensaje error" *ngIf="mensaje">{{ mensaje }}</p>
+  <p class="vacio" *ngIf="cargando"><i class="fas fa-spinner fa-spin"></i> Cargando…</p>
+</div>
+
+<ng-container *ngIf="!cargando">
+  <div class="card">
+    <h3><i class="fas fa-user-tie"></i> Selección y reclutamiento ({{ busquedas.length }})</h3>
+    <div class="item" *ngFor="let b of busquedas">
+      <div class="item-cabecera">
+        <strong>{{ b.Puesto }}</strong>
+        <span class="badge badge-azul">{{ b.Etapa }}</span>
+        <span class="badge" [ngClass]="activa(b.Estado) ? 'badge-activa' : 'badge-gris'">{{ b.Estado }}</span>
+      </div>
+      <div class="chico">
+        {{ b.Provincia || 'Sin provincia' }} · {{ candidatosDe(b.ID) }} candidato(s) presentado(s)
+        <span *ngIf="b.FechaAlta"> · abierta el {{ b.FechaAlta }}</span>
+      </div>
+      <a class="enlace-item" *ngFor="let a of enlacesDe('Busquedas', b.ID)" [href]="a.URL" target="_blank" rel="noopener">
+        <i class="fas fa-link"></i> {{ a.Titulo }}
+      </a>
+    </div>
+    <p class="vacio" *ngIf="!busquedas.length">No hay búsquedas en curso.</p>
+  </div>
+
+  <div class="card">
+    <h3><i class="fas fa-diagram-project"></i> Consultoría ({{ proyectos.length }})</h3>
+    <div class="item" *ngFor="let p of proyectos">
+      <div class="item-cabecera">
+        <strong>{{ p.Proyecto }}</strong>
+        <span class="badge" [ngClass]="activa(p.Estado) ? 'badge-activa' : 'badge-gris'">{{ p.Estado }}</span>
+      </div>
+      <div class="chico">
+        <span *ngIf="p.Linea">{{ p.Linea }}</span>
+        <span *ngIf="p.FechaInicio"> · desde {{ p.FechaInicio }}</span>
+        <span *ngIf="p.FechaFin"> · cierre {{ p.FechaFin }}</span>
+      </div>
+      <div class="avance" *ngIf="p.Avance">{{ p.Avance }}</div>
+      <a class="enlace-item" *ngFor="let a of enlacesDe('Proyectos', p.ID)" [href]="a.URL" target="_blank" rel="noopener">
+        <i class="fas fa-link"></i> {{ a.Titulo }}
+      </a>
+    </div>
+    <p class="vacio" *ngIf="!proyectos.length">No hay proyectos de consultoría en curso.</p>
+  </div>
+
+  <div class="card">
+    <h3><i class="fas fa-graduation-cap"></i> Capacitaciones ({{ capacitaciones.length }})</h3>
+    <div class="item" *ngFor="let c of capacitaciones">
+      <div class="item-cabecera">
+        <strong>{{ c.Tema }}</strong>
+        <span class="badge badge-azul" *ngIf="c.Formato">{{ c.Formato }}</span>
+      </div>
+      <div class="chico">
+        <span *ngIf="c.Fecha">{{ c.Fecha }}</span>
+        <span *ngIf="c.Facilitador"> · {{ c.Facilitador }}</span>
+      </div>
+      <a class="enlace-item" *ngFor="let a of enlacesDe('Capacitaciones', c.ID)" [href]="a.URL" target="_blank" rel="noopener">
+        <i class="fas fa-link"></i> {{ a.Titulo }}
+      </a>
+    </div>
+    <p class="vacio" *ngIf="!capacitaciones.length">No hay capacitaciones agendadas.</p>
+  </div>
+</ng-container>

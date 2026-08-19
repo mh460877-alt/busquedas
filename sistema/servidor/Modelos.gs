@@ -94,6 +94,35 @@ var HOJAS = {
     requeridos: ['Titulo']
   },
 
+  /* ===================== PORTAL DEL CLIENTE ===================== */
+
+  /**
+   * Lo que el cliente pide. Es el corazón del portal: hasta ahora los pedidos
+   * quedaban repartidos entre WhatsApp, mail y reuniones, y nadie podía decir
+   * con certeza qué se había pedido, cuándo, ni en qué quedó.
+   */
+  Solicitudes: {
+    cols: [
+      'ID', 'EmpresaID', 'Categoria', 'Tipo', 'Titulo', 'Descripcion', 'Prioridad',
+      'ResponsableCliente', 'ResponsableEscencial', 'FechaSolicitud', 'FechaEstimada',
+      'Estado', 'AutorID', 'AutorNombre'
+    ],
+    requeridos: ['Tipo', 'Titulo']
+  },
+
+  /**
+   * La conversación sobre un registro: cliente y equipo, ida y vuelta.
+   *
+   * Es distinta de Observaciones, que es de candidatos y tiene tres audiencias
+   * —equipo, consultor y empresa— con su marca de Interna o Compartida. Acá la
+   * conversación es entre dos partes y todo lo escrito lo ven las dos: mezclar
+   * ambos modelos en una tabla sería pedir que un día se filtre lo que no debe.
+   */
+  Mensajes: {
+    cols: ['ID', 'Entidad', 'RegistroID', 'Texto', 'AutorID', 'AutorNombre', 'RolAutor', 'Fecha'],
+    requeridos: ['Entidad', 'RegistroID', 'Texto']
+  },
+
   /* ===================== NÓMINA DE PERSONAL ===================== */
 
   /**
@@ -135,7 +164,7 @@ var ENTIDADES_POR_EMPRESA = [
 /** Dónde se pueden colgar enlaces. Todo lo que se trabaja, menos la auditoría. */
 var ENTIDADES_CON_ADJUNTOS = [
   'Empresas', 'Busquedas', 'Candidatos', 'Accesos',
-  'Colaboradores', 'Permisos'
+  'Colaboradores', 'Permisos', 'Solicitudes'
 ].concat(ENTIDADES_POR_EMPRESA).concat(['Cumpleanos']);
 
 /* ============================ CATÁLOGOS ============================ */
@@ -195,6 +224,29 @@ var ESTADOS_COLABORADOR = ['Activo', 'Licencia', 'Baja'];
  */
 var CAMPOS_SENSIBLES_NOMINA = ['CUIL', 'Sueldo', 'Banco', 'CBU'];
 
+/* Catálogos del portal del cliente. */
+var CATEGORIAS_SOLICITUD = ['Seleccion y reclutamiento', 'Consultoria integral'];
+
+var TIPOS_SOLICITUD = [
+  // Selección y reclutamiento
+  'Nueva busqueda laboral', 'Reemplazo de una posicion',
+  'Ampliacion o modificacion de una busqueda', 'Solicitud de candidatos',
+  'Consulta sobre un proceso', 'Feedback de candidatos', 'Solicitud de referencias',
+  // Consultoría integral
+  'Solicitud de diagnostico', 'Solicitud de reunion', 'Solicitud de capacitacion',
+  'Solicitud de evaluacion', 'Solicitud de informe',
+  'Intervencion sobre un area', 'Nueva necesidad o proyecto'
+];
+
+/** El flujo del pedido, de punta a punta. */
+var ESTADOS_SOLICITUD = [
+  'Nueva', 'Recibida', 'En analisis', 'En proceso', 'Pendiente cliente', 'Finalizada'
+];
+var PRIORIDADES = ['Baja', 'Normal', 'Alta', 'Urgente'];
+
+/** Estados en los que el pedido sigue vivo, para contarlos en el tablero. */
+var ESTADOS_SOLICITUD_ABIERTA = ['Nueva', 'Recibida', 'En analisis', 'En proceso', 'Pendiente cliente'];
+
 var ESTADOS_BUSQUEDA = ['Activa', 'Deshabilitada', 'Cerrada'];
 var ESTADOS_GENERALES = ['Activo', 'Baja'];
 var ESTADOS_EMPRESA = ['Activo', 'En pausa', 'Cerrado'];
@@ -209,7 +261,14 @@ var VISIBILIDAD_OBS = ['Interna', 'Compartida'];
 var CAMPOS_OCULTOS = {
   Empresa: {
     Candidatos: ['DNI', 'ConsultorID'],
-    Usuarios: ['Salt', 'Hash', 'Correo']
+    Usuarios: ['Salt', 'Hash', 'Correo'],
+    /**
+     * El cliente ve su proyecto y su capacitación, pero no las notas que el
+     * equipo escribe al costado para trabajar. El avance sí: eso es lo que le
+     * interesa y lo que se le viene contando por mail.
+     */
+    Proyectos: ['Observaciones'],
+    Capacitaciones: ['Observaciones']
   },
   Consultor: {
     Usuarios: ['Salt', 'Hash']

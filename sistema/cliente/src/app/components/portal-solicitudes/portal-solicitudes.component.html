@@ -1,0 +1,144 @@
+<div class="card acento">
+  <div class="card-header">
+    <div>
+      <h2><i class="fas fa-inbox"></i> Mis pedidos</h2>
+      <p class="desc">Lo que le pediste a Escencial, con su estado y su respuesta.</p>
+    </div>
+    <button class="btn" (click)="abrirNueva()"><i class="fas fa-plus-circle"></i> Nuevo pedido</button>
+  </div>
+
+  <input type="text" class="search-bar" placeholder="Buscar en tus pedidos…" [(ngModel)]="filtro">
+
+  <p class="mensaje error" *ngIf="mensaje && !nueva">{{ mensaje }}</p>
+  <p class="vacio" *ngIf="cargando"><i class="fas fa-spinner fa-spin"></i> Cargando…</p>
+
+  <ng-container *ngIf="!cargando">
+    <div class="pedido" *ngFor="let s of visibles" (click)="abrir(s)">
+      <div class="pedido-cabecera">
+        <strong>{{ s.Titulo }}</strong>
+        <span class="badge" [ngClass]="claseEstado(s)">{{ s.Estado }}</span>
+        <span class="badge badge-gris" *ngIf="s.Prioridad === 'Urgente' || s.Prioridad === 'Alta'">{{ s.Prioridad }}</span>
+      </div>
+      <div class="chico">
+        {{ s.Tipo }} · pedido el {{ s.FechaSolicitud }}
+        <span *ngIf="s.ResponsableEscencial"> · lo lleva {{ s.ResponsableEscencial }}</span>
+        <span *ngIf="s.FechaEstimada"> · estimado para {{ s.FechaEstimada }}</span>
+      </div>
+      <div class="pedido-pie chico">
+        <span *ngIf="mensajesDe(s)"><i class="fas fa-comment-dots"></i> {{ mensajesDe(s) }}</span>
+        <span *ngIf="enlacesDe(s).length"><i class="fas fa-link"></i> {{ enlacesDe(s).length }}</span>
+        <span class="abrir">Abrir <i class="fas fa-chevron-right"></i></span>
+      </div>
+    </div>
+
+    <p class="vacio" *ngIf="!visibles.length">
+      Todavía no hay pedidos. Usá «Nuevo pedido» para pedirnos una búsqueda, una reunión,
+      una capacitación o lo que necesites.
+    </p>
+
+    <button class="btn gris chico" *ngIf="cerradas" (click)="verCerradas = !verCerradas">
+      {{ verCerradas ? 'Ocultar' : 'Ver' }} los {{ cerradas }} pedidos finalizados
+    </button>
+  </ng-container>
+</div>
+
+<!-- Nuevo pedido -->
+<div class="modal-fondo" *ngIf="nueva" (click)="cerrarNueva()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header"><i class="fas fa-plus-circle"></i> Nuevo pedido</div>
+    <p class="desc">Contanos qué necesitás. Queda registrado y te asignamos un responsable.</p>
+
+    <div class="form-group">
+      <label>¿Qué necesitás?</label>
+      <input type="text" [(ngModel)]="nueva.Titulo" placeholder="Ej.: Búsqueda de Encargado de depósito">
+    </div>
+    <div class="form-group">
+      <label>Tipo de pedido</label>
+      <select [(ngModel)]="nueva.Tipo">
+        <option value="">— Elegir —</option>
+        <option *ngFor="let t of tipos" [value]="t">{{ t }}</option>
+      </select>
+    </div>
+    <div class="grid-container">
+      <div class="form-group">
+        <label>Área</label>
+        <select [(ngModel)]="nueva.Categoria">
+          <option value="">— Elegir —</option>
+          <option *ngFor="let c of categorias" [value]="c">{{ c }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Prioridad</label>
+        <select [(ngModel)]="nueva.Prioridad">
+          <option *ngFor="let p of prioridades" [value]="p">{{ p }}</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Detalle</label>
+      <textarea [(ngModel)]="nueva.Descripcion" rows="4"
+                placeholder="Contanos el alcance, el perfil, las fechas… lo que nos sirva para arrancar"></textarea>
+    </div>
+    <div class="grid-container">
+      <div class="form-group">
+        <label>Referente de tu empresa</label>
+        <input type="text" [(ngModel)]="nueva.ResponsableCliente">
+      </div>
+      <div class="form-group">
+        <label>¿Para cuándo lo necesitás?</label>
+        <input type="date" [(ngModel)]="nueva.FechaEstimada">
+      </div>
+    </div>
+
+    <p class="mensaje error" *ngIf="mensaje">{{ mensaje }}</p>
+    <div class="acciones-modal">
+      <button class="btn gris" (click)="cerrarNueva()">Cancelar</button>
+      <button class="btn success" (click)="guardar()" [disabled]="guardando">
+        <i class="fas fa-paper-plane"></i> {{ guardando ? 'Enviando…' : 'Enviar pedido' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Detalle y conversación -->
+<div class="modal-fondo" *ngIf="abierta" (click)="cerrar()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header"><i class="fas fa-inbox"></i> {{ abierta.Titulo }}</div>
+    <p class="desc">
+      {{ abierta.Tipo }} · pedido el {{ abierta.FechaSolicitud }}
+      <span class="badge" [ngClass]="claseEstado(abierta)">{{ abierta.Estado }}</span>
+    </p>
+
+    <div class="detalle" *ngIf="abierta.Descripcion">{{ abierta.Descripcion }}</div>
+
+    <div class="ficha-datos chico">
+      <span *ngIf="abierta.ResponsableEscencial"><strong>Lo lleva:</strong> {{ abierta.ResponsableEscencial }}</span>
+      <span *ngIf="abierta.FechaEstimada"><strong>Estimado:</strong> {{ abierta.FechaEstimada }}</span>
+      <span *ngIf="abierta.Prioridad"><strong>Prioridad:</strong> {{ abierta.Prioridad }}</span>
+    </div>
+
+    <div *ngIf="enlacesDe(abierta).length">
+      <h3><i class="fas fa-link"></i> Archivos y enlaces</h3>
+      <a class="enlace-item" *ngFor="let a of enlacesDe(abierta)" [href]="a.URL" target="_blank" rel="noopener">
+        <i class="fas fa-link"></i> {{ a.Titulo }}
+      </a>
+    </div>
+
+    <h3><i class="fas fa-comments"></i> Conversación</h3>
+    <div class="chat">
+      <div class="burbuja" *ngFor="let m of conversacion" [class.mia]="esMio(m)">
+        <div class="chico autor">{{ m.AutorNombre }} · {{ m.Fecha }}</div>
+        <div>{{ m.Texto }}</div>
+      </div>
+      <p class="vacio chico" *ngIf="!conversacion.length">Todavía no hay mensajes sobre este pedido.</p>
+    </div>
+
+    <textarea [(ngModel)]="textoMensaje" rows="3" placeholder="Escribí tu mensaje…"></textarea>
+    <div class="acciones-modal">
+      <button class="btn gris" (click)="cerrar()">Cerrar</button>
+      <button class="btn success" (click)="enviar()" [disabled]="enviando">
+        <i class="fas fa-paper-plane"></i> {{ enviando ? 'Enviando…' : 'Enviar mensaje' }}
+      </button>
+    </div>
+  </div>
+</div>

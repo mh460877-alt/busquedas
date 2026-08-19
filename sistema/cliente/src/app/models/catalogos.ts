@@ -23,6 +23,11 @@ export interface Catalogos {
   equipo?: string[];
   /** Clientes, para vincular cada registro interno con su empresa. */
   empresas?: EmpresaOpcion[];
+  // Portal del cliente
+  categoriasSolicitud?: string[];
+  tiposSolicitud?: string[];
+  estadosSolicitud?: string[];
+  prioridades?: string[];
   // Nómina
   tiposPermiso?: string[];
   estadosPermiso?: string[];

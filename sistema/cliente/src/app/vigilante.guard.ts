@@ -48,7 +48,7 @@ export class VigilanteGuard implements CanActivate {
       case 'Admin': return '/busquedas';
       case 'Interno': return '/busquedas';
       case 'Consultor': return '/mis-busquedas';
-      case 'Empresa': return '/mi-proceso';
+      case 'Empresa': return '/inicio';
       default: return '/login';
     }
   }

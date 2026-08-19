@@ -1,0 +1,6 @@
+.doc { display: flex; align-items: flex-start; gap: 11px; padding: 9px 0; border-bottom: 1px solid #f2f5f7; }
+.doc:last-child { border-bottom: none; }
+.doc > i { color: #93a0a9; margin-top: 3px; }
+.doc-cuerpo { flex: 1; min-width: 0; }
+.doc-cuerpo a { font-weight: 600; word-break: break-word; }
+.doc .fecha { white-space: nowrap; }
