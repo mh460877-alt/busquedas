@@ -3,9 +3,11 @@ import { BusquedaService } from '../../services/busqueda.service';
 import { CandidatoService } from '../../services/candidato.service';
 import { ObservacionService } from '../../services/observacion.service';
 import { StorageService } from '../../services/storage.service';
+import { AdjuntoService } from '../../services/adjunto.service';
 import { Busqueda } from '../../models/busqueda';
 import { Candidato } from '../../models/candidato';
 import { Observacion } from '../../models/observacion';
+import { Adjunto } from '../../models/adjunto';
 
 /**
  * Panel E · lo que ve una empresa cliente.
@@ -34,10 +36,14 @@ export class MiProcesoComponent implements OnInit {
   comentando: Candidato | null = null;
   texto = '';
 
+  /** Todo lo que el equipo adjuntó a cada candidato: informe, CV, referencias. */
+  enlacesPorCandidato: { [candidatoId: string]: Adjunto[] } = {};
+
   constructor(
     private busquedaService: BusquedaService,
     private candidatoService: CandidatoService,
     private observacionService: ObservacionService,
+    private adjuntos: AdjuntoService,
     private storage: StorageService
   ) { }
 
@@ -53,6 +59,18 @@ export class MiProcesoComponent implements OnInit {
     });
     this.candidatoService.listar().subscribe({ next: c => this.candidatos = c, error: () => { } });
     this.observacionService.listar().subscribe({ next: o => this.observaciones = o, error: () => { } });
+    /**
+     * Los enlaces de los candidatos que esta empresa puede ver. El servidor ya
+     * recorta: solo llegan los de sus candidatos, y solo desde terna.
+     */
+    this.adjuntos.listar('Candidatos').subscribe({
+      next: lista => this.enlacesPorCandidato = this.adjuntos.agrupar(lista),
+      error: () => { }
+    });
+  }
+
+  enlacesDe(c: Candidato): Adjunto[] {
+    return this.enlacesPorCandidato[String(c.ID)] || [];
   }
 
   candidatosDe(b: Busqueda): Candidato[] {

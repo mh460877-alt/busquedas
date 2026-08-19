@@ -18,7 +18,11 @@
           <td data-label="Informe" class="chico">
             <a *ngIf="c.LinkInforme" [href]="c.LinkInforme" target="_blank" rel="noopener"><i class="fas fa-file-alt"></i> Ver informe</a>
             <a *ngIf="c.LinkCV" [href]="c.LinkCV" target="_blank" rel="noopener"><i class="fas fa-file-pdf"></i> CV</a>
-            <span *ngIf="!c.LinkInforme && !c.LinkCV">—</span>
+            <!-- Todo lo demás que el equipo haya adjuntado: referencias, evaluaciones… -->
+            <a *ngFor="let a of enlacesDe(c)" [href]="a.URL" target="_blank" rel="noopener" class="mat-extra">
+              <i class="fas fa-link"></i> {{ a.Titulo }}
+            </a>
+            <span *ngIf="!c.LinkInforme && !c.LinkCV && !enlacesDe(c).length">—</span>
           </td>
           <td data-label="Etapa"><span class="badge badge-azul">{{ c.Etapa }}</span></td>
           <td data-label="Devolución" class="chico">
