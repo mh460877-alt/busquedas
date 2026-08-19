@@ -123,6 +123,35 @@ var HOJAS = {
     requeridos: ['Entidad', 'RegistroID', 'Texto']
   },
 
+  /* ===================== OBJETIVOS Y AVANCES ===================== */
+
+  /**
+   * Lo que alguien se propuso lograr, con su meta y su plazo.
+   *
+   * Sin una meta no hay "cuánto me falta" ni "mi mejor resultado": habría solo
+   * una cuenta de actividad, que es exactamente lo que este tablero no quiere
+   * ser. La meta es un número y la unidad la elige quien lo define.
+   */
+  Objetivos: {
+    cols: [
+      'ID', 'Titulo', 'Colaborador', 'Descripcion', 'Meta', 'Unidad',
+      'Frecuencia', 'Desde', 'Hasta', 'EmpresaID', 'Estado'
+    ],
+    requeridos: ['Titulo', 'Meta']
+  },
+
+  /**
+   * Cada paso dado hacia un objetivo, con su fecha.
+   *
+   * Se guardan uno por uno y no como un total que se pisa, porque de las fechas
+   * sale todo lo demás: la evolución del período, la comparación con el período
+   * anterior y la marca a superar.
+   */
+  Avances: {
+    cols: ['ID', 'ObjetivoID', 'Fecha', 'Cantidad', 'Nota', 'AutorID', 'AutorNombre'],
+    requeridos: ['ObjetivoID', 'Cantidad']
+  },
+
   /* ===================== NÓMINA DE PERSONAL ===================== */
 
   /**
@@ -164,7 +193,7 @@ var ENTIDADES_POR_EMPRESA = [
 /** Dónde se pueden colgar enlaces. Todo lo que se trabaja, menos la auditoría. */
 var ENTIDADES_CON_ADJUNTOS = [
   'Empresas', 'Busquedas', 'Candidatos', 'Accesos',
-  'Colaboradores', 'Permisos', 'Solicitudes'
+  'Colaboradores', 'Permisos', 'Solicitudes', 'Objetivos'
 ].concat(ENTIDADES_POR_EMPRESA).concat(['Cumpleanos']);
 
 /* ============================ CATÁLOGOS ============================ */
@@ -202,6 +231,11 @@ var NIVELES_COMUNICACION = ['Informativo', 'Importante', 'Urgente'];
 var TIPOS_CUMPLE = ['Cumpleaños de vida', 'Cumpleaños laboral'];
 var DESTINATARIOS_MATERIAL = ['Interno', 'Docentes', 'Empresas'];
 var ESTADOS_MATERIAL = ['Borrador', 'En revisión', 'Aprobado'];
+
+/* Catálogos de objetivos. */
+var FRECUENCIAS_OBJETIVO = ['Diario', 'Semanal', 'Mensual', 'Trimestral', 'Semestral', 'Anual'];
+var ESTADOS_OBJETIVO = ['Activo', 'En pausa', 'Cerrado'];
+var UNIDADES_OBJETIVO = ['Cantidad', 'Horas', 'Porcentaje', 'Pesos'];
 
 /* Catálogos de la nómina. */
 var TIPOS_PERMISO = [

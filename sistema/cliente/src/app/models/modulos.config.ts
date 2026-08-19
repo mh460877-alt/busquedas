@@ -175,6 +175,38 @@ export const MODULOS: { [ruta: string]: ConfigModulo } = {
     ]
   },
 
+  /* ===================== OBJETIVOS ===================== */
+
+  objetivos: {
+    entidad: 'Objetivos', titulo: 'Objetivos y desafíos', icono: 'fa-bullseye',
+    descripcion: 'Lo que cada uno se propuso lograr, con su meta y su plazo.',
+    campoEstado: 'Estado',
+    campos: [
+      { clave: 'Titulo', etiqueta: 'Objetivo', tipo: 'texto', enTabla: true, requerido: true },
+      { clave: 'Colaborador', etiqueta: 'De quién es', tipo: 'select', catalogo: 'equipo', enTabla: true },
+      { clave: 'Meta', etiqueta: 'Meta a alcanzar', tipo: 'texto', enTabla: true, requerido: true, ayuda: 'Un número. Ej.: 12' },
+      { clave: 'Unidad', etiqueta: 'Unidad', tipo: 'select', catalogo: 'unidadesObjetivo', enTabla: true },
+      { clave: 'Frecuencia', etiqueta: 'Se mide por', tipo: 'select', catalogo: 'frecuenciasObjetivo', enTabla: true, badge: true },
+      { clave: 'Desde', etiqueta: 'Desde', tipo: 'fecha' },
+      { clave: 'Hasta', etiqueta: 'Hasta', tipo: 'fecha' },
+      { clave: 'EmpresaID', etiqueta: 'Cliente (si aplica)', tipo: 'referencia', refCatalogo: 'empresas' },
+      { clave: 'Estado', etiqueta: 'Estado', tipo: 'select', catalogo: 'estadosObjetivo', enTabla: true, badge: true },
+      { clave: 'Descripcion', etiqueta: 'Descripción', tipo: 'textarea' }
+    ]
+  },
+
+  avances: {
+    entidad: 'Avances', titulo: 'Avances', icono: 'fa-forward-step',
+    descripcion: 'Cada paso dado hacia un objetivo. De acá sale toda la evolución.',
+    campos: [
+      { clave: 'ObjetivoID', etiqueta: 'Objetivo', tipo: 'referencia', refCatalogo: 'objetivos', enTabla: true, requerido: true },
+      { clave: 'Fecha', etiqueta: 'Fecha', tipo: 'fecha', enTabla: true },
+      { clave: 'Cantidad', etiqueta: 'Cuánto avanzaste', tipo: 'texto', enTabla: true, requerido: true, ayuda: 'Un número. Ej.: 3' },
+      { clave: 'Nota', etiqueta: 'Nota', tipo: 'texto', enTabla: true },
+      { clave: 'AutorNombre', etiqueta: 'Cargado por', tipo: 'texto', enTabla: true }
+    ]
+  },
+
   /* ===================== NÓMINA DE PERSONAL ===================== */
 
   colaboradores: {

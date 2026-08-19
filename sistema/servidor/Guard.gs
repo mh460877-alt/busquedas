@@ -33,7 +33,10 @@ var PERMISOS = {
     Colaboradores: ['ver', 'crear', 'editar', 'baja', 'eliminar'],
     Permisos:      ['ver', 'crear', 'editar', 'baja', 'eliminar'],
     // Portal del cliente
-    Solicitudes:   ['ver', 'crear', 'editar', 'baja', 'eliminar']
+    Solicitudes:   ['ver', 'crear', 'editar', 'baja', 'eliminar'],
+    // Objetivos
+    Objetivos:     ['ver', 'crear', 'editar', 'baja', 'eliminar'],
+    Avances:       ['ver', 'crear', 'editar', 'baja', 'eliminar']
   },
   Interno: {
     Usuarios:      ['ver'],
@@ -57,7 +60,9 @@ var PERMISOS = {
     // no se los manda— y sin poder borrar legajos.
     Colaboradores: ['ver', 'crear', 'editar', 'baja'],
     Permisos:      ['ver', 'crear', 'editar', 'baja'],
-    Solicitudes:   ['ver', 'crear', 'editar', 'baja']
+    Solicitudes:   ['ver', 'crear', 'editar', 'baja'],
+    Objetivos:     ['ver', 'crear', 'editar', 'baja'],
+    Avances:       ['ver', 'crear', 'editar', 'baja']
   },
   Consultor: {
     Usuarios:      [],
@@ -250,6 +255,18 @@ function validarAlta_(sesion, entidad, datos) {
   if (entidad === 'Empresas') {
     if (!datos.Estado) datos.Estado = 'Activo';
     if (!datos.FechaAlta) datos.FechaAlta = hoy_();
+  }
+
+  if (entidad === 'Avances') {
+    datos.AutorID = sesion.uid;
+    datos.AutorNombre = sesion.nombre;
+    if (!datos.Fecha) datos.Fecha = hoy_();
+  }
+
+  if (entidad === 'Objetivos') {
+    if (!datos.Estado) datos.Estado = 'Activo';
+    if (!datos.Frecuencia) datos.Frecuencia = 'Mensual';
+    if (!datos.Unidad) datos.Unidad = 'Cantidad';
   }
 
   if (entidad === 'Solicitudes') {

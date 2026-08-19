@@ -19,6 +19,7 @@ import { ModuloInternoComponent } from './components/modulo-interno/modulo-inter
 import { CalendarioComponent } from './components/calendario/calendario.component';
 import { InformesComponent } from './components/informes/informes.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { EvolucionComponent } from './components/evolucion/evolucion.component';
 import { PortalInicioComponent } from './components/portal-inicio/portal-inicio.component';
 import { PortalSolicitudesComponent } from './components/portal-solicitudes/portal-solicitudes.component';
 import { PortalServiciosComponent } from './components/portal-servicios/portal-servicios.component';
@@ -122,6 +123,9 @@ const routes: Routes = [
   /* Nómina de personal */
   { path: 'colaboradores',  component: ModuloInternoComponent, data: { rol: ['Admin','Interno'], modulo: 'colaboradores' }, canActivate: [VigilanteGuard] },
   { path: 'permisos',       component: ModuloInternoComponent, data: { rol: ['Admin','Interno'], modulo: 'permisos' },      canActivate: [VigilanteGuard] },
+  { path: 'objetivos',      component: ModuloInternoComponent, data: { rol: ['Admin','Interno'], modulo: 'objetivos' },   canActivate: [VigilanteGuard] },
+  { path: 'avances',        component: ModuloInternoComponent, data: { rol: ['Admin','Interno'], modulo: 'avances' },     canActivate: [VigilanteGuard] },
+  { path: 'evolucion',      component: EvolucionComponent,     data: { rol: ['Admin','Interno'] },                          canActivate: [VigilanteGuard] },
   { path: 'dashboard',      component: DashboardComponent,     data: { rol: ['Admin','Interno'] },                          canActivate: [VigilanteGuard] },
   { path: 'informes',       component: InformesComponent,      data: { rol: ['Admin','Interno'] },                          canActivate: [VigilanteGuard] },
   { path: 'mi-cuenta',      component: MiCuentaComponent,       canActivate: [VigilanteGuard] },

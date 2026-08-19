@@ -1,0 +1,68 @@
+.controles { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+.periodos { display: flex; flex-wrap: wrap; gap: 6px; }
+.filtro-persona { width: 200px; margin: 0 0 0 auto; }
+
+.bloque-titulo { text-align: center; margin: 14px 0 10px; }
+
+/* ---- el gráfico de evolución ---- */
+.grafico {
+  display: flex; align-items: flex-end; gap: 8px; height: 190px;
+  padding: 10px 4px 0; border-bottom: 1px solid #eef1f3;
+}
+.barra-col { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; }
+.barra-col .valor { font-size: 0.72rem; color: #7f8c8d; height: 16px; }
+.barra-fondo { flex: 1; width: 100%; display: flex; align-items: flex-end; }
+.barra {
+  width: 100%; background: var(--secondary); border-radius: 5px 5px 0 0;
+  min-height: 2px; transition: height .2s;
+}
+.barra-col.actual .barra { background: var(--success); }
+.barra-col .etiqueta { font-size: 0.68rem; color: #7a8894; padding-top: 5px; white-space: nowrap; }
+
+.centrado { text-align: center; margin: 8px 0 16px; }
+
+/* ---- tarjetas del período ---- */
+.tarjetas { display: flex; flex-wrap: wrap; gap: 10px; }
+.tarjeta {
+  flex: 1; min-width: 120px; text-align: center;
+  background: #f7fafc; border: 1px solid #eaeff2; border-radius: 9px; padding: 12px 10px;
+  font-size: 0.78rem; color: #7f8c8d;
+}
+.tarjeta .n { display: block; font-size: 1.5rem; font-weight: 700; color: var(--primary); line-height: 1.2; }
+.tarjeta.bien { background: #e8f5e9; border-color: #b6ddb9; }
+.tarjeta.bien .n { color: #2e7d32; }
+.tarjeta.mejor { background: #fff8e1; border-color: #f5d78e; }
+.tarjeta.mejor .n { color: #b7791f; }
+
+/* ---- cada objetivo ---- */
+.meta { padding: 14px 0; border-bottom: 1px solid #f2f5f7; }
+.meta:last-of-type { border-bottom: none; }
+.meta-cabecera { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.meta-cabecera .estado {
+  margin-left: auto; font-size: 0.72rem; font-weight: 700;
+  padding: 3px 11px; border-radius: 20px;
+}
+
+.barra-fondo.horizontal { display: block; background: #eef2f5; border-radius: 6px; height: 10px; overflow: hidden; }
+.barra-h { height: 100%; border-radius: 6px; transition: width .2s; }
+
+.meta-pie { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 8px; align-items: center; }
+.meta-pie .pct { margin-left: auto; font-weight: 700; }
+.record { color: #b7791f; font-weight: 700; }
+
+/* Un color por estado: se lee de un vistazo sin tener que buscar el número. */
+.progreso  .barra-h { background: var(--secondary); }
+.progreso  .estado  { background: #e1f0fb; color: #1c6ea4; }
+.cerca     .barra-h { background: #f1c40f; }
+.cerca     .estado  { background: #fff8e1; color: #b7791f; }
+.alcanzado .barra-h { background: var(--success); }
+.alcanzado .estado  { background: #e8f5e9; color: #2e7d32; }
+.superado  .barra-h { background: var(--morado); }
+.superado  .estado  { background: #f3eafa; color: #6f3d90; }
+
+@media (max-width: 700px) {
+  .filtro-persona { width: 100%; margin-left: 0; }
+  .tarjeta { min-width: calc(50% - 5px); }
+  .grafico { height: 150px; gap: 4px; }
+  .barra-col .etiqueta { font-size: 0.6rem; }
+}

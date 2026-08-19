@@ -18,6 +18,7 @@ import { EnlacesComponent } from './components/enlaces/enlaces.component';
 import { AccesosEmpresaComponent } from './components/accesos-empresa/accesos-empresa.component';
 import { ObservacionesComponent } from './components/observaciones/observaciones.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { EvolucionComponent } from './components/evolucion/evolucion.component';
 import { PortalInicioComponent } from './components/portal-inicio/portal-inicio.component';
 import { PortalSolicitudesComponent } from './components/portal-solicitudes/portal-solicitudes.component';
 import { PortalServiciosComponent } from './components/portal-servicios/portal-servicios.component';
@@ -49,6 +50,7 @@ import { MiCuentaComponent } from './components/mi-cuenta/mi-cuenta.component';
     AccesosEmpresaComponent,
     ObservacionesComponent,
     DashboardComponent,
+    EvolucionComponent,
     PortalInicioComponent,
     PortalSolicitudesComponent,
     PortalServiciosComponent,

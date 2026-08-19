@@ -90,6 +90,10 @@ function procesar_(e) {
       case 'mensajear':
         return { ok: true, datos: crearMensaje_(sesion, p.datos || {}) };
 
+      /* --- Objetivos y sus avances, para el tablero de evolución --- */
+      case 'metas':
+        return { ok: true, datos: metas_(sesion) };
+
       /* --- El portal del cliente, en una sola llamada --- */
       case 'portalCliente':
         return { ok: true, datos: portalCliente_(sesion) };
@@ -226,6 +230,10 @@ function catalogos_(sesion) {
     tiposCumple: TIPOS_CUMPLE,
     destinatariosMaterial: DESTINATARIOS_MATERIAL,
     estadosMaterial: ESTADOS_MATERIAL,
+    // Objetivos
+    frecuenciasObjetivo: FRECUENCIAS_OBJETIVO,
+    estadosObjetivo: ESTADOS_OBJETIVO,
+    unidadesObjetivo: UNIDADES_OBJETIVO,
     // Portal del cliente
     categoriasSolicitud: CATEGORIAS_SOLICITUD,
     tiposSolicitud: TIPOS_SOLICITUD,
@@ -238,6 +246,7 @@ function catalogos_(sesion) {
     areasTrabajo: AREAS_TRABAJO,
     estadosColaborador: ESTADOS_COLABORADOR,
     colaboradores: colaboradoresParaElegir_(sesion),
+    objetivos: objetivosParaElegir_(sesion),
     // Nombres del equipo, para elegir responsables sin escribirlos a mano
     equipo: listarTodo_('Usuarios')
       .filter(function (u) { return u.Rol === 'Admin' || u.Rol === 'Interno'; })
@@ -327,11 +336,35 @@ function portalCliente_(sesion) {
   return salida;
 }
 
+/**
+ * Los objetivos con todos sus avances, en una sola llamada.
+ * El tablero necesita las dos tablas siempre juntas: una meta sin sus pasos no
+ * dice nada, y los pasos sin la meta tampoco.
+ */
+function metas_(sesion) {
+  return {
+    objetivos: listar_(sesion, 'Objetivos'),
+    avances: listar_(sesion, 'Avances')
+  };
+}
+
 /** Nombres de la nómina, para colgarle un permiso a quien corresponde. */
 function colaboradoresParaElegir_(sesion) {
   if (((PERMISOS[sesion.rol] || {}).Colaboradores || []).indexOf('ver') < 0) return [];
   return listarTodo_('Colaboradores').map(function (c) {
     return { id: c.ID, nombre: c.Nombre, estado: c.Estado };
+  });
+}
+
+/** Los objetivos abiertos, para colgarles un avance sin escribir el ID. */
+function objetivosParaElegir_(sesion) {
+  if (((PERMISOS[sesion.rol] || {}).Objetivos || []).indexOf('ver') < 0) return [];
+  return listarTodo_('Objetivos').map(function (o) {
+    return {
+      id: o.ID,
+      nombre: o.Titulo + (o.Colaborador ? ' · ' + o.Colaborador : ''),
+      estado: o.Estado
+    };
   });
 }
 

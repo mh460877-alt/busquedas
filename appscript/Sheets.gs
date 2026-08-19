@@ -186,7 +186,8 @@ var DEPENDENCIAS = {
   Usuarios:   [{ entidad: 'Candidatos', campo: 'ConsultorID', nombre: 'candidatos cargados' },
                { entidad: 'Asignaciones', campo: 'ConsultorID', nombre: 'asignaciones' }],
   Candidatos: [{ entidad: 'Observaciones', campo: 'CandidatoID', nombre: 'observaciones' }],
-  Colaboradores: [{ entidad: 'Permisos', campo: 'ColaboradorID', nombre: 'permisos' }]
+  Colaboradores: [{ entidad: 'Permisos', campo: 'ColaboradorID', nombre: 'permisos' }],
+  Objetivos:  [{ entidad: 'Avances', campo: 'ObjetivoID', nombre: 'avances registrados' }]
 };
 
 /**
@@ -202,7 +203,8 @@ var HIJOS_EN_CASCADA = {
   Candidatos:    [{ entidad: 'Observaciones', campo: 'CandidatoID' }],
   Busquedas:     [{ entidad: 'Asignaciones', campo: 'BusquedaID' }],
   Usuarios:      [{ entidad: 'Asignaciones', campo: 'ConsultorID' }],
-  Colaboradores: [{ entidad: 'Permisos', campo: 'ColaboradorID' }]
+  Colaboradores: [{ entidad: 'Permisos', campo: 'ColaboradorID' }],
+  Objetivos:     [{ entidad: 'Avances', campo: 'ObjetivoID' }]
 };
 
 /** Borra los registros que colgaban del que se acaba de eliminar. */
