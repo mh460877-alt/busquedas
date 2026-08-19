@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ApiService } from '../../services/api.service';
 import { BusquedaService } from '../../services/busqueda.service';
 import { CandidatoService } from '../../services/candidato.service';
 import { UsuarioService } from '../../services/usuario.service';
@@ -43,6 +44,7 @@ export class BusquedaDetalleComponent implements OnInit {
   enlazando: Candidato | null = null;
 
   constructor(
+    private api: ApiService,
     private busquedaService: BusquedaService,
     private candidatoService: CandidatoService,
     private usuarioService: UsuarioService,
@@ -57,28 +59,22 @@ export class BusquedaDetalleComponent implements OnInit {
   ngOnInit(): void {
     const id = this.ruta.snapshot.paramMap.get('id') ?? '';
 
-    this.busquedaService.listar().subscribe({
-      next: lista => {
-        this.busqueda = lista.find(b => b.ID === id) ?? null;
+    // Todo lo de la carpeta en un solo pedido. Eran seis, de ~2,5 s cada uno.
+    this.api.varios(['Busquedas', 'Candidatos', 'Observaciones', 'Usuarios']).subscribe({
+      next: r => {
+        this.busqueda = (r['Busquedas'] || []).find((b: Busqueda) => b.ID === id) ?? null;
+        this.candidatos = (r['Candidatos'] || []).filter((c: Candidato) => c.BusquedaID === id);
+        this.observaciones = r['Observaciones'] || [];
+        this.consultores = r['Usuarios'] || [];
         this.cargando = false;
         if (!this.busqueda) this.mensaje = 'Esa búsqueda no está a tu alcance.';
       },
       error: e => { this.mensaje = e.message; this.cargando = false; }
     });
 
-    this.candidatoService.listar().subscribe({
-      next: c => this.candidatos = c.filter(x => x.BusquedaID === id),
-      error: e => this.mensaje = e.message
-    });
-
-    this.observacionService.listar().subscribe({ next: o => this.observaciones = o, error: () => { } });
     this.loginService.catalogos().subscribe({
       next: c => this.etapasCandidato = c.etapasCandidato, error: () => { }
     });
-
-    if (this.puedeEditar) {
-      this.usuarioService.listar().subscribe({ next: u => this.consultores = u, error: () => { } });
-    }
 
     this.cargarEnlaces();
   }

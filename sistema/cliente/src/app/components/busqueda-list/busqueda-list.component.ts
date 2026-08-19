@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { ApiService } from '../../services/api.service';
 import { BusquedaService } from '../../services/busqueda.service';
 import { EmpresaService } from '../../services/empresa.service';
 import { UsuarioService } from '../../services/usuario.service';
@@ -42,6 +43,7 @@ export class BusquedaListComponent implements OnInit {
   plegados: { [empresaId: string]: boolean } = {};
 
   constructor(
+    private api: ApiService,
     private busquedaService: BusquedaService,
     private empresaService: EmpresaService,
     private usuarioService: UsuarioService,
@@ -56,16 +58,18 @@ export class BusquedaListComponent implements OnInit {
 
   cargar(): void {
     this.cargando = true;
-    this.busquedaService.listar().subscribe({
-      next: b => { this.busquedas = b; this.cargando = false; },
+    // Las cuatro tablas en un solo pedido: antes eran cuatro viajes de ~2,5 s.
+    this.api.varios(['Busquedas', 'Empresas', 'Usuarios', 'Asignaciones']).subscribe({
+      next: r => {
+        this.busquedas = r['Busquedas'] || [];
+        this.empresas = r['Empresas'] || [];
+        this.consultores = (r['Usuarios'] || [])
+          .filter((u: Usuario) => u.Rol === 'Consultor' && u.Estado !== 'Baja');
+        this.asignaciones = r['Asignaciones'] || [];
+        this.cargando = false;
+      },
       error: e => { this.mensaje = e.message; this.cargando = false; }
     });
-    this.empresaService.listar().subscribe({ next: e => this.empresas = e, error: () => { } });
-    this.usuarioService.listar().subscribe({
-      next: u => this.consultores = u.filter(x => x.Rol === 'Consultor' && x.Estado !== 'Baja'),
-      error: () => { }
-    });
-    this.asignacionService.listar().subscribe({ next: a => this.asignaciones = a, error: () => { } });
   }
 
   get visibles(): Busqueda[] {

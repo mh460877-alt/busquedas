@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { ApiService } from '../../services/api.service';
 import { CandidatoService } from '../../services/candidato.service';
 import { BusquedaService } from '../../services/busqueda.service';
 import { UsuarioService } from '../../services/usuario.service';
@@ -45,6 +46,7 @@ export class CandidatoListComponent implements OnInit {
   comentando: Candidato | null = null;
 
   constructor(
+    private api: ApiService,
     private candidatoService: CandidatoService,
     private busquedaService: BusquedaService,
     private usuarioService: UsuarioService,
@@ -60,12 +62,16 @@ export class CandidatoListComponent implements OnInit {
 
   cargar(): void {
     this.cargando = true;
-    this.candidatoService.listar().subscribe({
-      next: c => { this.candidatos = c; this.cargando = false; },
+    this.api.varios(['Candidatos', 'Busquedas', 'Usuarios', 'Observaciones']).subscribe({
+      next: r => {
+        this.candidatos = r['Candidatos'] || [];
+        this.busquedas = r['Busquedas'] || [];
+        this.usuarios = r['Usuarios'] || [];
+        this.observaciones = r['Observaciones'] || [];
+        this.cargando = false;
+      },
       error: e => { this.mensaje = e.message; this.cargando = false; }
     });
-    this.busquedaService.listar().subscribe({ next: b => this.busquedas = b, error: () => { } });
-    this.usuarioService.listar().subscribe({ next: u => this.usuarios = u, error: () => { } });
     this.loginService.catalogos().subscribe({
       next: c => {
         this.etapas = c.etapasCandidato;
@@ -73,7 +79,6 @@ export class CandidatoListComponent implements OnInit {
       },
       error: () => { }
     });
-    this.cargarObservaciones();
   }
 
   /** Todos los comentarios de una vez, no una llamada por candidato. */
@@ -83,6 +88,9 @@ export class CandidatoListComponent implements OnInit {
       error: () => { }
     });
   }
+
+  // (las observaciones llegan con el resto en cargar(); esto solo refresca
+  //  después de escribir un comentario)
 
   observacionesDe(c: Candidato): Observacion[] {
     return this.observaciones.filter(o => String(o.CandidatoID) === String(c.ID));

@@ -9,8 +9,48 @@ function ss_() {
   return SpreadsheetApp.getActiveSpreadsheet();
 }
 
+/**
+ * MEMORIA DE LA EJECUCIÓN
+ *
+ * Cada pedido a Apps Script arranca un proceso nuevo, así que esto no guarda
+ * nada entre usuarios ni entre llamadas: sirve para no volver a leer la misma
+ * hoja dos veces dentro del mismo pedido.
+ *
+ * Y eso pasaba todo el tiempo. Listar una tabla ya la lee entera; después el
+ * filtro de pertenencia vuelve a leerla, el control de alcance otra vez, y una
+ * pantalla que muestra cuatro tablas relacionadas terminaba abriendo la misma
+ * planilla diez veces. Con pocos datos igual se nota, porque lo que cuesta no
+ * son las filas sino cada viaje a la planilla.
+ *
+ * Cualquier escritura borra lo memorizado: es preferible releer que contestar
+ * con algo que ya cambió.
+ */
+var _cacheHoja = {};
+var _cacheFilas = {};
+var _cacheCabecera = {};
+
+function olvidarCache_(entidad) {
+  if (entidad) {
+    delete _cacheFilas[entidad];
+    delete _cacheCabecera[entidad];
+  } else {
+    _cacheFilas = {};
+    _cacheCabecera = {};
+  }
+}
+
+/** El encabezado real de la hoja, leído una sola vez por pedido. */
+function encabezado_(entidad) {
+  if (_cacheCabecera[entidad]) return _cacheCabecera[entidad];
+  var sh = hoja_(entidad);
+  _cacheCabecera[entidad] = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+  return _cacheCabecera[entidad];
+}
+
 /** Devuelve la hoja, creándola con sus encabezados si no existe. */
 function hoja_(entidad) {
+  // Ya verificada en este pedido: la estructura no cambia a mitad de camino.
+  if (_cacheHoja[entidad]) return _cacheHoja[entidad];
   var cols = columnasDe(entidad);
   var ss = ss_();
   var sh = ss.getSheetByName(entidad);
@@ -52,6 +92,7 @@ function hoja_(entidad) {
       r2.setFontWeight('bold').setFontColor('#ffffff').setBackground('#1C5A4A');
     }
   }
+  _cacheHoja[entidad] = sh;
   return sh;
 }
 
@@ -90,18 +131,33 @@ function aTexto_(valor, columna) {
   return valor === null || valor === undefined ? '' : String(valor);
 }
 
-/** Todas las filas de una tabla, como objetos. */
+/**
+ * Todas las filas de una tabla, como objetos.
+ *
+ * Devuelve copias y no las filas memorizadas: quien las recibe a veces las
+ * modifica —agregar un indicador, descifrar una contraseña— y esos retoques no
+ * deben quedar pegados para el resto del pedido.
+ */
 function listarTodo_(entidad) {
-  var sh = hoja_(entidad);
-  var datos = sh.getDataRange().getValues();
-  if (datos.length < 2) return [];
-  var cab = datos[0], salida = [];
-  for (var r = 1; r < datos.length; r++) {
-    var o = {};
-    for (var c = 0; c < cab.length; c++) { o[cab[c]] = aTexto_(datos[r][c], cab[c]); }
-    salida.push(o);
+  if (!_cacheFilas[entidad]) {
+    var sh = hoja_(entidad);
+    var datos = sh.getDataRange().getValues();
+    var salida = [];
+    if (datos.length >= 2) {
+      var cab = datos[0];
+      for (var r = 1; r < datos.length; r++) {
+        var o = {};
+        for (var c = 0; c < cab.length; c++) { o[cab[c]] = aTexto_(datos[r][c], cab[c]); }
+        salida.push(o);
+      }
+    }
+    _cacheFilas[entidad] = salida;
   }
-  return salida;
+  return _cacheFilas[entidad].map(function (f) {
+    var copia = {};
+    for (var k in f) copia[k] = f[k];
+    return copia;
+  });
 }
 
 function buscarPorId_(entidad, id) {
@@ -112,14 +168,16 @@ function buscarPorId_(entidad, id) {
   return null;
 }
 
-/** Número de fila real en la planilla, o -1. */
+/**
+ * Número de fila real en la planilla, o -1.
+ * Se apoya en lo ya leído en vez de volver a bajar toda la hoja: las filas
+ * vienen en el mismo orden que la planilla, y la primera es la 2 porque la 1
+ * es el encabezado.
+ */
 function filaDe_(entidad, id) {
-  var sh = hoja_(entidad);
-  var datos = sh.getDataRange().getValues();
-  var iID = datos[0].indexOf('ID');
-  if (iID < 0) return -1;
-  for (var r = 1; r < datos.length; r++) {
-    if (String(datos[r][iID]) === String(id)) return r + 1;
+  var filas = listarTodo_(entidad);
+  for (var i = 0; i < filas.length; i++) {
+    if (String(filas[i].ID) === String(id)) return i + 2;
   }
   return -1;
 }
@@ -142,12 +200,12 @@ function insertar_(entidad, datos) {
    * a partir de ese momento cada alta escribiría los valores corridos de lugar:
    * el dato de una columna terminaría guardado en otra.
    */
-  var cab = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
-  var fila = cab.map(function (c) {
+  var fila = encabezado_(entidad).map(function (c) {
     if (c === 'MarcaTiempo') return new Date();
     return seguroParaCelda_(datos[c] !== undefined && datos[c] !== null ? datos[c] : '');
   });
   sh.appendRow(fila);
+  olvidarCache_(entidad);
   return datos;
 }
 
@@ -155,7 +213,7 @@ function actualizar_(entidad, id, cambios) {
   var sh = hoja_(entidad);
   var fila = filaDe_(entidad, id);
   if (fila < 0) throw new Error('No se encontró el registro ' + id);
-  var cab = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+  var cab = encabezado_(entidad);
   var tocados = [];
   for (var campo in cambios) {
     var col = cab.indexOf(campo);
@@ -164,6 +222,7 @@ function actualizar_(entidad, id, cambios) {
       tocados.push(campo);
     }
   }
+  olvidarCache_(entidad);
   return { id: id, campos: tocados };
 }
 
@@ -171,6 +230,7 @@ function eliminar_(entidad, id) {
   var fila = filaDe_(entidad, id);
   if (fila < 0) throw new Error('No se encontró el registro ' + id);
   hoja_(entidad).deleteRow(fila);
+  olvidarCache_(entidad);
   return { id: id };
 }
 

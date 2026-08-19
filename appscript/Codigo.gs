@@ -55,6 +55,14 @@ function procesar_(e) {
       case 'listar':
         return { ok: true, datos: listar_(sesion, p.entidad) };
 
+      /**
+       * Varias tablas en un solo viaje. Una pantalla que muestra búsquedas,
+       * empresas, consultores y asignaciones hacía cuatro pedidos, y lo que
+       * cuesta no son las filas sino cada viaje.
+       */
+      case 'varios':
+        return { ok: true, datos: varios_(sesion, p.entidades || []) };
+
       case 'panel':
         return { ok: true, datos: panel_(sesion) };
 
@@ -442,6 +450,15 @@ function fichaEmpresa_(sesion, empresaId) {
     return !!permitidos && permitidos.indexOf(String(a.RegistroID)) >= 0;
   });
 
+  return salida;
+}
+
+/** Las tablas pedidas, cada una con el recorte que le toca al rol. */
+function varios_(sesion, entidades) {
+  var salida = {};
+  entidades.forEach(function (entidad) {
+    salida[entidad] = listar_(sesion, entidad);
+  });
   return salida;
 }
 

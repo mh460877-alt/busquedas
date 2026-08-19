@@ -36,6 +36,17 @@ export class ApiService {
       );
   }
 
+  /**
+   * Varias tablas en un solo pedido.
+   *
+   * Cada llamada a Apps Script cuesta unos dos segundos aunque la tabla tenga
+   * ocho filas: lo que se paga es abrir la planilla, no leerla. Una pantalla
+   * que necesita cuatro tablas conviene que las pida juntas.
+   */
+  varios(entidades: string[]): Observable<{ [entidad: string]: any[] }> {
+    return this.llamar<{ [entidad: string]: any[] }>('varios', { entidades });
+  }
+
   /* Acciones genéricas, las mismas para todas las entidades. */
   listar<T>(entidad: string): Observable<T[]> {
     return this.llamar<T[]>('listar', { entidad });
