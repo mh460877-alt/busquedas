@@ -42,6 +42,21 @@ function procesar_(e) {
     // De acá en adelante, hay que estar identificado.
     var sesion = leerSesion_(p.token);
 
+    /**
+     * Antes de escribir, se confirma quién es hoy.
+     *
+     * El rol viaja adentro del token, así que una sesión abierta sigue diciendo
+     * lo que decía al entrar: si a alguien se le cambia el rol o se le da de
+     * baja, su sesión sigue funcionando con los permisos viejos hasta que
+     * vuelva a ingresar.
+     *
+     * Se controla solo en las acciones que modifican datos. Hacerlo también al
+     * leer costaría una lectura más de la planilla en cada pedido, y el riesgo
+     * de que alguien vea de más un rato es bastante menor al de que escriba con
+     * permisos que ya no tiene.
+     */
+    if (ACCIONES_QUE_ESCRIBEN.indexOf(accion) >= 0) confirmarSesionVigente_(sesion);
+
     switch (accion) {
       case 'sesion':
         return { ok: true, datos: sesion };
@@ -127,6 +142,28 @@ function procesar_(e) {
   } catch (err) {
     return { ok: false, error: err.message || String(err) };
   }
+}
+
+/** Las que modifican datos. Solo estas revalidan quién es quien pide. */
+var ACCIONES_QUE_ESCRIBEN = [
+  'crear', 'editar', 'baja', 'eliminar', 'asignar', 'contrasena',
+  'adjuntar', 'subirArchivo', 'quitarAdjunto', 'mensajear', 'decidirCandidato'
+];
+
+/**
+ * Relee al usuario en la planilla y actualiza la sesión con lo que vale hoy.
+ * Si lo dieron de baja o lo borraron, la sesión deja de servir en el acto.
+ */
+function confirmarSesionVigente_(sesion) {
+  var u = buscarPorId_('Usuarios', sesion.uid);
+  if (!u) throw new Error('Tu acceso ya no existe. Volvé a ingresar.');
+  if (String(u.Estado).toLowerCase() === 'baja') {
+    throw new Error('Tu acceso fue dado de baja.');
+  }
+  // El rol de ahora manda sobre el que traía el token.
+  sesion.rol = u.Rol;
+  sesion.empresaId = u.EmpresaID || '';
+  return sesion;
 }
 
 /* ============================ ACCIONES GENÉRICAS ============================ */
