@@ -18,6 +18,12 @@
         {{ b.Provincia || 'Sin provincia' }} · {{ candidatosDe(b.ID) }} candidato(s) presentado(s)
         <span *ngIf="b.FechaAlta"> · abierta el {{ b.FechaAlta }}</span>
       </div>
+      <div class="enlaces-fijos">
+        <a *ngIf="b.LinkTerna" [href]="b.LinkTerna" target="_blank" rel="noopener"><i class="fas fa-list-ol"></i> Terna presentada</a>
+        <a *ngIf="b.LinkCVs" [href]="b.LinkCVs" target="_blank" rel="noopener"><i class="fas fa-folder"></i> CV</a>
+        <a *ngIf="b.LinkInformes" [href]="b.LinkInformes" target="_blank" rel="noopener"><i class="fas fa-folder-open"></i> Informes</a>
+        <a *ngIf="b.LinkReferencias" [href]="b.LinkReferencias" target="_blank" rel="noopener"><i class="fas fa-address-card"></i> Referencias</a>
+      </div>
       <a class="enlace-item" *ngFor="let a of enlacesDe('Busquedas', b.ID)" [href]="a.URL" target="_blank" rel="noopener">
         <i class="fas fa-link"></i> {{ a.Titulo }}
       </a>

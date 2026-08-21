@@ -40,14 +40,27 @@
     </div>
   </div>
 
-  <div class="form-group">
-    <label>Carpeta de informes</label>
-    <input type="url" name="informes" [(ngModel)]="empresa.LinkInformes" placeholder="https://…">
+  <!-- Los cuatro enlaces de trabajo. Ninguno obligatorio. -->
+  <h3 class="enlaces-titulo"><i class="fas fa-folder-open"></i> Enlaces de trabajo</h3>
+  <div class="grid-container">
+    <div class="form-group">
+      <label>Terna presentada</label>
+      <input type="url" name="terna" [(ngModel)]="empresa.LinkTerna" placeholder="https://…">
+    </div>
+    <div class="form-group">
+      <label>CV</label>
+      <input type="url" name="cvs" [(ngModel)]="empresa.LinkCVs" placeholder="https://…">
+    </div>
+    <div class="form-group">
+      <label>Informes</label>
+      <input type="url" name="informes" [(ngModel)]="empresa.LinkInformes" placeholder="https://…">
+    </div>
+    <div class="form-group">
+      <label>Referencias</label>
+      <input type="url" name="referencias" [(ngModel)]="empresa.LinkReferencias" placeholder="https://…">
+    </div>
   </div>
-  <div class="form-group">
-    <label>Carpeta de CV</label>
-    <input type="url" name="cvs" [(ngModel)]="empresa.LinkCVs" placeholder="https://…">
-  </div>
+  <p class="chico">Se completan cuando existen; ninguno es obligatorio.</p>
 
   <div class="nota">
     La fecha de alta es la referencia para saber desde cuándo corresponde facturarle a este cliente.

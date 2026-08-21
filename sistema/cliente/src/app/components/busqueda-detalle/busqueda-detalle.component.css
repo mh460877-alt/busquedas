@@ -4,3 +4,7 @@
   display: inline-block; margin-left: 4px; font-size: 0.7rem; font-weight: 700;
   background: #e1f5fe; color: #0288d1; border-radius: 10px; padding: 1px 6px;
 }
+
+/* Los cuatro enlaces de trabajo del proceso, en una línea. */
+.enlaces-fijos { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 12px 0; font-size: 0.86rem; }
+.enlaces-fijos a { display: inline-flex; align-items: center; gap: 6px; }

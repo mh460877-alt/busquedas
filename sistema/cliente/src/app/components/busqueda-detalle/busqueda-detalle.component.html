@@ -11,6 +11,13 @@
       <span class="badge" [ngClass]="b.Estado === 'Activa' ? 'badge-activa' : 'badge-gris'">{{ b.Estado }}</span>
     </p>
     <div class="nota">{{ b.Descripcion || 'Todavía no se cargó el descriptivo del puesto.' }}</div>
+    <div class="enlaces-fijos" *ngIf="b.LinkTerna || b.LinkCVs || b.LinkInformes || b.LinkReferencias">
+      <a *ngIf="b.LinkTerna" [href]="b.LinkTerna" target="_blank" rel="noopener"><i class="fas fa-list-ol"></i> Terna presentada</a>
+      <a *ngIf="b.LinkCVs" [href]="b.LinkCVs" target="_blank" rel="noopener"><i class="fas fa-folder"></i> CV</a>
+      <a *ngIf="b.LinkInformes" [href]="b.LinkInformes" target="_blank" rel="noopener"><i class="fas fa-folder-open"></i> Informes</a>
+      <a *ngIf="b.LinkReferencias" [href]="b.LinkReferencias" target="_blank" rel="noopener"><i class="fas fa-address-card"></i> Referencias</a>
+    </div>
+
     <button class="btn" (click)="presentar()"><i class="fas fa-user-plus"></i> Presentar candidato</button>
   </div>
 

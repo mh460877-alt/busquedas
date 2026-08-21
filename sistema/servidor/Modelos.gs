@@ -11,12 +11,21 @@ var HOJAS = {
     cols: ['ID', 'Usuario', 'Nombre', 'Correo', 'Rol', 'EmpresaID', 'Salt', 'Hash', 'Estado'],
     requeridos: ['Nombre', 'Rol']
   },
+  /**
+   * Los cuatro enlaces de trabajo son los mismos acá y en cada búsqueda: la
+   * terna presentada, los CV, los informes y las referencias. En la empresa
+   * viven las carpetas generales del cliente; en la búsqueda, las de ese
+   * proceso puntual. Ninguno es obligatorio: se completan cuando existen.
+   */
   Empresas: {
-    cols: ['ID', 'Nombre', 'Linea', 'Contacto', 'Email', 'Telefono', 'Estado', 'LinkInformes', 'LinkCVs', 'FechaAlta'],
+    cols: ['ID', 'Nombre', 'Linea', 'Contacto', 'Email', 'Telefono', 'Estado',
+           'LinkTerna', 'LinkCVs', 'LinkInformes', 'LinkReferencias', 'FechaAlta'],
     requeridos: ['Nombre']
   },
   Busquedas: {
-    cols: ['ID', 'Puesto', 'EmpresaID', 'Provincia', 'Descripcion', 'Etapa', 'Estado', 'Responsable', 'FechaAlta', 'FechaCierre'],
+    cols: ['ID', 'Puesto', 'EmpresaID', 'Provincia', 'Descripcion', 'Etapa', 'Estado', 'Responsable',
+           'LinkTerna', 'LinkCVs', 'LinkInformes', 'LinkReferencias',
+           'FechaAlta', 'FechaCierre'],
     requeridos: ['Puesto']
   },
   Asignaciones: {

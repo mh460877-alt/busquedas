@@ -6,3 +6,6 @@
   padding: 9px 12px; margin: 7px 0; font-size: 0.87rem;
 }
 .enlace-item { display: block; font-size: 0.83rem; padding: 2px 0; }
+
+.enlaces-fijos { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 6px 0; font-size: 0.83rem; }
+.enlaces-fijos a { display: inline-flex; align-items: center; gap: 5px; }

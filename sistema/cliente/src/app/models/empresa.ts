@@ -11,8 +11,11 @@ export interface Empresa {
   Email?: string;
   Telefono?: string;
   Estado?: string;
-  LinkInformes?: string;
+  /** Los cuatro enlaces de trabajo con el cliente. Ninguno obligatorio. */
+  LinkTerna?: string;
   LinkCVs?: string;
+  LinkInformes?: string;
+  LinkReferencias?: string;
   /** Desde cuándo se trabaja con el cliente: referencia para facturar. */
   FechaAlta?: string;
   MarcaTiempo?: string;

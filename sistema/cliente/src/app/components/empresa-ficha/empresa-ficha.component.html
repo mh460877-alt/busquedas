@@ -31,11 +31,17 @@
       <span *ngIf="ficha.empresa.Email"><i class="fas fa-envelope"></i> {{ ficha.empresa.Email }}</span>
       <span *ngIf="ficha.empresa.Telefono"><i class="fas fa-phone"></i> {{ ficha.empresa.Telefono }}</span>
       <span *ngIf="ficha.empresa.FechaAlta"><i class="fas fa-calendar-check"></i> Cliente desde {{ ficha.empresa.FechaAlta }}</span>
+      <a *ngIf="ficha.empresa.LinkTerna" [href]="ficha.empresa.LinkTerna" target="_blank" rel="noopener">
+        <i class="fas fa-list-ol"></i> Terna presentada
+      </a>
+      <a *ngIf="ficha.empresa.LinkCVs" [href]="ficha.empresa.LinkCVs" target="_blank" rel="noopener">
+        <i class="fas fa-folder"></i> Carpeta de CV
+      </a>
       <a *ngIf="ficha.empresa.LinkInformes" [href]="ficha.empresa.LinkInformes" target="_blank" rel="noopener">
         <i class="fas fa-folder-open"></i> Carpeta de informes
       </a>
-      <a *ngIf="ficha.empresa.LinkCVs" [href]="ficha.empresa.LinkCVs" target="_blank" rel="noopener">
-        <i class="fas fa-folder"></i> Carpeta de CVs
+      <a *ngIf="ficha.empresa.LinkReferencias" [href]="ficha.empresa.LinkReferencias" target="_blank" rel="noopener">
+        <i class="fas fa-address-card"></i> Referencias
       </a>
     </div>
   </div>

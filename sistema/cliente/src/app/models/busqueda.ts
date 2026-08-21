@@ -7,6 +7,11 @@ export interface Busqueda {
   Etapa?: string;
   Estado?: string;
   Responsable?: string;
+  /** Los mismos cuatro enlaces, pero de este proceso puntual. */
+  LinkTerna?: string;
+  LinkCVs?: string;
+  LinkInformes?: string;
+  LinkReferencias?: string;
   FechaAlta?: string;
   FechaCierre?: string;
   MarcaTiempo?: string;

@@ -29,9 +29,11 @@
           </td>
           <td data-label="Búsquedas">{{ cantidadBusquedas(e) }}</td>
           <td data-label="Carpetas" class="chico">
+            <a *ngIf="e.LinkTerna" [href]="e.LinkTerna" target="_blank" rel="noopener"><i class="fas fa-list-ol"></i> Terna</a>
+            <a *ngIf="e.LinkCVs" [href]="e.LinkCVs" target="_blank" rel="noopener"><i class="fas fa-folder"></i> CV</a>
             <a *ngIf="e.LinkInformes" [href]="e.LinkInformes" target="_blank" rel="noopener"><i class="fas fa-folder-open"></i> Informes</a>
-            <a *ngIf="e.LinkCVs" [href]="e.LinkCVs" target="_blank" rel="noopener"><i class="fas fa-folder"></i> CVs</a>
-            <span *ngIf="!e.LinkInformes && !e.LinkCVs">—</span>
+            <a *ngIf="e.LinkReferencias" [href]="e.LinkReferencias" target="_blank" rel="noopener"><i class="fas fa-address-card"></i> Referencias</a>
+            <span *ngIf="!e.LinkTerna && !e.LinkCVs && !e.LinkInformes && !e.LinkReferencias">—</span>
           </td>
           <td data-label="Alta" class="chico">{{ e.FechaAlta || '—' }}</td>
           <td data-label="Estado"><span class="badge" [ngClass]="e.Estado === 'Activo' ? 'badge-activa' : 'badge-gris'">{{ e.Estado }}</span></td>
