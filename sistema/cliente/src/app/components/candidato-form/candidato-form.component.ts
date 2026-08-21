@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CandidatoService } from '../../services/candidato.service';
+import { StorageService } from '../../services/storage.service';
 import { BusquedaService } from '../../services/busqueda.service';
 import { Candidato } from '../../models/candidato';
 import { Busqueda } from '../../models/busqueda';
@@ -29,6 +30,7 @@ export class CandidatoFormComponent implements OnInit {
 
   constructor(
     private candidatoService: CandidatoService,
+    private storage: StorageService,
     private busquedaService: BusquedaService,
     private ruta: ActivatedRoute,
     private router: Router
@@ -87,7 +89,15 @@ export class CandidatoFormComponent implements OnInit {
     });
   }
 
-  volver(): void { this.router.navigate(['/mis-busquedas']); }
+  /**
+   * Vuelve a donde corresponde según quién esté cargando: el consultor a sus
+   * búsquedas, el equipo al registro. Antes mandaba a todos a "mis búsquedas",
+   * que para el equipo no existe y terminaba rebotando.
+   */
+  volver(): void {
+    const rol = this.storage.rol;
+    this.router.navigate([rol === 'Consultor' ? '/mis-busquedas' : '/candidatos']);
+  }
 
   private avisar(texto: string, esError: boolean): void {
     this.mensaje = texto;

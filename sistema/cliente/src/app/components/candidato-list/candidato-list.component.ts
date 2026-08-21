@@ -41,6 +41,10 @@ export class CandidatoListComponent implements OnInit {
   /** Partners con su lista cerrada. Por omisión están todos abiertos. */
   plegados: { [consultorId: string]: boolean } = {};
 
+  /** Candidato al que se le está editando el material. */
+  editando: Candidato | null = null;
+  guardando = false;
+
   /** Comentarios por candidato, y el candidato que se está mirando. */
   observaciones: Observacion[] = [];
   comentando: Candidato | null = null;
@@ -183,4 +187,43 @@ export class CandidatoListComponent implements OnInit {
   }
 
   abrir(c: Candidato): void { this.router.navigate(['/busqueda', c.BusquedaID]); }
+
+  /**
+   * Cargar un candidato sin entrar antes a una búsqueda.
+   * Se abre el mismo formulario de siempre con la búsqueda sin elegir: se
+   * selecciona ahí, del desplegable de búsquedas activas.
+   */
+  nuevo(): void { this.router.navigate(['/presentar', 'nueva']); }
+
+  /**
+   * Editar el material de un candidato ya presentado.
+   *
+   * Hacía falta porque el informe casi nunca está el día que se lo carga: llega
+   * después, igual que las referencias. Sin esto había que presentarlo de nuevo
+   * o tocar la planilla a mano.
+   */
+  abrirEdicion(c: Candidato): void { this.editando = { ...c }; this.mensaje = ''; }
+  cerrarEdicion(): void { this.editando = null; }
+
+  guardarEdicion(): void {
+    if (!this.editando?.ID) return;
+    if (!this.editando.Nombre?.trim()) { this.mensaje = 'El nombre no puede quedar vacío.'; return; }
+    this.guardando = true;
+    const cambios = {
+      Nombre: this.editando.Nombre.trim(),
+      LinkCV: this.editando.LinkCV || '',
+      LinkVideo: this.editando.LinkVideo || '',
+      LinkInforme: this.editando.LinkInforme || '',
+      LinkReferencias: this.editando.LinkReferencias || ''
+    };
+    this.candidatoService.editar(this.editando.ID, cambios).subscribe({
+      next: () => {
+        this.guardando = false;
+        this.editando = null;
+        this.mensaje = 'Material actualizado';
+        this.cargar();
+      },
+      error: e => { this.guardando = false; this.mensaje = e.message; }
+    });
+  }
 }
