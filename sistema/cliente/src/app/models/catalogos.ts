@@ -25,6 +25,7 @@ export interface Catalogos {
   empresas?: EmpresaOpcion[];
   // Objetivos
   frecuenciasObjetivo?: string[];
+  ambitosObjetivo?: string[];
   estadosObjetivo?: string[];
   unidadesObjetivo?: string[];
   /** Los objetivos, para colgarles un avance. */

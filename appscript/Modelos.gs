@@ -134,10 +134,12 @@ var HOJAS = {
    */
   Objetivos: {
     cols: [
-      'ID', 'Titulo', 'Colaborador', 'Descripcion', 'Meta', 'Unidad',
-      'Frecuencia', 'Desde', 'Hasta', 'EmpresaID', 'Estado'
+      'ID', 'Titulo', 'Ambito', 'Colaborador', 'Alcance', 'Descripcion', 'Unidad',
+      'MetaDiaria', 'MetaSemanal', 'MetaMensual',
+      'MetaTrimestral', 'MetaSemestral', 'MetaAnual',
+      'Meta', 'Frecuencia', 'Desde', 'Hasta', 'EmpresaID', 'Estado'
     ],
-    requeridos: ['Titulo', 'Meta']
+    requeridos: ['Titulo']
   },
 
   /**
@@ -234,6 +236,15 @@ var ESTADOS_MATERIAL = ['Borrador', 'En revisión', 'Aprobado'];
 
 /* Catálogos de objetivos. */
 var FRECUENCIAS_OBJETIVO = ['Diario', 'Semanal', 'Mensual', 'Trimestral', 'Semestral', 'Anual'];
+
+/**
+ * A quién le corresponde un objetivo.
+ *
+ * Uno de persona es de esa persona; los demás son compartidos y los ve todo el
+ * que participa. Es lo que permite proponerse algo como equipo sin convertirlo
+ * en una comparación entre compañeros.
+ */
+var AMBITOS_OBJETIVO = ['Persona', 'Equipo', 'Area', 'Proyecto', 'Servicio'];
 var ESTADOS_OBJETIVO = ['Activo', 'En pausa', 'Cerrado'];
 var UNIDADES_OBJETIVO = ['Cantidad', 'Horas', 'Porcentaje', 'Pesos'];
 

@@ -1,68 +1,104 @@
-.controles { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
-.periodos { display: flex; flex-wrap: wrap; gap: 6px; }
-.filtro-persona { width: 200px; margin: 0 0 0 auto; }
+.controles { display: flex; gap: 10px; flex-wrap: wrap; }
+.controles select { width: 240px; margin: 0; }
 
-.bloque-titulo { text-align: center; margin: 14px 0 10px; }
-
-/* ---- el gráfico de evolución ---- */
-.grafico {
-  display: flex; align-items: flex-end; gap: 8px; height: 190px;
-  padding: 10px 4px 0; border-bottom: 1px solid #eef1f3;
+/* ---- Mi próximo desafío: la tarjeta que más pesa ---- */
+.desafio {
+  display: flex; align-items: center; gap: 20px;
+  background: linear-gradient(135deg, #2c3e50 0%, #34576f 100%);
+  color: #fff; border-top: none;
 }
+.desafio-icono { font-size: 2.8rem; line-height: 1; flex-shrink: 0; }
+.desafio-cuerpo { flex: 1; min-width: 0; }
+.desafio h3 { color: #fff; margin: 0 0 4px; }
+.desafio p { margin: 0 0 12px; font-size: 0.95rem; opacity: .92; }
+.desafio .barra-fondo { background: rgba(255,255,255,.2); }
+.desafio .barra-h { background: #f1c40f; }
+
+/* ---- Reconocimientos ---- */
+.reconocimientos { display: flex; flex-wrap: wrap; gap: 10px; }
+.premio {
+  background: #fff8e1; border: 1px solid #f5d78e; color: #8a6116;
+  border-radius: 20px; padding: 7px 16px; font-size: 0.86rem; font-weight: 600;
+}
+
+/* ---- Las seis tarjetas ---- */
+.tarjetas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px; }
+.tarjeta {
+  background: #fff; border: 1px solid #e8ecef; border-radius: 12px; padding: 18px 20px;
+  border-top: 3px solid #cfd8dc;
+}
+.t-cabecera { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.t-icono { font-size: 1.6rem; line-height: 1; }
+.t-cabecera h3 { margin: 0; font-size: 1rem; }
+.t-pct { margin-left: auto; font-size: 1.35rem; font-weight: 700; color: var(--primary); }
+
+.t-numeros { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 10px; }
+.t-numeros .etq { display: block; font-size: 0.7rem; color: #93a0a9; text-transform: uppercase; letter-spacing: .3px; }
+.t-numeros .val { font-size: 1.15rem; font-weight: 600; color: var(--primary); }
+.t-numeros .val.fuerte { font-size: 1.5rem; font-weight: 700; }
+
+.barra-fondo { background: #eef2f5; border-radius: 6px; height: 10px; overflow: hidden; }
+.barra-h { height: 100%; border-radius: 6px; transition: width .25s; }
+
+.sin-meta { margin: 4px 0 0; font-style: italic; }
+
+.t-pie { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 10px; }
+.t-pie .mejor { color: #2e7d32; font-weight: 600; }
+
+/* Los tramos chicos que empujan al horizonte */
+.t-partes {
+  display: flex; align-items: flex-end; gap: 3px; height: 30px; margin-top: 12px;
+  padding-top: 8px; border-top: 1px solid #f2f5f7;
+}
+.parte { flex: 1; height: 100%; display: flex; align-items: flex-end; }
+.parte-barra { width: 100%; background: #cfd8dc; border-radius: 3px 3px 0 0; min-height: 2px; }
+
+.t-premio {
+  margin-top: 12px; text-align: center; font-size: 0.85rem; font-weight: 700;
+  background: #f7fafc; border-radius: 8px; padding: 7px;
+}
+
+/* Un color por estado, para leerlo sin buscar el número */
+.progreso  { border-top-color: var(--secondary); }
+.progreso  .barra-h { background: var(--secondary); }
+.cerca     { border-top-color: #f1c40f; }
+.cerca     .barra-h { background: #f1c40f; }
+.alcanzado { border-top-color: var(--success); }
+.alcanzado .barra-h { background: var(--success); }
+.alcanzado .t-premio { background: #e8f5e9; color: #2e7d32; }
+.superado  { border-top-color: var(--morado); }
+.superado  .barra-h { background: var(--morado); }
+.superado  .t-premio { background: #f3eafa; color: #6f3d90; }
+.sinmeta   { border-top-color: #e0e5e9; background: #fbfcfd; }
+
+/* ---- Cadena de progresión ---- */
+.cadena { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.eslabon {
+  flex: 1; min-width: 110px; text-align: center;
+  background: #f7fafc; border: 1px solid #eaeff2; border-radius: 9px; padding: 12px 8px;
+}
+.e-icono { display: block; font-size: 1.3rem; }
+.e-titulo { display: block; font-size: 0.72rem; color: #7f8c8d; text-transform: uppercase; letter-spacing: .3px; }
+.e-valor { display: block; font-size: 1.25rem; font-weight: 700; color: var(--primary); }
+.flecha { color: #cfd8dc; flex-shrink: 0; }
+
+/* ---- Gráfico ---- */
+.periodos { display: flex; flex-wrap: wrap; gap: 6px; }
+.grafico { display: flex; align-items: flex-end; gap: 8px; height: 190px; padding-top: 10px; }
 .barra-col { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; }
 .barra-col .valor { font-size: 0.72rem; color: #7f8c8d; height: 16px; }
-.barra-fondo { flex: 1; width: 100%; display: flex; align-items: flex-end; }
-.barra {
-  width: 100%; background: var(--secondary); border-radius: 5px 5px 0 0;
-  min-height: 2px; transition: height .2s;
-}
+.barra-fondo.vertical { flex: 1; width: 100%; display: flex; align-items: flex-end; background: none; height: auto; }
+.barra { width: 100%; background: var(--secondary); border-radius: 5px 5px 0 0; min-height: 2px; transition: height .2s; }
 .barra-col.actual .barra { background: var(--success); }
-.barra-col .etiqueta { font-size: 0.68rem; color: #7a8894; padding-top: 5px; white-space: nowrap; }
+.barra-col .etiqueta { font-size: 0.66rem; color: #7a8894; padding-top: 5px; white-space: nowrap; }
 
-.centrado { text-align: center; margin: 8px 0 16px; }
-
-/* ---- tarjetas del período ---- */
-.tarjetas { display: flex; flex-wrap: wrap; gap: 10px; }
-.tarjeta {
-  flex: 1; min-width: 120px; text-align: center;
-  background: #f7fafc; border: 1px solid #eaeff2; border-radius: 9px; padding: 12px 10px;
-  font-size: 0.78rem; color: #7f8c8d;
-}
-.tarjeta .n { display: block; font-size: 1.5rem; font-weight: 700; color: var(--primary); line-height: 1.2; }
-.tarjeta.bien { background: #e8f5e9; border-color: #b6ddb9; }
-.tarjeta.bien .n { color: #2e7d32; }
-.tarjeta.mejor { background: #fff8e1; border-color: #f5d78e; }
-.tarjeta.mejor .n { color: #b7791f; }
-
-/* ---- cada objetivo ---- */
-.meta { padding: 14px 0; border-bottom: 1px solid #f2f5f7; }
-.meta:last-of-type { border-bottom: none; }
-.meta-cabecera { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
-.meta-cabecera .estado {
-  margin-left: auto; font-size: 0.72rem; font-weight: 700;
-  padding: 3px 11px; border-radius: 20px;
-}
-
-.barra-fondo.horizontal { display: block; background: #eef2f5; border-radius: 6px; height: 10px; overflow: hidden; }
-.barra-h { height: 100%; border-radius: 6px; transition: width .2s; }
-
-.meta-pie { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 8px; align-items: center; }
-.meta-pie .pct { margin-left: auto; font-weight: 700; }
-.record { color: #b7791f; font-weight: 700; }
-
-/* Un color por estado: se lee de un vistazo sin tener que buscar el número. */
-.progreso  .barra-h { background: var(--secondary); }
-.progreso  .estado  { background: #e1f0fb; color: #1c6ea4; }
-.cerca     .barra-h { background: #f1c40f; }
-.cerca     .estado  { background: #fff8e1; color: #b7791f; }
-.alcanzado .barra-h { background: var(--success); }
-.alcanzado .estado  { background: #e8f5e9; color: #2e7d32; }
-.superado  .barra-h { background: var(--morado); }
-.superado  .estado  { background: #f3eafa; color: #6f3d90; }
-
+@media (max-width: 1100px) { .tarjetas { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 700px) {
-  .filtro-persona { width: 100%; margin-left: 0; }
-  .tarjeta { min-width: calc(50% - 5px); }
-  .grafico { height: 150px; gap: 4px; }
-  .barra-col .etiqueta { font-size: 0.6rem; }
+  .tarjetas { grid-template-columns: 1fr; }
+  .controles select { width: 100%; }
+  .desafio { flex-direction: column; text-align: center; }
+  .flecha { display: none; }
+  .eslabon { min-width: calc(33% - 6px); }
+  .grafico { height: 140px; gap: 4px; }
+  .barra-col .etiqueta { font-size: 0.55rem; }
 }

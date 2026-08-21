@@ -265,8 +265,17 @@ function validarAlta_(sesion, entidad, datos) {
 
   if (entidad === 'Objetivos') {
     if (!datos.Estado) datos.Estado = 'Activo';
-    if (!datos.Frecuencia) datos.Frecuencia = 'Mensual';
     if (!datos.Unidad) datos.Unidad = 'Cantidad';
+    if (!datos.Ambito) datos.Ambito = datos.Colaborador ? 'Persona' : 'Equipo';
+    /**
+     * Un objetivo sin ninguna meta no se puede medir. Con una alcanza: los
+     * demás horizontes muestran lo acumulado y avisan que ahí no hay meta
+     * definida, en lugar de inventar una.
+     */
+    var metas = ['MetaDiaria', 'MetaSemanal', 'MetaMensual',
+                 'MetaTrimestral', 'MetaSemestral', 'MetaAnual', 'Meta'];
+    var tieneAlguna = metas.some(function (m) { return Number(datos[m]) > 0; });
+    if (!tieneAlguna) throw new Error('Poné al menos una meta: diaria, semanal, mensual, trimestral, semestral o anual');
   }
 
   if (entidad === 'Solicitudes') {

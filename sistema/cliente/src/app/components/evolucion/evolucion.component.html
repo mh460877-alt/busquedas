@@ -2,83 +2,132 @@
   <div class="card-header">
     <div>
       <h2><i class="fas fa-chart-line"></i> Evolución y desafíos</h2>
-      <p class="desc">Qué te propusiste, cuánto llevás y cuánto te falta para superarte.</p>
+      <p class="desc">Dónde estás, qué lograste, qué te falta y cuál es tu próximo desafío.</p>
     </div>
   </div>
 
   <div class="controles">
-    <div class="periodos">
-      <button *ngFor="let f of frecuencias" class="btn chico"
-              [class.gris]="frecuencia !== f" (click)="frecuencia = f">{{ f }}</button>
-    </div>
-    <select class="filtro-persona" [(ngModel)]="persona">
+    <select [(ngModel)]="persona" (ngModelChange)="objetivoId = ''">
       <option value="">Todo el equipo</option>
       <option *ngFor="let p of equipo" [value]="p">{{ p }}</option>
+    </select>
+    <select [(ngModel)]="objetivoId">
+      <option value="">Todos mis objetivos juntos</option>
+      <option *ngFor="let o of objetivosEnJuego" [value]="o.ID">{{ o.Titulo }}</option>
     </select>
   </div>
 
   <p class="mensaje error" *ngIf="mensaje">{{ mensaje }}</p>
   <p class="vacio" *ngIf="cargando"><i class="fas fa-spinner fa-spin"></i> Cargando…</p>
-
-  <ng-container *ngIf="!cargando">
-    <!-- BLOQUE PRINCIPAL · la evolución -->
-    <h3 class="bloque-titulo">Evolución de objetivos</h3>
-    <div class="grafico">
-      <div class="barra-col" *ngFor="let t of tramos" [class.actual]="t.actual"
-           [title]="t.etiqueta + ': ' + t.logrado">
-        <div class="valor">{{ t.logrado || '' }}</div>
-        <div class="barra-fondo">
-          <div class="barra" [style.height.%]="altura(t)"></div>
-        </div>
-        <div class="etiqueta">{{ t.etiqueta }}</div>
-      </div>
-    </div>
-    <p class="chico centrado">
-      Cada barra es un período {{ frecuencia.toLowerCase() }}. La última es la que está corriendo.
-    </p>
-
-    <!-- Resumen del período que corre -->
-    <div class="tarjetas">
-      <div class="tarjeta"><span class="n">{{ totales.logrado }}</span> logrado</div>
-      <div class="tarjeta"><span class="n">{{ totales.meta }}</span> propuesto</div>
-      <div class="tarjeta" [class.bien]="totales.pct >= 100"><span class="n">{{ totales.pct }}%</span> del objetivo</div>
-      <div class="tarjeta" [class.bien]="totales.alcanzados"><span class="n">{{ totales.alcanzados }}</span> alcanzados</div>
-      <div class="tarjeta" [class.mejor]="totales.records"><span class="n">{{ totales.records }}</span> superan su marca</div>
-    </div>
-  </ng-container>
 </div>
 
-<!-- Objetivo por objetivo -->
-<div class="card" *ngIf="!cargando">
-  <h3><i class="fas fa-bullseye"></i> Tus objetivos · {{ etiquetaTramo }}</h3>
+<ng-container *ngIf="!cargando">
 
-  <div class="meta" *ngFor="let m of metas" [ngClass]="clase(m)">
-    <div class="meta-cabecera">
-      <strong>{{ m.titulo }}</strong>
-      <span class="chico">{{ m.persona }}</span>
-      <span class="estado">{{ m.estado }}</span>
-    </div>
-
-    <div class="barra-fondo horizontal">
-      <div class="barra-h" [style.width.%]="ancho(m)"></div>
-    </div>
-
-    <div class="meta-pie chico">
-      <span><strong>{{ m.logrado }}</strong> de {{ m.meta }} {{ m.unidad }}</span>
-      <span *ngIf="m.falta">Te faltan <strong>{{ m.falta }}</strong></span>
-      <span *ngIf="!m.falta && m.estado === 'Objetivo superado'">
-        Lo superaste por <strong>{{ m.logrado - m.meta }}</strong>
-      </span>
-      <span *ngIf="m.record">
-        Tu mejor marca: <strong>{{ m.record }}</strong>
-        <span *ngIf="m.superaRecord" class="record"> · ¡la estás superando!</span>
-      </span>
-      <span class="pct">{{ m.pct }}%</span>
+  <!-- MI PRÓXIMO DESAFÍO -->
+  <div class="card desafio">
+    <div class="desafio-icono">{{ proximoDesafio.icono }}</div>
+    <div class="desafio-cuerpo">
+      <h3>{{ proximoDesafio.titulo }}</h3>
+      <p>{{ proximoDesafio.texto }}</p>
+      <div class="barra-fondo"><div class="barra-h" [style.width.%]="proximoDesafio.pct"></div></div>
     </div>
   </div>
 
-  <p class="vacio" *ngIf="!metas.length">
-    Todavía no hay objetivos cargados{{ persona ? ' para ' + persona : '' }}.
-    Cargalos en «Objetivos y desafíos» y registrá cada paso en «Avances».
-  </p>
-</div>
+  <!-- RECONOCIMIENTOS -->
+  <div class="card reconocimientos" *ngIf="reconocimientos.length">
+    <span class="premio" *ngFor="let r of reconocimientos">{{ r }}</span>
+  </div>
+
+  <!-- LAS SEIS TARJETAS -->
+  <div class="tarjetas">
+    <div class="tarjeta" *ngFor="let h of horizontes" [ngClass]="clase(h)">
+      <div class="t-cabecera">
+        <span class="t-icono">{{ h.icono }}</span>
+        <div>
+          <h3>{{ h.titulo }}</h3>
+          <span class="chico">{{ h.ventana }}</span>
+        </div>
+        <span class="t-pct" *ngIf="h.meta > 0">{{ h.pct }}%</span>
+      </div>
+
+      <div class="t-numeros">
+        <div><span class="etq">Objetivo</span><span class="val">{{ h.meta || '—' }}</span></div>
+        <div><span class="etq">Logrado</span><span class="val fuerte">{{ h.logrado }}</span></div>
+        <div *ngIf="h.meta > 0 && h.falta">
+          <span class="etq">Faltan</span><span class="val">{{ h.falta }}</span>
+        </div>
+        <div *ngIf="h.excedente">
+          <span class="etq">De más</span><span class="val">+{{ h.excedente }}</span>
+        </div>
+      </div>
+
+      <div class="barra-fondo" *ngIf="h.meta > 0">
+        <div class="barra-h" [style.width.%]="ancho(h)"></div>
+      </div>
+      <p class="chico sin-meta" *ngIf="h.meta <= 0">
+        Todavía no hay meta {{ h.clave.toLowerCase() }} definida.
+      </p>
+
+      <div class="t-pie chico">
+        <span *ngIf="h.anterior || h.evolucion" [class.mejor]="h.evolucion > 0">
+          <i class="fas" [ngClass]="h.evolucion >= 0 ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down'"></i>
+          {{ h.evolucion >= 0 ? '+' : '' }}{{ h.evolucion }} vs. anterior
+          <span *ngIf="h.mejora"> ({{ h.mejora > 0 ? '+' : '' }}{{ h.mejora }}%)</span>
+        </span>
+        <span *ngIf="h.record">Mejor marca: <strong>{{ h.record }}</strong></span>
+        <span *ngIf="h.clave === 'Anual' && h.meta > 0">Proyección: <strong>{{ h.proyeccion }}</strong></span>
+      </div>
+
+      <!-- De qué se compone: los tramos chicos que empujan a este -->
+      <div class="t-partes" *ngIf="h.partes.length">
+        <div class="parte" *ngFor="let p of h.partes" [title]="p.etiqueta + ': ' + p.valor">
+          <div class="parte-barra" [style.height.%]="anchoParte(p, h)"></div>
+        </div>
+      </div>
+
+      <div class="t-premio" *ngIf="h.reconocimiento">{{ h.reconocimiento }}</div>
+    </div>
+  </div>
+
+  <!-- CADENA DE PROGRESIÓN -->
+  <div class="card">
+    <h3><i class="fas fa-link"></i> Cómo suma lo que hacés hoy</h3>
+    <p class="desc">El mismo avance empuja los seis horizontes a la vez.</p>
+    <div class="cadena">
+      <ng-container *ngFor="let c of cadena; let i = index">
+        <div class="eslabon">
+          <span class="e-icono">{{ c.icono }}</span>
+          <span class="e-titulo">{{ c.titulo }}</span>
+          <span class="e-valor">{{ c.logrado }}<span class="chico" *ngIf="c.meta"> / {{ c.meta }}</span></span>
+        </div>
+        <i class="fas fa-chevron-right flecha" *ngIf="i < cadena.length - 1"></i>
+      </ng-container>
+    </div>
+  </div>
+
+  <!-- EVOLUCIÓN -->
+  <div class="card">
+    <div class="card-header">
+      <h3><i class="fas fa-chart-column"></i> Tu evolución</h3>
+      <div class="periodos">
+        <button *ngFor="let f of frecuencias" class="btn chico"
+                [class.gris]="grafico !== f" (click)="grafico = f">{{ f }}</button>
+      </div>
+    </div>
+    <div class="grafico">
+      <div class="barra-col" *ngFor="let s of serie" [class.actual]="s.actual"
+           [title]="s.etiqueta + ': ' + s.valor">
+        <div class="valor">{{ s.valor || '' }}</div>
+        <div class="barra-fondo vertical"><div class="barra" [style.height.%]="altura(s.valor)"></div></div>
+        <div class="etiqueta">{{ s.etiqueta }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" *ngIf="!objetivosEnJuego.length">
+    <p class="vacio">
+      Todavía no hay objetivos{{ persona ? ' para ' + persona : '' }}.
+      Cargalos en «Objetivos» con la meta de cada período, y registrá cada paso en «Avances».
+    </p>
+  </div>
+</ng-container>

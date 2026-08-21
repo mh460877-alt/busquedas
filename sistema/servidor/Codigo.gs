@@ -240,6 +240,7 @@ function catalogos_(sesion) {
     estadosMaterial: ESTADOS_MATERIAL,
     // Objetivos
     frecuenciasObjetivo: FRECUENCIAS_OBJETIVO,
+    ambitosObjetivo: AMBITOS_OBJETIVO,
     estadosObjetivo: ESTADOS_OBJETIVO,
     unidadesObjetivo: UNIDADES_OBJETIVO,
     // Portal del cliente

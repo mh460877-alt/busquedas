@@ -179,16 +179,23 @@ export const MODULOS: { [ruta: string]: ConfigModulo } = {
 
   objetivos: {
     entidad: 'Objetivos', titulo: 'Objetivos y desafíos', icono: 'fa-bullseye',
-    descripcion: 'Lo que cada uno se propuso lograr, con su meta y su plazo.',
+    descripcion: 'Lo que cada uno se propuso lograr. Con una meta alcanza; podés poner las seis.',
     campoEstado: 'Estado',
     campos: [
       { clave: 'Titulo', etiqueta: 'Objetivo', tipo: 'texto', enTabla: true, requerido: true },
-      { clave: 'Colaborador', etiqueta: 'De quién es', tipo: 'select', catalogo: 'equipo', enTabla: true },
-      { clave: 'Meta', etiqueta: 'Meta a alcanzar', tipo: 'texto', enTabla: true, requerido: true, ayuda: 'Un número. Ej.: 12' },
-      { clave: 'Unidad', etiqueta: 'Unidad', tipo: 'select', catalogo: 'unidadesObjetivo', enTabla: true },
-      { clave: 'Frecuencia', etiqueta: 'Se mide por', tipo: 'select', catalogo: 'frecuenciasObjetivo', enTabla: true, badge: true },
-      { clave: 'Desde', etiqueta: 'Desde', tipo: 'fecha' },
-      { clave: 'Hasta', etiqueta: 'Hasta', tipo: 'fecha' },
+      { clave: 'Ambito', etiqueta: 'Es de', tipo: 'select', catalogo: 'ambitosObjetivo', enTabla: true, badge: true },
+      { clave: 'Colaborador', etiqueta: 'Persona', tipo: 'select', catalogo: 'equipo', enTabla: true },
+      { clave: 'Alcance', etiqueta: 'Equipo / área / proyecto / servicio', tipo: 'texto', ayuda: 'Solo si no es de una persona' },
+      { clave: 'Unidad', etiqueta: 'Unidad', tipo: 'select', catalogo: 'unidadesObjetivo' },
+
+      // Una meta por horizonte: el mismo avance las alimenta a todas.
+      { clave: 'MetaDiaria', etiqueta: '🏆 Meta diaria', tipo: 'texto', ayuda: 'Un número. Ej.: 2' },
+      { clave: 'MetaSemanal', etiqueta: '🚀 Meta semanal', tipo: 'texto', enTabla: true, ayuda: 'Ej.: 10' },
+      { clave: 'MetaMensual', etiqueta: '⭐ Meta mensual', tipo: 'texto', enTabla: true, ayuda: 'Ej.: 40' },
+      { clave: 'MetaTrimestral', etiqueta: '📈 Meta trimestral', tipo: 'texto', ayuda: 'Ej.: 120' },
+      { clave: 'MetaSemestral', etiqueta: '🔥 Meta semestral', tipo: 'texto', ayuda: 'Ej.: 240' },
+      { clave: 'MetaAnual', etiqueta: '🏅 Meta anual', tipo: 'texto', enTabla: true, ayuda: 'Ej.: 480' },
+
       { clave: 'EmpresaID', etiqueta: 'Cliente (si aplica)', tipo: 'referencia', refCatalogo: 'empresas' },
       { clave: 'Estado', etiqueta: 'Estado', tipo: 'select', catalogo: 'estadosObjetivo', enTabla: true, badge: true },
       { clave: 'Descripcion', etiqueta: 'Descripción', tipo: 'textarea' }
