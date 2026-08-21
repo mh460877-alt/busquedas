@@ -32,4 +32,9 @@ export interface ConfigModulo {
   campos: CampoModulo[];
   /** Campo que define el estado, para el botón de baja. */
   campoEstado?: string;
+  /**
+   * Campo por el que se agrupan las filas, si conviene verlas en carpetas.
+   * Las que no lo tengan cargado caen juntas al final.
+   */
+  agruparPor?: string;
 }

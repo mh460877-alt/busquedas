@@ -22,6 +22,7 @@ export interface Catalogos {
   tiposCumple?: string[];
   destinatariosMaterial?: string[];
   estadosMaterial?: string[];
+  categoriasAcceso?: string[];
   equipo?: string[];
   /** Clientes, para vincular cada registro interno con su empresa. */
   empresas?: EmpresaOpcion[];

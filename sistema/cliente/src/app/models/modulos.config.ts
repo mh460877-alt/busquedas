@@ -135,9 +135,11 @@ export const MODULOS: { [ruta: string]: ConfigModulo } = {
 
   boveda: {
     entidad: 'Accesos', titulo: 'Bóveda de contraseñas', icono: 'fa-key',
-    descripcion: 'Accesos de la empresa. Solo Dirección puede editarlos.',
+    descripcion: 'Accesos de la empresa, en carpetas. Solo Dirección puede editarlos.',
+    agruparPor: 'Categoria',
     campos: [
       { clave: 'Sistema', etiqueta: 'Sistema', tipo: 'texto', enTabla: true, requerido: true },
+      { clave: 'Categoria', etiqueta: 'Carpeta', tipo: 'select', catalogo: 'categoriasAcceso' },
       { clave: 'Tipo', etiqueta: 'Tipo', tipo: 'texto', enTabla: true },
       { clave: 'Usuario', etiqueta: 'Usuario', tipo: 'texto', enTabla: true },
       { clave: 'Clave', etiqueta: 'Contraseña', tipo: 'password', enTabla: true },

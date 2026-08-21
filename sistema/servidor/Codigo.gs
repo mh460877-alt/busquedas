@@ -306,6 +306,7 @@ function catalogos_(sesion) {
     tiposCumple: TIPOS_CUMPLE,
     destinatariosMaterial: DESTINATARIOS_MATERIAL,
     estadosMaterial: ESTADOS_MATERIAL,
+    categoriasAcceso: CATEGORIAS_ACCESO,
     // Objetivos
     frecuenciasObjetivo: FRECUENCIAS_OBJETIVO,
     ambitosObjetivo: AMBITOS_OBJETIVO,

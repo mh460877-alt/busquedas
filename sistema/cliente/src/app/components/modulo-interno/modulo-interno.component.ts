@@ -45,6 +45,9 @@ export class ModuloInternoComponent implements OnInit {
   /** Fila cuyos enlaces se están mirando. */
   enlazando: any | null = null;
 
+  /** Carpetas cerradas, cuando el módulo se muestra agrupado. */
+  plegados: { [carpeta: string]: boolean } = {};
+
   constructor(
     private api: ApiService,
     private loginService: LoginService,
@@ -155,6 +158,41 @@ export class ModuloInternoComponent implements OnInit {
 
   abrirEnlaces(fila: any): void { this.enlazando = fila; }
   cerrarEnlaces(): void { this.enlazando = null; this.cargarEnlaces(); }
+
+  /** Este módulo se muestra en carpetas. */
+  get agrupado(): boolean { return !!this.config.agruparPor; }
+
+  /**
+   * Las filas repartidas en carpetas.
+   *
+   * Una bóveda con veinte accesos en lista corrida obliga a leerla entera para
+   * encontrar una casilla de correo. Agrupada, se va derecho a la carpeta.
+   * Lo que todavía no tiene carpeta queda junto al final, a la vista, para que
+   * se pueda clasificar en lugar de perderse.
+   */
+  get carpetas(): { nombre: string; filas: any[]; sinClasificar: boolean }[] {
+    const campo = this.config.agruparPor!;
+    const mapa = new Map<string, any[]>();
+    this.visibles.forEach(f => {
+      const clave = String(f[campo] || '');
+      if (!mapa.has(clave)) mapa.set(clave, []);
+      mapa.get(clave)!.push(f);
+    });
+
+    const salida: { nombre: string; filas: any[]; sinClasificar: boolean }[] = [];
+    mapa.forEach((filas, clave) => salida.push({
+      nombre: clave || 'Sin carpeta',
+      filas,
+      sinClasificar: !clave
+    }));
+    return salida.sort((a, b) =>
+      (a.sinClasificar ? 1 : 0) - (b.sinClasificar ? 1 : 0) || a.nombre.localeCompare(b.nombre));
+  }
+
+  trackCarpeta(_: number, c: { nombre: string }): string { return c.nombre; }
+
+  abierta(nombre: string): boolean { return this.plegados[nombre] !== true; }
+  alternarCarpeta(nombre: string): void { this.plegados[nombre] = !this.plegados[nombre]; }
 
   get visibles(): any[] {
     const t = this.filtro.toLowerCase().trim();

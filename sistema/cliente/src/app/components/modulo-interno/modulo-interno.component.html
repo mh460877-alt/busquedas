@@ -24,7 +24,34 @@
   <p class="mensaje" *ngIf="mensaje">{{ mensaje }}</p>
   <p class="vacio" *ngIf="cargando"><i class="fas fa-spinner fa-spin"></i> Cargando…</p>
 
-  <div class="tabla-cont" *ngIf="!cargando">
+  <ng-container *ngIf="!cargando">
+
+    <!-- Sin carpetas: la tabla de siempre -->
+    <div class="tabla-cont" *ngIf="!agrupado">
+      <ng-container *ngTemplateOutlet="tabla; context: { $implicit: visibles }"></ng-container>
+      <p class="vacio" *ngIf="!visibles.length">Todavía no hay registros.</p>
+    </div>
+
+    <!-- Con carpetas: un bloque por cada una -->
+    <ng-container *ngIf="agrupado">
+      <div class="carpeta" *ngFor="let c of carpetas; trackBy: trackCarpeta"
+           [class.sin-clasificar]="c.sinClasificar">
+        <div class="carpeta-cabecera" (click)="alternarCarpeta(c.nombre)">
+          <i class="fas" [ngClass]="abierta(c.nombre) ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+          <i class="fas" [ngClass]="abierta(c.nombre) ? 'fa-folder-open' : 'fa-folder'"></i>
+          <span class="carpeta-nombre">{{ c.nombre }}</span>
+          <span class="carpeta-cuenta">{{ c.filas.length }}</span>
+        </div>
+        <div class="tabla-cont" *ngIf="abierta(c.nombre)">
+          <ng-container *ngTemplateOutlet="tabla; context: { $implicit: c.filas }"></ng-container>
+        </div>
+      </div>
+      <p class="vacio" *ngIf="!carpetas.length">Todavía no hay registros.</p>
+    </ng-container>
+  </ng-container>
+
+  <!-- La tabla, definida una sola vez -->
+  <ng-template #tabla let-filas>
     <table>
       <thead>
         <tr>
@@ -34,7 +61,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let f of visibles">
+        <tr *ngFor="let f of filas">
           <td *ngFor="let c of columnas" [attr.data-label]="c.etiqueta">
             <span *ngIf="c.badge" class="badge badge-azul">{{ mostrar(f, c) }}</span>
             <ng-container *ngIf="!c.badge">
@@ -49,7 +76,6 @@
             </ng-container>
           </td>
 
-          <!-- Todos los enlaces guardados sobre este registro -->
           <td data-label="Enlaces">
             <button class="btn-accion btn-ver" title="Ver y agregar enlaces" (click)="abrirEnlaces(f)">
               <i class="fas fa-link"></i>
@@ -68,8 +94,7 @@
         </tr>
       </tbody>
     </table>
-    <p class="vacio" *ngIf="!visibles.length">Todavía no hay registros.</p>
-  </div>
+  </ng-template>
 </div>
 
 <!-- Alta / edición -->

@@ -119,7 +119,7 @@ var HOJAS = {
     requeridos: ['Persona', 'Fecha']
   },
   Accesos: {
-    cols: ['ID', 'Sistema', 'Tipo', 'Usuario', 'Clave', 'URL', 'Owner', 'Notas', 'ProximaRotacion'],
+    cols: ['ID', 'Sistema', 'Categoria', 'Tipo', 'Usuario', 'Clave', 'URL', 'Owner', 'Notas', 'ProximaRotacion'],
     requeridos: ['Sistema']
   },
   Materiales: {
@@ -280,6 +280,18 @@ var NIVELES_COMUNICACION = ['Informativo', 'Importante', 'Urgente'];
 var TIPOS_CUMPLE = ['Cumpleaños de vida', 'Cumpleaños laboral'];
 var DESTINATARIOS_MATERIAL = ['Interno', 'Docentes', 'Empresas'];
 var ESTADOS_MATERIAL = ['Borrador', 'En revisión', 'Aprobado'];
+
+/**
+ * Las carpetas de la bóveda.
+ *
+ * Sin esto todo cae en una lista corrida y encontrar una casilla de correo
+ * entre veinte accesos es leer de arriba abajo. La categoría agrupa; el campo
+ * Tipo sigue estando para el detalle fino de cada acceso.
+ */
+var CATEGORIAS_ACCESO = [
+  'Mails', 'Plataformas de empleo', 'Redes sociales',
+  'Sistemas internos', 'Accesos de clientes', 'Bancos y pagos', 'Otros'
+];
 
 /* Catálogos de objetivos. */
 var FRECUENCIAS_OBJETIVO = ['Diario', 'Semanal', 'Mensual', 'Trimestral', 'Semestral', 'Anual'];

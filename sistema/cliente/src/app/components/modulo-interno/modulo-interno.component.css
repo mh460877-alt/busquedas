@@ -13,3 +13,27 @@
   .filtros { flex-direction: column; align-items: stretch; }
   .filtro-empresa { width: 100%; }
 }
+
+/* ---- carpetas ---- */
+.carpeta { border: 1px solid #e8ecef; border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
+.carpeta.sin-clasificar { border-style: dashed; }
+
+.carpeta-cabecera {
+  display: flex; align-items: center; gap: 10px; cursor: pointer;
+  padding: 12px 16px; background: #f7fafc; transition: background .12s;
+}
+.carpeta-cabecera:hover { background: #eef4f8; }
+.carpeta-cabecera > .fa-chevron-down,
+.carpeta-cabecera > .fa-chevron-right { color: #7f8c8d; width: 12px; font-size: .8rem; }
+.carpeta-cabecera > .fa-folder,
+.carpeta-cabecera > .fa-folder-open { color: #e6b422; }
+
+.carpeta-nombre { font-weight: 700; color: var(--primary); }
+.sin-clasificar .carpeta-nombre { color: #7f8c8d; font-style: italic; }
+
+.carpeta-cuenta {
+  margin-left: auto; font-size: .72rem; font-weight: 700;
+  background: #e1f5fe; color: #0288d1; border-radius: 10px; padding: 2px 9px;
+}
+
+.carpeta .tabla-cont { border: none; border-radius: 0; margin: 0; }
