@@ -69,6 +69,23 @@
     <p class="chico">Queda a la vista del equipo cada vez que se trabaja con esta empresa.</p>
   </div>
 
+<ng-container *ngIf="!esNueva">
+  <!-- Lo que varía de cliente a cliente: landing, Drive, lo que use cada uno -->
+  <h3 class="enlaces-titulo"><i class="fas fa-link"></i> Otros enlaces de este cliente</h3>
+  <p class="chico">
+    Los cuatro de arriba son los de selección. Acá va todo lo demás, que cambia según cómo se trabaje con cada cliente.
+    Cada uno con el nombre que quieras: landing, carpeta de Drive, tablero, informe puntual.
+  </p>
+  <app-enlaces *ngIf="!esNueva" entidad="Empresas" [registroId]="empresa.ID || ''"></app-enlaces>
+
+</ng-container>
+
+  <h3 *ngIf="esNueva" class="enlaces-titulo"><i class="fas fa-link"></i> Otros enlaces de este cliente</h3>
+  <p class="vacio chico" *ngIf="esNueva">
+    Guardá primero y vas a poder sumar todos los enlaces que necesites, con el
+    nombre que quieras.
+  </p>
+
   <div class="nota">
     La fecha de alta es la referencia para saber desde cuándo corresponde facturarle a este cliente.
   </div>

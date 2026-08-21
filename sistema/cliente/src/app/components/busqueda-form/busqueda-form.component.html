@@ -72,6 +72,16 @@
   </div>
   <p class="chico">Se completan cuando existen; ninguno es obligatorio.</p>
 
+<ng-container *ngIf="!esNueva">
+  <!-- Lo que varía de cliente a cliente: landing, Drive, lo que use cada uno -->
+  <h3 class="enlaces-titulo"><i class="fas fa-link"></i> Otros enlaces de esta búsqueda</h3>
+  <p class="chico">
+    Todo lo que se use en este proceso y no entre en los cuatro de arriba.
+    Cada uno con el nombre que quieras: landing, carpeta de Drive, tablero, informe puntual.
+  </p>
+  <app-enlaces entidad="Busquedas" [registroId]="busqueda.ID || ''"></app-enlaces>
+
+</ng-container>
   <p class="mensaje error" *ngIf="mensaje">{{ mensaje }}</p>
   <div class="acciones-modal">
     <button class="btn gris" (click)="volver()">Cancelar</button>
