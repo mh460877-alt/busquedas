@@ -88,7 +88,18 @@ export class BusquedaListComponent implements OnInit {
    * tienen empresa asignada caen juntas al final, para que se vean y se puedan
    * corregir en lugar de quedar perdidas entre las demás.
    */
+  /** Agrupar recorre todo; la plantilla lo pide varias veces por ciclo. */
+  private memoGrupos: { clave: string; valor: GrupoEmpresa[] } | null = null;
+
   get grupos(): GrupoEmpresa[] {
+    const clave = this.filtro + '|' + this.busquedas.length;
+    if (this.memoGrupos && this.memoGrupos.clave === clave) return this.memoGrupos.valor;
+    const valor = this.calcularGrupos();
+    this.memoGrupos = { clave, valor };
+    return valor;
+  }
+
+  private calcularGrupos(): GrupoEmpresa[] {
     const porEmpresa = new Map<string, Busqueda[]>();
     this.visibles.forEach(b => {
       const clave = b.EmpresaID || '';

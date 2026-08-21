@@ -59,6 +59,27 @@ export class EvolucionComponent implements OnInit {
   /** El gráfico grande sigue este horizonte. */
   grafico: Clave = 'Mensual';
 
+  /**
+   * Angular vuelve a evaluar los getters en cada ciclo de detección de cambios,
+   * y armar los seis horizontes recorre trece ventanas de tiempo por cada uno,
+   * filtrando todos los avances en cada vuelta. La plantilla los pide media
+   * docena de veces por ciclo, así que sin esto el mismo cálculo se repetía
+   * decenas de veces por segundo y la pantalla se sentía pesada al escribir o
+   * al pasar el mouse. Se calcula una vez y se recalcula solo si cambió algo
+   * que lo afecte.
+   */
+  private memoria: { [clave: string]: any } = {};
+  private version = 0;
+
+  private memo<T>(clave: string, calcular: () => T): T {
+    const k = clave + '|' + this.persona + '|' + this.objetivoId + '|' + this.version;
+    if (!(k in this.memoria)) {
+      this.memoria = {};          // cambió algo: lo viejo ya no sirve
+      this.memoria[k] = calcular();
+    }
+    return this.memoria[k];
+  }
+
   private readonly def: { clave: Clave; titulo: string; icono: string; campo: string }[] = [
     { clave: 'Diario',     titulo: 'Desafío diario',      icono: '🏆', campo: 'MetaDiaria' },
     { clave: 'Semanal',    titulo: 'Desafío semanal',     icono: '🚀', campo: 'MetaSemanal' },
@@ -82,6 +103,7 @@ export class EvolucionComponent implements OnInit {
       next: r => {
         this.objetivos = (r.objetivos || []).filter((o: any) => o.Estado !== 'Cerrado');
         this.avances = r.avances || [];
+        this.version++;
         this.cargando = false;
       },
       error: e => { this.mensaje = e.message; this.cargando = false; }
@@ -158,12 +180,12 @@ export class EvolucionComponent implements OnInit {
    * servicio): un objetivo del equipo también es de cada uno.
    */
   get objetivosEnJuego(): any[] {
-    return this.objetivos.filter(o => {
+    return this.memo('enJuego', () => this.objetivos.filter(o => {
       if (this.objetivoId) return String(o.ID) === this.objetivoId;
       if (!this.persona) return true;
       const esPersonal = (o.Ambito || 'Persona') === 'Persona';
       return esPersonal ? o.Colaborador === this.persona : true;
-    });
+    }));
   }
 
   private logradoEn(desde: Date, hasta: Date): number {
@@ -200,6 +222,10 @@ export class EvolucionComponent implements OnInit {
   /* ---------------- Las seis tarjetas ---------------- */
 
   get horizontes(): Horizonte[] {
+    return this.memo('horizontes', () => this.calcularHorizontes());
+  }
+
+  private calcularHorizontes(): Horizonte[] {
     return this.def.map(d => {
       const actual = this.ventana(d.clave, 0);
       const previa = this.ventana(d.clave, 1);
@@ -319,6 +345,10 @@ export class EvolucionComponent implements OnInit {
   /* ---------------- El gráfico ---------------- */
 
   get serie(): { etiqueta: string; valor: number; actual: boolean }[] {
+    return this.memo('serie' + this.grafico, () => this.calcularSerie());
+  }
+
+  private calcularSerie(): { etiqueta: string; valor: number; actual: boolean }[] {
     const cuantos: { [k: string]: number } =
       { Diario: 14, Semanal: 12, Mensual: 12, Trimestral: 8, Semestral: 6, Anual: 5 };
     const n = cuantos[this.grafico] || 12;

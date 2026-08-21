@@ -105,7 +105,18 @@ export class CandidatoListComponent implements OnInit {
    * Cada partner ve su propio registro cuando entra; esto es la contracara
    * adentro: de un vistazo, qué presentó cada uno y en qué está.
    */
+  /** Agrupar recorre todo; la plantilla lo pide varias veces por ciclo. */
+  private memoGrupos: { clave: string; valor: GrupoConsultor[] } | null = null;
+
   get grupos(): GrupoConsultor[] {
+    const clave = this.filtro + '|' + this.candidatos.length;
+    if (this.memoGrupos && this.memoGrupos.clave === clave) return this.memoGrupos.valor;
+    const valor = this.calcularGrupos();
+    this.memoGrupos = { clave, valor };
+    return valor;
+  }
+
+  private calcularGrupos(): GrupoConsultor[] {
     const porConsultor = new Map<string, Candidato[]>();
     this.visibles.forEach(c => {
       const clave = c.ConsultorID || '';

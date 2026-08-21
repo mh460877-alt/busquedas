@@ -42,6 +42,13 @@ export class DashboardComponent implements OnInit {
 
   equipo: string[] = [];
   private datos: { [tabla: string]: any[] } = {};
+
+  /**
+   * Igual que en el tablero de evolución: la plantilla pide `gestiones` varias
+   * veces por ciclo y cada vuelta recorre todas las tablas. Se calcula una vez
+   * por período.
+   */
+  private memoria: { [clave: string]: GestionPersona[] } = {};
   private nombrePorId: { [id: string]: string } = {};
 
   readonly periodos: { clave: Periodo; etiqueta: string }[] = [
@@ -57,7 +64,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.api.llamar<any>('agenda').subscribe({
-      next: r => { this.datos = r; this.cargando = false; },
+      next: r => { this.datos = r; this.memoria = {}; this.cargando = false; },
       error: e => { this.mensaje = e.message; this.cargando = false; }
     });
     this.loginService.catalogos().subscribe({
@@ -139,6 +146,13 @@ export class DashboardComponent implements OnInit {
   /* ---------------- El tablero ---------------- */
 
   get gestiones(): GestionPersona[] {
+    if (!this.memoria[this.periodo]) {
+      this.memoria[this.periodo] = this.calcularGestiones();
+    }
+    return this.memoria[this.periodo];
+  }
+
+  private calcularGestiones(): GestionPersona[] {
     const mapa: { [p: string]: GestionPersona } = {};
     const de = (nombre: string): GestionPersona => {
       const clave = (nombre || 'Sin asignar').trim() || 'Sin asignar';
