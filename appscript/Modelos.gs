@@ -354,7 +354,18 @@ var ESTADOS_SOLICITUD_ABIERTA = ['Nueva', 'Recibida', 'En analisis', 'En proceso
 var ESTADOS_BUSQUEDA = ['Activa', 'Deshabilitada', 'Cerrada'];
 var ESTADOS_GENERALES = ['Activo', 'Baja'];
 var ESTADOS_EMPRESA = ['Activo', 'En pausa', 'Cerrado'];
-var LINEAS = ['Seleccion y reclutamiento', 'Consultoria externa', 'Soluciones integrales', 'Transversal'];
+/**
+ * Las líneas de trabajo de la consultora.
+ *
+ * "RRHH interno" es la de puertas adentro: el día del profesor, una campaña de
+ * difusión propia, un procedimiento nuestro. Sirve para separar lo que se hace
+ * para un cliente de lo que se hace para Escencial, que hasta ahora se marcaba
+ * escribiendo "interno" en el campo del cliente y no se podía filtrar.
+ */
+var LINEAS = [
+  'Seleccion y reclutamiento', 'Consultoria externa',
+  'Soluciones integrales', 'RRHH interno', 'Transversal'
+];
 var VISIBILIDAD_OBS = ['Interna', 'Compartida'];
 
 /**
