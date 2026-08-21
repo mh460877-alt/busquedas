@@ -94,6 +94,10 @@ function procesar_(e) {
       case 'quitarAdjunto':
         return { ok: true, datos: quitarAdjunto_(sesion, p.id) };
 
+      /* --- Lo que la empresa decide sobre un candidato --- */
+      case 'decidirCandidato':
+        return { ok: true, datos: decidirCandidato_(sesion, p.id, p.decision, p.motivo) };
+
       /* --- Conversación sobre un pedido (ver Mensajes.gs) --- */
       case 'mensajes':
         return { ok: true, datos: listarMensajes_(sesion, p.entidad, p.registroId) };
@@ -167,8 +171,67 @@ function editar_(sesion, entidad, id, cambios) {
   if (entidad === 'Accesos' && cambios.Clave) cambios.Clave = cifrar_(cambios.Clave);
 
   var r = actualizar_(entidad, id, cambios);
+  marcarEnvioSiCorresponde_(entidad, id, cambios);
   auditar_(sesion, 'edito', entidad, id, resumen_(cambios));
   return r;
+}
+
+/**
+ * Deja constancia de cuándo un candidato quedó a la vista de la empresa.
+ *
+ * Es el registro de "qué le mandamos y cuándo": hasta ahora eso vivía en la
+ * bandeja de salida de quien lo hubiera enviado. Se anota una sola vez, la
+ * primera; si después vuelve a moverse de etapa, la fecha original se conserva.
+ */
+function marcarEnvioSiCorresponde_(entidad, id, cambios) {
+  if (entidad !== 'Candidatos' || !cambios.Etapa) return;
+  if (ETAPAS_VISIBLES_EMPRESA.indexOf(String(cambios.Etapa)) < 0) return;
+  var c = buscarPorId_('Candidatos', id);
+  if (c && !c.FechaEnvio) {
+    actualizar_('Candidatos', id, { FechaEnvio: hoy_(), DecisionEmpresa: 'Sin ver' });
+  }
+}
+
+/**
+ * La empresa dice qué le pareció un candidato.
+ *
+ * Va por su propia acción y no por 'editar' a propósito: el cliente no tiene
+ * permiso para editar candidatos, y no debería tenerlo. Acá solo puede tocar
+ * su decisión y su motivo, sobre un candidato que ya alcanza a ver.
+ */
+function decidirCandidato_(sesion, id, decision, motivo) {
+  exigirPermiso_(sesion, 'Candidatos', 'ver');
+  exigirAlcance_(sesion, 'Candidatos', id);
+
+  if (DECISIONES_EMPRESA.indexOf(String(decision)) < 0) {
+    throw new Error('Esa decisión no existe: ' + decision);
+  }
+
+  actualizar_('Candidatos', id, {
+    DecisionEmpresa: decision,
+    MotivoDecision: String(motivo || '').trim(),
+    FechaDecision: hoy_()
+  });
+
+  auditar_(sesion, 'decidio sobre el candidato', 'Candidatos', id, decision);
+
+  /**
+   * La decisión se guarda además como observación compartida: así aparece en la
+   * conversación del candidato, junto al resto de las devoluciones, y el equipo
+   * la ve donde ya está mirando en vez de tener que revisar una columna aparte.
+   */
+  try {
+    insertar_('Observaciones', {
+      CandidatoID: id,
+      AutorID: sesion.uid,
+      RolAutor: sesion.rol,
+      Texto: decision + (motivo ? ': ' + motivo : ''),
+      Visibilidad: 'Compartida',
+      Fecha: hoy_()
+    });
+  } catch (e) { /* la constancia principal ya quedó guardada */ }
+
+  return { id: id, decision: decision };
 }
 
 /** Dar de baja es marcar inactivo, no borrar: preserva el historial. */
@@ -227,6 +290,7 @@ function catalogos_(sesion) {
     etapasBusqueda: ETAPAS_BUSQUEDA,
     etapasCandidato: ETAPAS_CANDIDATO,
     etapasVisiblesEmpresa: ETAPAS_VISIBLES_EMPRESA,
+    decisionesEmpresa: DECISIONES_EMPRESA,
     estadosBusqueda: ESTADOS_BUSQUEDA,
     estadosEmpresa: ESTADOS_EMPRESA,
     lineas: LINEAS,

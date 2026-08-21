@@ -11,20 +11,43 @@
 
   <div class="tabla-cont">
     <table>
-      <thead><tr><th>Candidato</th><th>Informe</th><th>Etapa</th><th>Tu devolución</th></tr></thead>
+      <thead><tr><th>Candidato</th><th>Material</th><th>Etapa</th><th>Tu decisión</th><th>Tu devolución</th></tr></thead>
       <tbody>
-        <tr *ngFor="let c of candidatosDe(b)">
-          <td data-label="Candidato"><strong>{{ c.Nombre }}</strong></td>
-          <td data-label="Informe" class="chico">
-            <a *ngIf="c.LinkInforme" [href]="c.LinkInforme" target="_blank" rel="noopener"><i class="fas fa-file-alt"></i> Ver informe</a>
+        <tr *ngFor="let c of candidatosDe(b)" [class.descartado]="descartado(c)">
+          <td data-label="Candidato">
+            <strong>{{ c.Nombre }}</strong>
+            <div class="chico" *ngIf="c.FechaEnvio">te lo presentamos el {{ c.FechaEnvio }}</div>
+          </td>
+          <td data-label="Material" class="chico">
+            <a *ngIf="c.LinkInforme" [href]="c.LinkInforme" target="_blank" rel="noopener"><i class="fas fa-file-alt"></i> Informe</a>
             <a *ngIf="c.LinkCV" [href]="c.LinkCV" target="_blank" rel="noopener"><i class="fas fa-file-pdf"></i> CV</a>
+            <a *ngIf="c.LinkVideo" [href]="c.LinkVideo" target="_blank" rel="noopener"><i class="fas fa-video"></i> Video</a>
+            <a *ngIf="c.LinkReferencias" [href]="c.LinkReferencias" target="_blank" rel="noopener"><i class="fas fa-address-card"></i> Referencias</a>
             <!-- Todo lo demás que el equipo haya adjuntado: referencias, evaluaciones… -->
             <a *ngFor="let a of enlacesDe(c)" [href]="a.URL" target="_blank" rel="noopener" class="mat-extra">
               <i class="fas fa-link"></i> {{ a.Titulo }}
             </a>
-            <span *ngIf="!c.LinkInforme && !c.LinkCV && !enlacesDe(c).length">—</span>
+            <span *ngIf="!c.LinkInforme && !c.LinkCV && !c.LinkVideo && !c.LinkReferencias && !enlacesDe(c).length">—</span>
           </td>
           <td data-label="Etapa"><span class="badge badge-azul">{{ c.Etapa }}</span></td>
+          <td data-label="Tu decisión">
+            <span class="badge" [ngClass]="claseDecision(c)">{{ c.DecisionEmpresa || 'Sin ver' }}</span>
+            <div class="chico" *ngIf="c.MotivoDecision">{{ c.MotivoDecision }}</div>
+            <div class="acciones-decision">
+              <button class="btn success chico" title="Querés entrevistarlo"
+                      (click)="abrirDecision(c, 'Quiere entrevistarlo')">
+                <i class="fas fa-thumbs-up"></i> Entrevistar
+              </button>
+              <button class="btn gris chico" title="Lo estás viendo"
+                      (click)="abrirDecision(c, 'En evaluacion')">
+                <i class="fas fa-hourglass-half"></i> En evaluación
+              </button>
+              <button class="btn danger chico" title="No te sirve este perfil"
+                      (click)="abrirDecision(c, 'Descartado')">
+                <i class="fas fa-thumbs-down"></i> Descartar
+              </button>
+            </div>
+          </td>
           <td data-label="Devolución" class="chico">
             <div *ngFor="let o of observacionesDe(c)" class="obs">{{ o.Texto }}</div>
             <button class="btn chico" (click)="abrirObservacion(c)"><i class="fas fa-comment"></i> Dejar observación</button>
@@ -37,6 +60,35 @@
 </div>
 
 <p class="vacio" *ngIf="!cargando && !busquedas.length">Todavía no hay búsquedas asociadas a tu empresa.</p>
+
+<!-- Qué le pareció el candidato -->
+<div class="modal-fondo" *ngIf="decidiendo" (click)="cerrarDecision()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <i class="fas fa-user-check"></i> {{ decidiendo.Nombre }}
+    </div>
+    <p class="desc">
+      Vas a marcarlo como <strong>{{ decision }}</strong>.
+      Lo ve el equipo de Escencial y queda registrado con la fecha.
+    </p>
+
+    <div class="form-group">
+      <label>
+        {{ decision === 'Descartado' ? '¿Por qué no te sirve?' : 'Comentario (opcional)' }}
+      </label>
+      <textarea [(ngModel)]="motivo" rows="4"
+                placeholder="Lo que nos digas acá orienta la próxima terna."></textarea>
+    </div>
+
+    <p class="mensaje error" *ngIf="mensaje">{{ mensaje }}</p>
+    <div class="acciones-modal">
+      <button class="btn gris" (click)="cerrarDecision()">Cancelar</button>
+      <button class="btn success" (click)="confirmarDecision()" [disabled]="guardandoDecision">
+        <i class="fas fa-check"></i> {{ guardandoDecision ? 'Guardando…' : 'Confirmar' }}
+      </button>
+    </div>
+  </div>
+</div>
 
 <div class="modal-fondo" *ngIf="comentando" (click)="comentando = null">
   <div class="modal-content" (click)="$event.stopPropagation()">

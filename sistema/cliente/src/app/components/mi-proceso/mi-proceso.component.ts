@@ -36,6 +36,12 @@ export class MiProcesoComponent implements OnInit {
   comentando: Candidato | null = null;
   texto = '';
 
+  /** Candidato sobre el que se está tomando una decisión. */
+  decidiendo: Candidato | null = null;
+  decision = '';
+  motivo = '';
+  guardandoDecision = false;
+
   /** Todo lo que el equipo adjuntó a cada candidato: informe, CV, referencias. */
   enlacesPorCandidato: { [candidatoId: string]: Adjunto[] } = {};
 
@@ -82,6 +88,48 @@ export class MiProcesoComponent implements OnInit {
   }
 
   abrirObservacion(c: Candidato): void { this.comentando = c; this.texto = ''; }
+
+  /* ---------------- Qué le pareció el candidato ---------------- */
+
+  abrirDecision(c: Candidato, decision: string): void {
+    this.decidiendo = c;
+    this.decision = decision;
+    this.motivo = '';
+    this.mensaje = '';
+  }
+
+  cerrarDecision(): void { this.decidiendo = null; }
+
+  confirmarDecision(): void {
+    if (!this.decidiendo?.ID) return;
+    // Descartar sin decir por qué deja al equipo sin saber qué corregir.
+    if (this.decision === 'Descartado' && !this.motivo.trim()) {
+      this.mensaje = 'Contanos brevemente por qué lo descartás: nos sirve para la próxima terna.';
+      return;
+    }
+    this.guardandoDecision = true;
+    const c = this.decidiendo;
+    this.candidatoService.decidir(c.ID!, this.decision, this.motivo.trim()).subscribe({
+      next: () => {
+        c.DecisionEmpresa = this.decision;
+        c.MotivoDecision = this.motivo.trim();
+        this.guardandoDecision = false;
+        this.decidiendo = null;
+        this.mensaje = 'Listo. El equipo de Escencial ya lo ve.';
+        this.cargar();
+      },
+      error: e => { this.guardandoDecision = false; this.mensaje = e.message; }
+    });
+  }
+
+  claseDecision(c: Candidato): string {
+    if (c.DecisionEmpresa === 'Descartado') return 'badge-rojo';
+    if (c.DecisionEmpresa === 'Quiere entrevistarlo') return 'badge-activa';
+    if (c.DecisionEmpresa === 'En evaluacion') return 'badge-ambar';
+    return 'badge-gris';
+  }
+
+  descartado(c: Candidato): boolean { return c.DecisionEmpresa === 'Descartado'; }
 
   guardar(): void {
     if (!this.comentando?.ID || !this.texto.trim()) return;

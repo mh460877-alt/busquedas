@@ -1,3 +1,11 @@
 
 /* Cada enlace extra en su propia línea: suelen ser varios por candidato. */
 .mat-extra { display: block; font-size: 0.8rem; }
+
+/* Los tres botones de decisión, juntos y chicos. */
+.acciones-decision { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
+.acciones-decision .btn { padding: 5px 10px; font-size: 0.75rem; }
+
+/* Un candidato descartado se atenúa: sigue estando, pero ya no es la atención. */
+tr.descartado { opacity: 0.6; }
+tr.descartado strong { text-decoration: line-through; }

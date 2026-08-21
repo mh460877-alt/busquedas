@@ -33,8 +33,19 @@ var HOJAS = {
     cols: ['ID', 'BusquedaID', 'ConsultorID', 'FechaAsignacion'],
     requeridos: ['BusquedaID', 'ConsultorID']
   },
+  /**
+   * El candidato con todo su material y, aparte, lo que la empresa decidió.
+   *
+   * La decisión del cliente vive en su propia columna y no en la etapa: la
+   * etapa la maneja Escencial y describe dónde está el proceso; la decisión es
+   * del cliente y dice qué le pareció. Mezclarlas haría que descartar a alguien
+   * borre en qué instancia estaba, que es justo lo que hay que conservar.
+   */
   Candidatos: {
-    cols: ['ID', 'DNI', 'Nombre', 'BusquedaID', 'ConsultorID', 'LinkCV', 'LinkVideo', 'LinkInforme', 'Etapa', 'Provincia', 'FechaCarga', 'Estado'],
+    cols: ['ID', 'DNI', 'Nombre', 'BusquedaID', 'ConsultorID',
+           'LinkCV', 'LinkVideo', 'LinkInforme', 'LinkReferencias',
+           'Etapa', 'Provincia', 'FechaCarga', 'FechaEnvio',
+           'DecisionEmpresa', 'MotivoDecision', 'FechaDecision', 'Estado'],
     requeridos: ['DNI', 'Nombre', 'BusquedaID']
   },
   Observaciones: {
@@ -241,6 +252,14 @@ var ETAPAS_CANDIDATO = [
  * Antes de terna, la empresa no ve nada: es trabajo en crudo.
  */
 var ETAPAS_VISIBLES_EMPRESA = ['Terna', 'Terna final', 'Contratado'];
+
+/**
+ * Lo que la empresa dice de un candidato.
+ * "Descartado" no lo saca del sistema ni cambia su etapa: deja constancia de
+ * que el cliente no lo quiere, con su motivo, para que después se pueda saber
+ * por qué se cayó cada perfil.
+ */
+var DECISIONES_EMPRESA = ['Sin ver', 'En evaluacion', 'Quiere entrevistarlo', 'Descartado'];
 
 /* Catálogos del mundo interno. */
 var TIPOS_PENDIENTE = [

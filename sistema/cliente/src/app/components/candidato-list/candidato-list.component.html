@@ -28,7 +28,7 @@
       <table>
         <thead>
           <tr><th>DNI</th><th>Nombre</th><th>Búsqueda</th>
-              <th>Material</th><th>Etapa</th><th>Ve empresa</th><th>Comentarios</th><th *ngIf="esAdmin"></th></tr>
+              <th>Material</th><th>Etapa</th><th>Ve empresa</th><th>Qué dijo el cliente</th><th>Comentarios</th><th *ngIf="esAdmin"></th></tr>
         </thead>
         <tbody>
           <tr *ngFor="let c of g.candidatos">
@@ -46,6 +46,12 @@
               </select>
             </td>
             <td data-label="Ve empresa"><span class="badge" [ngClass]="visibleParaEmpresa(c) ? 'badge-activa' : 'badge-gris'">{{ visibleParaEmpresa(c) ? 'Sí' : 'Todavía no' }}</span></td>
+            <td data-label="Qué dijo el cliente" class="chico">
+              <span class="badge" [ngClass]="claseDecision(c)" *ngIf="c.DecisionEmpresa">{{ c.DecisionEmpresa }}</span>
+              <span *ngIf="!c.DecisionEmpresa">—</span>
+              <div *ngIf="c.MotivoDecision">{{ c.MotivoDecision }}</div>
+              <div class="atenuado" *ngIf="c.FechaEnvio">enviado {{ c.FechaEnvio }}</div>
+            </td>
             <td data-label="Comentarios">
               <button class="btn-accion btn-ver" title="Comentarios y avances" (click)="abrirObservaciones(c)">
                 <i class="fas fa-comment-dots"></i>

@@ -35,3 +35,4 @@
   display: inline-block; margin-left: 4px; font-size: 0.7rem; font-weight: 700;
   background: #e1f5fe; color: #0288d1; border-radius: 10px; padding: 1px 6px;
 }
+.atenuado { opacity: .7; }

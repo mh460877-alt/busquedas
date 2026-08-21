@@ -19,5 +19,13 @@ export class CandidatoService {
   crear(dato: Candidato): Observable<Candidato> { return this.api.crear<Candidato>(this.entidad, dato); }
   editar(id: string, cambios: Partial<Candidato>): Observable<any> { return this.api.editar(this.entidad, id, cambios); }
   baja(id: string): Observable<any> { return this.api.baja(this.entidad, id); }
+  /**
+   * La empresa deja dicho qué le pareció el candidato.
+   * Acción propia y no un editar: el cliente no puede editar candidatos.
+   */
+  decidir(id: string, decision: string, motivo?: string): Observable<any> {
+    return this.api.llamar('decidirCandidato', { id, decision, motivo });
+  }
+
   eliminar(id: string, forzar = false): Observable<any> { return this.api.eliminar(this.entidad, id, forzar); }
 }

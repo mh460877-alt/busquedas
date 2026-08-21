@@ -174,5 +174,13 @@ export class CandidatoListComponent implements OnInit {
     });
   }
 
+  /** El color de lo que dijo el cliente, para leerlo sin detenerse. */
+  claseDecision(c: Candidato): string {
+    if (c.DecisionEmpresa === 'Descartado') return 'badge-rojo';
+    if (c.DecisionEmpresa === 'Quiere entrevistarlo') return 'badge-activa';
+    if (c.DecisionEmpresa === 'En evaluacion') return 'badge-ambar';
+    return 'badge-gris';
+  }
+
   abrir(c: Candidato): void { this.router.navigate(['/busqueda', c.BusquedaID]); }
 }

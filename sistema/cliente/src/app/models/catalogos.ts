@@ -6,6 +6,7 @@ export interface Catalogos {
   etapasBusqueda: string[];
   etapasCandidato: string[];
   etapasVisiblesEmpresa: string[];
+  decisionesEmpresa?: string[];
   estadosBusqueda: string[];
   estadosEmpresa: string[];
   lineas: string[];
