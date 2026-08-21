@@ -32,23 +32,58 @@
   </div>
 
   <div class="card">
-    <h3><i class="fas fa-diagram-project"></i> Consultoría ({{ proyectos.length }})</h3>
-    <div class="item" *ngFor="let p of proyectos">
+    <h3><i class="fas fa-diagram-project"></i> Consultoría Integral ({{ proyectos.length }})</h3>
+    <p class="desc">Cada servicio con su objetivo, su etapa y lo que se entregó.</p>
+
+    <div class="proyecto" *ngFor="let p of proyectos">
       <div class="item-cabecera">
         <strong>{{ p.Proyecto }}</strong>
+        <span class="badge badge-azul" *ngIf="p.Etapa">{{ p.Etapa }}</span>
         <span class="badge" [ngClass]="activa(p.Estado) ? 'badge-activa' : 'badge-gris'">{{ p.Estado }}</span>
       </div>
-      <div class="chico">
-        <span *ngIf="p.Linea">{{ p.Linea }}</span>
-        <span *ngIf="p.FechaInicio"> · desde {{ p.FechaInicio }}</span>
-        <span *ngIf="p.FechaFin"> · cierre {{ p.FechaFin }}</span>
+
+      <!-- Cuánto lleva recorrido -->
+      <div class="avance" *ngIf="pct(p) !== null">
+        <div class="barra-fondo"><div class="barra" [style.width.%]="pct(p)"></div></div>
+        <span class="chico">{{ pct(p) }}% del plan de trabajo</span>
       </div>
-      <div class="avance" *ngIf="p.Avance">{{ p.Avance }}</div>
+
+      <div class="chico fechas">
+        <span *ngIf="p.Linea">{{ p.Linea }}</span>
+        <span *ngIf="p.FechaInicio">desde {{ p.FechaInicio }}</span>
+        <span *ngIf="p.FechaFin">cierre {{ p.FechaFin }}</span>
+      </div>
+
+      <div class="bloque" *ngIf="p.Objetivo">
+        <span class="etq">Objetivo</span>
+        <div>{{ p.Objetivo }}</div>
+      </div>
+      <div class="bloque" *ngIf="p.Alcance">
+        <span class="etq">Alcance</span>
+        <div>{{ p.Alcance }}</div>
+      </div>
+      <div class="bloque" *ngIf="p.Avance">
+        <span class="etq">Cómo viene</span>
+        <div>{{ p.Avance }}</div>
+      </div>
+      <div class="bloque" *ngIf="p.Entregables">
+        <span class="etq">Entregables</span>
+        <div>{{ p.Entregables }}</div>
+      </div>
+      <div class="bloque" *ngIf="p.Resultados">
+        <span class="etq">Resultados</span>
+        <div>{{ p.Resultados }}</div>
+      </div>
+
       <a class="enlace-item" *ngFor="let a of enlacesDe('Proyectos', p.ID)" [href]="a.URL" target="_blank" rel="noopener">
         <i class="fas fa-link"></i> {{ a.Titulo }}
       </a>
     </div>
-    <p class="vacio" *ngIf="!proyectos.length">No hay proyectos de consultoría en curso.</p>
+
+    <p class="vacio" *ngIf="!proyectos.length">
+      Todavía no hay proyectos de consultoría en curso.
+      Podés pedir uno desde «Mis pedidos».
+    </p>
   </div>
 
   <div class="card">

@@ -9,3 +9,23 @@
 
 .enlaces-fijos { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 6px 0; font-size: 0.83rem; }
 .enlaces-fijos a { display: inline-flex; align-items: center; gap: 5px; }
+
+/* Un proyecto de consultoría ocupa más que una línea: se le da su bloque. */
+.proyecto { padding: 16px 0; border-bottom: 1px solid #f2f5f7; }
+.proyecto:last-of-type { border-bottom: none; }
+
+.avance { display: flex; align-items: center; gap: 10px; margin: 10px 0 6px; }
+.avance .barra-fondo { flex: 1; background: #eef2f5; border-radius: 6px; height: 9px; overflow: hidden; }
+.avance .barra { height: 100%; background: var(--success); border-radius: 6px; transition: width .25s; }
+
+.fechas { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-bottom: 10px; }
+
+.bloque { margin: 10px 0; }
+.bloque .etq {
+  display: block; font-size: 0.7rem; color: #93a0a9;
+  text-transform: uppercase; letter-spacing: .3px; margin-bottom: 3px;
+}
+.bloque > div {
+  white-space: pre-wrap; background: #f7fafc; border-radius: 8px;
+  padding: 10px 12px; font-size: 0.89rem;
+}

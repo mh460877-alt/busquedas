@@ -19,13 +19,14 @@ var HOJAS = {
    */
   Empresas: {
     cols: ['ID', 'Nombre', 'Linea', 'Contacto', 'Email', 'Telefono', 'Estado',
-           'LinkTerna', 'LinkCVs', 'LinkInformes', 'LinkReferencias', 'FechaAlta'],
+           'LinkTerna', 'LinkCVs', 'LinkInformes', 'LinkReferencias',
+           'Observaciones', 'FechaAlta'],
     requeridos: ['Nombre']
   },
   Busquedas: {
     cols: ['ID', 'Puesto', 'EmpresaID', 'Provincia', 'Descripcion', 'Etapa', 'Estado', 'Responsable',
            'LinkTerna', 'LinkCVs', 'LinkInformes', 'LinkReferencias',
-           'FechaAlta', 'FechaCierre'],
+           'Observaciones', 'FechaAlta', 'FechaCierre'],
     requeridos: ['Puesto']
   },
   Asignaciones: {
@@ -71,8 +72,19 @@ var HOJAS = {
     cols: ['ID', 'Titulo', 'Tipo', 'Detalle', 'Responsable', 'EmpresaID', 'Fecha', 'Estado', 'Observaciones', 'Link'],
     requeridos: ['Titulo']
   },
+  /**
+   * Los proyectos de Consultoría Integral.
+   *
+   * Es el equivalente de una búsqueda pero del otro servicio, así que necesita
+   * lo mismo que ella: qué se busca lograr, hasta dónde llega, en qué etapa
+   * está y qué se entregó. Sin eso, el cliente entra a su portal y ve un
+   * nombre y una fecha, que es lo que ya sabía.
+   */
   Proyectos: {
-    cols: ['ID', 'Proyecto', 'EmpresaID', 'Cliente', 'Linea', 'Responsable', 'Estado', 'FechaInicio', 'FechaFin', 'Avance', 'Observaciones', 'Link'],
+    cols: ['ID', 'Proyecto', 'EmpresaID', 'Cliente', 'Linea', 'Responsable', 'Estado',
+           'Objetivo', 'Alcance', 'Etapa', 'Porcentaje',
+           'FechaInicio', 'FechaFin', 'Avance', 'Entregables', 'Resultados',
+           'Observaciones', 'Link'],
     requeridos: ['Proyecto']
   },
   Viajes: {
@@ -237,6 +249,12 @@ var TIPOS_PENDIENTE = [
 ];
 var ESTADOS_PENDIENTE = ['Pendiente', 'En curso', 'Finalizada'];
 var ESTADOS_PROYECTO = ['Sin iniciar', 'En curso', 'En pausa', 'Finalizado'];
+
+/** Por dónde va un proyecto de consultoría, en orden. */
+var ETAPAS_PROYECTO = [
+  'Relevamiento', 'Diagnostico', 'Plan de trabajo',
+  'Implementacion', 'Seguimiento', 'Cierre'
+];
 var TIPOS_ONBOARDING = ['Ingreso colaborador', 'Alta cliente', 'Manual de proceso', 'Politica'];
 var AMBITOS = ['Interno', 'Externo', 'Ambos'];
 var NIVELES_COMUNICACION = ['Informativo', 'Importante', 'Urgente'];

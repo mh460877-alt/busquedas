@@ -235,6 +235,7 @@ function catalogos_(sesion) {
     tiposPendiente: TIPOS_PENDIENTE,
     estadosPendiente: ESTADOS_PENDIENTE,
     estadosProyecto: ESTADOS_PROYECTO,
+    etapasProyecto: ETAPAS_PROYECTO,
     tiposOnboarding: TIPOS_ONBOARDING,
     ambitos: AMBITOS,
     nivelesComunicacion: NIVELES_COMUNICACION,

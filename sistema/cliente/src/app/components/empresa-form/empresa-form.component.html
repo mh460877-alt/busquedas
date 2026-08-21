@@ -62,6 +62,13 @@
   </div>
   <p class="chico">Se completan cuando existen; ninguno es obligatorio.</p>
 
+  <div class="form-group">
+    <label>Observaciones</label>
+    <textarea name="observaciones" [(ngModel)]="empresa.Observaciones" rows="4"
+              placeholder="Particularidades de este cliente: cómo pide las cosas, qué necesita siempre, con quién hablar…"></textarea>
+    <p class="chico">Queda a la vista del equipo cada vez que se trabaja con esta empresa.</p>
+  </div>
+
   <div class="nota">
     La fecha de alta es la referencia para saber desde cuándo corresponde facturarle a este cliente.
   </div>

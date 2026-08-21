@@ -42,4 +42,14 @@ export class PortalServiciosComponent implements OnInit {
   }
 
   activa(estado?: string): boolean { return !/finaliz|cerrad/i.test(estado || ''); }
+
+  /**
+   * El avance del proyecto, si está cargado. Devuelve null cuando no hay dato,
+   * para no mostrar una barra en cero que se lea como "no arrancó".
+   */
+  pct(p: any): number | null {
+    const n = parseFloat(String(p.Porcentaje ?? '').replace(',', '.'));
+    if (isNaN(n)) return null;
+    return Math.max(0, Math.min(100, Math.round(n)));
+  }
 }

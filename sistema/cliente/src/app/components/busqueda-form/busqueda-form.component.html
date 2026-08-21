@@ -43,6 +43,13 @@
               placeholder="Qué buscamos, requisitos, condiciones…"></textarea>
   </div>
 
+  <div class="form-group">
+    <label>Observaciones</label>
+    <textarea name="observacionesB" [(ngModel)]="busqueda.Observaciones" rows="4"
+              placeholder="Particularidades de este pedido: qué pidió distinto el cliente, condiciones, salvedades…"></textarea>
+    <p class="chico">Lo que hay que tener en cuenta en esta búsqueda en particular.</p>
+  </div>
+
   <!-- Los cuatro enlaces de trabajo. Ninguno obligatorio. -->
   <h3 class="enlaces-titulo"><i class="fas fa-folder-open"></i> Enlaces de trabajo</h3>
   <div class="grid-container">

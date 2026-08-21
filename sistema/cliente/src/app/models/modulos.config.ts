@@ -31,17 +31,28 @@ export const MODULOS: { [ruta: string]: ConfigModulo } = {
 
   proyectos: {
     entidad: 'Proyectos', titulo: 'Proyectos', icono: 'fa-diagram-project',
-    descripcion: 'Proyectos delegados y su avance.',
+    descripcion: 'Consultoría Integral: qué se busca lograr, en qué etapa está y qué se entregó.',
     campoEstado: 'Estado',
     campos: [
       { clave: 'Proyecto', etiqueta: 'Proyecto', tipo: 'texto', enTabla: true, requerido: true },
       { clave: 'EmpresaID', etiqueta: 'Cliente', tipo: 'referencia', refCatalogo: 'empresas', enTabla: true },
       { clave: 'Linea', etiqueta: 'Línea', tipo: 'select', catalogo: 'lineas' },
       { clave: 'Responsable', etiqueta: 'Responsable', tipo: 'select', catalogo: 'equipo', enTabla: true },
+
+      { clave: 'Objetivo', etiqueta: 'Objetivo', tipo: 'textarea', ayuda: 'Qué se busca lograr' },
+      { clave: 'Alcance', etiqueta: 'Alcance', tipo: 'textarea', ayuda: 'Hasta dónde llega el servicio' },
+      { clave: 'Etapa', etiqueta: 'Etapa', tipo: 'select', catalogo: 'etapasProyecto', enTabla: true, badge: true },
+      { clave: 'Porcentaje', etiqueta: 'Avance (%)', tipo: 'texto', enTabla: true, ayuda: 'Un número de 0 a 100' },
       { clave: 'Estado', etiqueta: 'Estado', tipo: 'select', catalogo: 'estadosProyecto', enTabla: true, badge: true },
+
       { clave: 'FechaInicio', etiqueta: 'Inicio', tipo: 'fecha' },
       { clave: 'FechaFin', etiqueta: 'Cierre', tipo: 'fecha', enTabla: true },
-      { clave: 'Avance', etiqueta: 'Avance / devolución', tipo: 'textarea' },
+
+      { clave: 'Avance', etiqueta: 'Avance / devolución', tipo: 'textarea', ayuda: 'Lo ve el cliente' },
+      { clave: 'Entregables', etiqueta: 'Entregables', tipo: 'textarea', ayuda: 'Lo ve el cliente' },
+      { clave: 'Resultados', etiqueta: 'Resultados', tipo: 'textarea', ayuda: 'Lo ve el cliente' },
+      // Observaciones queda para el equipo: el servidor no se lo manda al cliente.
+      { clave: 'Observaciones', etiqueta: 'Observaciones internas', tipo: 'textarea' },
       { clave: 'Link', etiqueta: 'Enlace', tipo: 'url' }
     ]
   },

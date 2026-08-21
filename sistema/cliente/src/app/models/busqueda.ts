@@ -14,5 +14,7 @@ export interface Busqueda {
   LinkReferencias?: string;
   FechaAlta?: string;
   FechaCierre?: string;
+  /** Particularidades de este cliente o de este pedido. */
+  Observaciones?: string;
   MarcaTiempo?: string;
 }

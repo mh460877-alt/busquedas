@@ -18,6 +18,8 @@ export interface Empresa {
   LinkReferencias?: string;
   /** Desde cuándo se trabaja con el cliente: referencia para facturar. */
   FechaAlta?: string;
+  /** Particularidades de este cliente o de este pedido. */
+  Observaciones?: string;
   MarcaTiempo?: string;
 }
 

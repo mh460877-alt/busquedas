@@ -14,6 +14,7 @@ export interface Catalogos {
   tiposPendiente?: string[];
   estadosPendiente?: string[];
   estadosProyecto?: string[];
+  etapasProyecto?: string[];
   tiposOnboarding?: string[];
   ambitos?: string[];
   nivelesComunicacion?: string[];
