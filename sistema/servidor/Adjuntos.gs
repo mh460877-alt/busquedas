@@ -12,6 +12,86 @@
  * que el enlace cuelga: si no podés ver la búsqueda, no ves sus enlaces.
  */
 
+/**
+ * ARCHIVOS
+ *
+ * Un adjunto puede ser un enlace pegado a mano o un archivo subido desde la
+ * computadora. El archivo no se guarda en la planilla —ahí no entra ni tendría
+ * sentido— sino en el Drive de la cuenta que publicó el sistema, dentro de una
+ * carpeta propia. En la tabla queda su dirección, igual que cualquier enlace,
+ * así que todo lo que ya existe sigue funcionando sin cambios.
+ */
+var CARPETA_ARCHIVOS = 'Escencial · Archivos del sistema';
+
+/**
+ * Tope de tamaño. Apps Script recibe el archivo codificado en texto, lo que lo
+ * agranda cerca de un tercio, y un pedido demasiado grande se corta a la mitad
+ * sin decir por qué. Ocho megas es cómodo para informes y CV, que es para lo
+ * que se usa.
+ */
+var MAX_ARCHIVO_MB = 8;
+
+/** La carpeta del sistema en Drive. Se crea sola la primera vez. */
+function carpetaArchivos_() {
+  var props = PropertiesService.getScriptProperties();
+  var id = props.getProperty('CARPETA_ARCHIVOS_ID');
+  if (id) {
+    try { return DriveApp.getFolderById(id); } catch (e) { /* la borraron: se rehace */ }
+  }
+  var carpeta = DriveApp.createFolder(CARPETA_ARCHIVOS);
+  props.setProperty('CARPETA_ARCHIVOS_ID', carpeta.getId());
+  return carpeta;
+}
+
+/**
+ * Sube un archivo y lo cuelga del registro, como un adjunto más.
+ *
+ * Queda compartido por enlace: es lo que permite que el partner abra el CV o
+ * que el cliente lea el informe sin tener cuenta de Google. Quien tenga la
+ * dirección puede verlo, así que no es lugar para documentación reservada.
+ */
+function subirArchivo_(sesion, datos) {
+  var entidad = String(datos.Entidad || '');
+  var registroId = String(datos.RegistroID || '');
+
+  validarEntidadAdjunto_(entidad);
+  exigirPermiso_(sesion, entidad, 'ver');
+  exigirPermisoAdjunto_(sesion, entidad);
+  exigirAlcance_(sesion, entidad, registroId);
+
+  var contenido = String(datos.Contenido || '');
+  if (!contenido) throw new Error('El archivo llegó vacío');
+
+  var bytes = Utilities.base64Decode(contenido);
+  var megas = bytes.length / (1024 * 1024);
+  if (megas > MAX_ARCHIVO_MB) {
+    throw new Error('El archivo pesa ' + megas.toFixed(1) + ' MB y el máximo es ' +
+                    MAX_ARCHIVO_MB + ' MB. Subilo a Drive y pegá el enlace.');
+  }
+
+  var nombre = String(datos.Nombre || 'archivo').trim() || 'archivo';
+  var blob = Utilities.newBlob(bytes, String(datos.TipoMime || 'application/octet-stream'), nombre);
+  var archivo = carpetaArchivos_().createFile(blob);
+  archivo.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+
+  var creado = insertar_('Adjuntos', {
+    Entidad: entidad,
+    RegistroID: registroId,
+    Titulo: String(datos.Titulo || '').trim() || nombre,
+    URL: archivo.getUrl(),
+    Tipo: 'Archivo',
+    ArchivoID: archivo.getId(),
+    Peso: megas < 1 ? Math.round(megas * 1024) + ' KB' : megas.toFixed(1) + ' MB',
+    Nota: String(datos.Nota || '').trim(),
+    AutorID: sesion.uid,
+    AutorNombre: sesion.nombre,
+    Fecha: hoy_()
+  });
+
+  auditar_(sesion, 'subio un archivo', entidad, registroId, creado.Titulo);
+  return creado;
+}
+
 /** Se puede colgar un enlace acá, ¿sí o no? */
 function validarEntidadAdjunto_(entidad) {
   if (ENTIDADES_CON_ADJUNTOS.indexOf(String(entidad)) < 0) {
@@ -98,6 +178,7 @@ function crearAdjunto_(sesion, datos) {
     RegistroID: registroId,
     Titulo: titulo || url,          // sin nombre, se muestra la dirección
     URL: url,
+    Tipo: 'Enlace',
     Nota: String(datos.Nota || '').trim(),
     AutorID: sesion.uid,
     AutorNombre: sesion.nombre,
@@ -129,8 +210,14 @@ function quitarAdjunto_(sesion, id) {
     throw new Error('Ese enlace lo cargó otra persona');
   }
 
+  // Si era un archivo subido, se va también de Drive: dejarlo ahí sería
+  // guardar para siempre algo que el sistema ya no muestra.
+  if (adjunto.ArchivoID) {
+    try { DriveApp.getFileById(adjunto.ArchivoID).setTrashed(true); } catch (e) { }
+  }
+
   eliminar_('Adjuntos', id);
-  auditar_(sesion, 'quito un enlace', entidad, adjunto.RegistroID, adjunto.Titulo);
+  auditar_(sesion, 'quito un adjunto', entidad, adjunto.RegistroID, adjunto.Titulo);
   return { eliminado: true, id: id };
 }
 
@@ -141,5 +228,10 @@ function borrarAdjuntosDe_(entidad, registroId) {
       return String(a.Entidad) === String(entidad) &&
              String(a.RegistroID) === String(registroId);
     })
-    .forEach(function (a) { eliminar_('Adjuntos', a.ID); });
+    .forEach(function (a) {
+      if (a.ArchivoID) {
+        try { DriveApp.getFileById(a.ArchivoID).setTrashed(true); } catch (e) { }
+      }
+      eliminar_('Adjuntos', a.ID);
+    });
 }

@@ -23,3 +23,13 @@
 @media (max-width: 600px) {
   .enlaces > .btn { align-self: stretch; }
 }
+
+/* Separa las dos formas de adjuntar: subir o pegar. */
+.separador { display: flex; align-items: center; gap: 10px; margin: 4px 0 12px; }
+.separador::before, .separador::after {
+  content: ''; flex: 1; height: 1px; background: #e8ecef;
+}
+.separador span { font-size: 0.78rem; color: #93a0a9; }
+
+.archivo-elegido { margin-right: auto; }
+.enlace-form input[type=file] { padding: 7px; }

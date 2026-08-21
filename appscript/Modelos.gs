@@ -48,7 +48,8 @@ var HOJAS = {
    * antes de responder verifican el permiso sobre el registro al que cuelga.
    */
   Adjuntos: {
-    cols: ['ID', 'Entidad', 'RegistroID', 'Titulo', 'URL', 'Nota', 'AutorID', 'AutorNombre', 'Fecha'],
+    cols: ['ID', 'Entidad', 'RegistroID', 'Titulo', 'URL', 'Tipo', 'ArchivoID',
+           'Peso', 'Nota', 'AutorID', 'AutorNombre', 'Fecha'],
     requeridos: ['Entidad', 'RegistroID', 'URL']
   },
 

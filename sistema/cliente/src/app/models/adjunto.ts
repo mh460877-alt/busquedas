@@ -12,6 +12,11 @@ export interface Adjunto {
   RegistroID: string;
   Titulo?: string;
   URL: string;
+  /** 'Archivo' si se subió desde la computadora; 'Enlace' si se pegó. */
+  Tipo?: string;
+  /** Solo para archivos: su id en Drive, para poder borrarlo de verdad. */
+  ArchivoID?: string;
+  Peso?: string;
   Nota?: string;
   AutorID?: string;
   AutorNombre?: string;

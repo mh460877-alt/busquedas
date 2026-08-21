@@ -27,6 +27,38 @@ export class AdjuntoService {
     return this.api.llamar<Adjunto>('adjuntar', { datos });
   }
 
+  /**
+   * Sube un archivo y lo cuelga del registro.
+   *
+   * El archivo viaja codificado en texto porque Apps Script no recibe formularios
+   * con archivos: eso lo agranda cerca de un tercio, y por eso el tope de 8 MB
+   * es más bajo de lo que uno esperaría. Para algo más pesado conviene subirlo a
+   * Drive y pegar el enlace.
+   */
+  subir(entidad: string, registroId: string, archivo: File, titulo?: string, nota?: string): Observable<Adjunto> {
+    return new Observable<Adjunto>(observador => {
+      const lector = new FileReader();
+      lector.onerror = () => observador.error(new Error('No se pudo leer el archivo'));
+      lector.onload = () => {
+        // readAsDataURL devuelve "data:tipo;base64,XXXX"; solo sirve lo de después de la coma.
+        const texto = String(lector.result || '');
+        const contenido = texto.slice(texto.indexOf(',') + 1);
+        this.api.llamar<Adjunto>('subirArchivo', {
+          datos: {
+            Entidad: entidad, RegistroID: registroId,
+            Nombre: archivo.name, TipoMime: archivo.type || 'application/octet-stream',
+            Titulo: titulo || archivo.name, Nota: nota || '',
+            Contenido: contenido
+          }
+        }).subscribe({
+          next: a => { observador.next(a); observador.complete(); },
+          error: e => observador.error(e)
+        });
+      };
+      lector.readAsDataURL(archivo);
+    });
+  }
+
   quitar(id: string): Observable<any> {
     return this.api.llamar('quitarAdjunto', { id });
   }

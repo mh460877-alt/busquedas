@@ -88,6 +88,9 @@ function procesar_(e) {
       case 'adjuntar':
         return { ok: true, datos: crearAdjunto_(sesion, p.datos || {}) };
 
+      case 'subirArchivo':
+        return { ok: true, datos: subirArchivo_(sesion, p.datos || {}) };
+
       case 'quitarAdjunto':
         return { ok: true, datos: quitarAdjunto_(sesion, p.id) };
 

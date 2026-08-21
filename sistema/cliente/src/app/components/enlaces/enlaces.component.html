@@ -3,11 +3,13 @@
   <p class="vacio chico" *ngIf="cargando"><i class="fas fa-spinner fa-spin"></i> Cargando enlaces…</p>
 
   <div class="enlace" *ngFor="let a of enlaces">
-    <i class="fas fa-link"></i>
+    <i class="fas" [ngClass]="esArchivo(a) ? 'fa-paperclip' : 'fa-link'"></i>
     <div class="enlace-cuerpo">
       <a [href]="a.URL" target="_blank" rel="noopener">{{ a.Titulo || a.URL }}</a>
       <div class="chico" *ngIf="a.Nota">{{ a.Nota }}</div>
-      <div class="chico atenuado" *ngIf="a.AutorNombre">{{ a.AutorNombre }} · {{ soloDia(a.Fecha) }}</div>
+      <div class="chico atenuado" *ngIf="a.AutorNombre">
+        {{ a.AutorNombre }} · {{ soloDia(a.Fecha) }}<span *ngIf="a.Peso"> · {{ a.Peso }}</span>
+      </div>
     </div>
     <button class="btn-accion btn-borrar" title="Quitar enlace"
             *ngIf="puedeQuitar(a)" (click)="quitar(a)">
@@ -20,10 +22,28 @@
   </p>
 
   <button class="btn chico" *ngIf="!agregando && !soloLectura" (click)="abrirNuevo()">
-    <i class="fas fa-plus"></i> Agregar enlace
+    <i class="fas fa-plus"></i> Agregar archivo o enlace
   </button>
 
   <div class="enlace-form" *ngIf="agregando">
+    <!-- Subir un archivo de la computadora -->
+    <div class="form-group">
+      <label>Subir un archivo</label>
+      <input type="file" (change)="elegirArchivo($event)">
+      <p class="chico">Hasta {{ maxMB }} MB. Se guarda en el Drive de Escencial.</p>
+    </div>
+
+    <div class="acciones-modal" *ngIf="archivo">
+      <span class="chico archivo-elegido">
+        <i class="fas fa-paperclip"></i> {{ archivo.name }}
+      </span>
+      <button class="btn success chico" (click)="subir()" [disabled]="subiendo">
+        <i class="fas fa-upload"></i> {{ subiendo ? 'Subiendo…' : 'Subir archivo' }}
+      </button>
+    </div>
+
+    <div class="separador" *ngIf="!archivo"><span>o pegá un enlace</span></div>
+
     <div class="form-group">
       <label>Nombre</label>
       <input type="text" [(ngModel)]="nuevo.Titulo" placeholder="Carpeta de CVs, Informe final…">

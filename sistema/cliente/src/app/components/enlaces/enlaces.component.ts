@@ -37,6 +37,10 @@ export class EnlacesComponent implements OnChanges {
   mensaje = '';
 
   agregando = false;
+  /** El archivo elegido, todavía sin subir. */
+  archivo: File | null = null;
+  subiendo = false;
+  readonly maxMB = 8;
   nuevo: Adjunto = { Entidad: '', RegistroID: '', Titulo: '', URL: '', Nota: '' };
   guardando = false;
 
@@ -59,13 +63,49 @@ export class EnlacesComponent implements OnChanges {
     });
   }
 
+  elegirArchivo(evento: Event): void {
+    const input = evento.target as HTMLInputElement;
+    const f = input.files && input.files[0];
+    this.mensaje = '';
+    if (!f) { this.archivo = null; return; }
+    if (f.size > this.maxMB * 1024 * 1024) {
+      this.archivo = null;
+      input.value = '';
+      this.mensaje = `«${f.name}» pesa ${(f.size / 1048576).toFixed(1)} MB y el máximo es ${this.maxMB} MB. ` +
+                     'Subilo a Drive y pegá el enlace.';
+      return;
+    }
+    this.archivo = f;
+    if (!this.nuevo.Titulo) this.nuevo.Titulo = f.name;
+  }
+
+  subir(): void {
+    if (!this.archivo) return;
+    this.subiendo = true;
+    this.adjuntos.subir(this.entidad, this.registroId, this.archivo,
+                        this.nuevo.Titulo, this.nuevo.Nota).subscribe({
+      next: creado => {
+        this.enlaces.push(creado);
+        this.archivo = null;
+        this.subiendo = false;
+        this.agregando = false;
+        this.mensaje = '';
+        this.cambio.emit();
+      },
+      error: e => { this.subiendo = false; this.mensaje = e.message; }
+    });
+  }
+
   abrirNuevo(): void {
     this.agregando = true;
+    this.archivo = null;
     this.mensaje = '';
     this.nuevo = { Entidad: this.entidad, RegistroID: this.registroId, Titulo: '', URL: '', Nota: '' };
   }
 
-  cancelar(): void { this.agregando = false; this.mensaje = ''; }
+  cancelar(): void { this.agregando = false; this.archivo = null; this.mensaje = ''; }
+
+  esArchivo(a: Adjunto): boolean { return a.Tipo === 'Archivo'; }
 
   guardar(): void {
     const url = (this.nuevo.URL || '').trim();
