@@ -211,6 +211,35 @@ export class ModuloInternoComponent implements OnInit {
     }));
   }
 
+  /**
+   * El color de una etiqueta, según lo que diga.
+   *
+   * Antes todas salían azules, así que una tabla con estados mezclados —en
+   * curso, finalizado, sin iniciar— se veía igual de punta a punta y había que
+   * leer cada celda. El color se deduce del texto y no de una lista fija, para
+   * que valga igual en los estados de un proyecto, en la prioridad de un pedido
+   * o en cualquier catálogo que se agregue mañana.
+   */
+  claseBadge(valor: any): string {
+    const v = String(valor || '')
+      .toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '');   // sin acentos
+
+    if (!v) return 'badge-gris';
+    // Terminado y bien
+    if (/finaliz|complet|aprobad|contratad|cerrad|realizad|tomad|alcanzad/.test(v)) return 'badge-activa';
+    // Se cayó o no va más
+    if (/rechaz|descartad|cancelad|baja|vencid|urgente/.test(v)) return 'badge-rojo';
+    // Frenado, esperando a alguien
+    if (/pausa|espera|pendiente|analisis|revision|borrador|solicitad/.test(v)) return 'badge-ambar';
+    // Todavía no arrancó
+    if (/sin iniciar|sin ver|nueva|nuevo|programad/.test(v)) return 'badge-gris';
+    // En movimiento
+    if (/curso|proceso|activ|implementa|seguimiento|evaluacion|entrevista/.test(v)) return 'badge-azul';
+    // Lo que no encaja en ningún grupo, pero es un valor válido
+    return 'badge-morado';
+  }
+
   mostrar(fila: any, campo: CampoModulo): string {
     const v = fila[campo.clave];
     if (campo.tipo === 'password') {

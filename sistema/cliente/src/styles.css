@@ -177,6 +177,7 @@ td .subtexto { display: block; font-size: 0.76rem; color: #93a0a9; font-weight: 
 .badge-proceso, .badge-azul  { background: #e1f5fe; color: #0288d1; }
 .badge-ambar { background: #fff8e1; color: #f57f17; }
 .badge-gris  { background: #eceff1; color: #607d8b; }
+.badge-morado { background: #f3eafa; color: #6f3d90; }
 
 /* ============ AVISOS / NOTAS ============ */
 .mensaje { font-size: 0.85rem; font-weight: 600; margin: 8px 0 12px; color: var(--success); }

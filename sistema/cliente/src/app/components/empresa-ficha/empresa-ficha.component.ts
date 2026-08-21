@@ -108,6 +108,20 @@ export class EmpresaFichaComponent implements OnInit {
 
   get totalEnlaces(): number { return this.ficha?.adjuntos.length ?? 0; }
 
+  /** Mismo criterio de color que en los módulos internos. */
+  claseBadge(valor: any): string {
+    const v = String(valor || '')
+      .toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    if (!v) return 'badge-gris';
+    if (/finaliz|complet|aprobad|contratad|cerrad|realizad|tomad|alcanzad/.test(v)) return 'badge-activa';
+    if (/rechaz|descartad|cancelad|baja|vencid|urgente/.test(v)) return 'badge-rojo';
+    if (/pausa|espera|pendiente|analisis|revision|borrador|solicitad/.test(v)) return 'badge-ambar';
+    if (/sin iniciar|sin ver|nueva|nuevo|programad/.test(v)) return 'badge-gris';
+    if (/curso|proceso|activ|implementa|seguimiento|evaluacion|entrevista/.test(v)) return 'badge-azul';
+    return 'badge-morado';
+  }
+
   abrirBusqueda(id?: string): void { this.router.navigate(['/busqueda', id]); }
   editar(): void { this.router.navigate(['/empresa-form', this.ficha?.empresa.ID]); }
   volver(): void { this.router.navigate(['/empresas']); }

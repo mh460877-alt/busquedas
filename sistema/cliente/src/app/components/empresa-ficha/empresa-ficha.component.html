@@ -102,7 +102,7 @@
         <tbody>
           <tr *ngFor="let f of filasDe(entidad)">
             <td *ngFor="let c of columnasDe(entidad)" [attr.data-label]="c.etiqueta">
-              <span *ngIf="c.badge" class="badge badge-azul">{{ f[c.clave] || '—' }}</span>
+              <span *ngIf="c.badge" class="badge" [ngClass]="claseBadge(f[c.clave])">{{ f[c.clave] || '—' }}</span>
               <span *ngIf="!c.badge">{{ f[c.clave] || '—' }}</span>
             </td>
             <td data-label="Enlaces">

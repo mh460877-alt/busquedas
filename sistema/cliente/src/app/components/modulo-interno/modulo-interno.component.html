@@ -63,7 +63,7 @@
       <tbody>
         <tr *ngFor="let f of filas">
           <td *ngFor="let c of columnas" [attr.data-label]="c.etiqueta">
-            <span *ngIf="c.badge" class="badge badge-azul">{{ mostrar(f, c) }}</span>
+            <span *ngIf="c.badge" class="badge" [ngClass]="claseBadge(f[c.clave])">{{ mostrar(f, c) }}</span>
             <ng-container *ngIf="!c.badge">
               <span *ngIf="c.tipo === 'password'">
                 {{ mostrar(f, c) }}
